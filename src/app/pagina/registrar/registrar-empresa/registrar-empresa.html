@@ -1,0 +1,134 @@
+<div class="registro-container">
+
+  <h2>Registre su Empresa aquí</h2>
+  <p>Complete los datos para acceder al Sistema de Intermediación Laboral</p>
+
+  <form [formGroup]="formRegistro" (ngSubmit)="registrarEmpresa(); $event.preventDefault()">
+
+    <div class="form-group">
+      <label>Razón Social:</label>
+      <input type="text" formControlName="razonSocial" placeholder="Ej: Empresa S.A.">
+    </div>
+
+    <div class="form-group">
+      <label>Nombre de Fantasía:</label>
+      <input type="text" formControlName="fantasia" placeholder="Ej: MiEmpresa">
+    </div>
+
+    <div class="form-group">
+      <label>Organización:</label>
+      <input type="text" formControlName="organizacion" placeholder="Ej: S.R.L., S.A., ONG">
+    </div>
+
+    <div class="form-group">
+      <label>CUIT:</label>
+      <input type="text" formControlName="cuit" placeholder="Ej: 30-12345678-9">
+      @if (formRegistro.get('cuit')?.invalid && formRegistro.get('cuit')?.touched) {
+        <div class="error-msg">
+          @if (formRegistro.get('cuit')?.errors?.['required']) {
+            <small>El CUIT es obligatorio.</small>
+          }
+          @if (formRegistro.get('cuit')?.errors?.['pattern']) {
+            <small>Formato inválido. Ej: 30-12345678-9</small>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Sector:</label>
+      <input type="text" formControlName="sector" placeholder="Ej: Tecnología, Salud">
+    </div>
+
+    <div class="form-group">
+      <label>País:</label>
+      <input type="text" formControlName="pais" placeholder="Ej: Argentina">
+    </div>
+
+    <div class="form-group">
+      <label>Provincia:</label>
+      <input type="text" formControlName="provincia" placeholder="Ej: Buenos Aires">
+    </div>
+
+    <div class="form-group">
+      <label>Ciudad:</label>
+      <input type="text" formControlName="ciudad" placeholder="Ej: San Martín">
+    </div>
+
+    <div class="form-group">
+      <label>Código Postal:</label>
+      <input type="text" formControlName="cp" placeholder="Ej: 1650">
+    </div>
+
+    <div class="form-group">
+      <label>Calle:</label>
+      <input type="text" formControlName="calle" placeholder="Ej: Av. Libertador">
+    </div>
+
+    <div class="form-group">
+      <label>N°:</label>
+      <input type="text" formControlName="numero" placeholder="Ej: 1234">
+    </div>
+
+    <div class="form-group">
+      <label>Piso:</label>
+      <input type="text" formControlName="piso" placeholder="Ej: 3">
+    </div>
+
+    <div class="form-group">
+      <label>Departamento:</label>
+      <input type="text" formControlName="dpto" placeholder="Ej: B">
+    </div>
+
+    <div class="form-group">
+      <label>Email:</label>
+      <input type="email" formControlName="email" placeholder="Ej: contacto@empresa.com">
+      @if (formRegistro.get('email')?.invalid && formRegistro.get('email')?.touched) {
+        <div class="error-msg">
+          @if (formRegistro.get('email')?.errors?.['required']) {
+            <small>El correo es obligatorio.</small>
+          }
+          @if (formRegistro.get('email')?.errors?.['email']) {
+            <small>Formato de correo no válido.</small>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Sitio Web:</label>
+      <input type="text" formControlName="web" placeholder="Ej: www.miempresa.com">
+    </div>
+
+    <div class="form-group">
+      <label>Teléfono de Contacto:</label>
+      <input type="text" formControlName="telefono" placeholder="Ej: 011-4567-8900">
+    </div>
+
+    <div class="form-group full-width">
+      <label>Nombre del Responsable del Área:</label>
+      <input type="text" formControlName="responsable" placeholder="Ej: María González">
+    </div>
+
+    <div class="form-group full-width">
+      <label>Contraseña:</label>
+      <input type="password" formControlName="password" placeholder="Mínimo 8 caracteres">
+      @if (formRegistro.get('password')?.invalid && formRegistro.get('password')?.touched) {
+        <div class="error-msg">
+          @if (formRegistro.get('password')?.errors?.['required']) {
+            <small>La contraseña es obligatoria.</small>
+          }
+          @if (formRegistro.get('password')?.errors?.['minlength']) {
+            <small>Debe tener al menos 8 caracteres.</small>
+          }
+        </div>
+      }
+    </div>
+
+    <button type="submit" [disabled]="formRegistro.invalid">
+      Crear Cuenta
+    </button>
+
+  </form>
+
+</div>

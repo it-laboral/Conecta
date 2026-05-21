@@ -1,0 +1,79 @@
+<div class="registro-container">
+  
+  <h2>¿Quieres registrarte como postulante?</h2>
+  <p>Completa los datos para acceder al Sistema de intermediación Laboral</p>
+
+  <!-- Usamos [formGroup] para conectar con tu lógica del TS -->
+  <form [formGroup]="formRegistro" (ngSubmit)="registrarPostulante(); $event.preventDefault()">
+    
+    <div class="form-group">
+      <label>Nombres:</label>
+      <input type="text" formControlName="nombres" placeholder="Ej: Juan Pablo">
+    </div>
+
+    <div class="form-group">
+      <label>Apellidos:</label>
+      <input type="text" formControlName="apellidos" placeholder="Ej: Pérez Garcia">
+    </div>
+
+    <div class="form-group">
+      <label>DNI:</label>
+      <input type="text" formControlName="dni" placeholder="Solo números, sin puntos">
+      <!-- Mensajes de error -->
+        @if (formRegistro.get('dni')?.invalid && formRegistro.get('dni')?.touched) {
+        <div class="error-msg">
+          @if (formRegistro.get('dni')?.errors?.['required']) {
+            <small>El DNI es obligatorio.</small>
+          }
+          @if (formRegistro.get('dni')?.errors?.['pattern']) {
+            <small>Solo se permiten números.</small>
+          }
+      </div>
+      }
+      </div>
+
+      <div class="form-group">
+      <label>Legajo:</label>
+      <input type="text" formControlName="legajo" placeholder="Número dado por ITB">
+    </div>
+    <div class="form-group">
+      <label>Carrera:</label>
+      <input type="text" formControlName="carrera" placeholder="Ej: Analista de Sistemas">
+    </div>
+
+    <div class="form-group">
+      <label>Correo Electrónico:</label>
+      <input type="email" formControlName="email" placeholder="Ej: usuario@ibeltran.com.ar">
+      @if (formRegistro.get('email')?.invalid && formRegistro.get('email')?.touched) {
+        <div class="error-msg">
+          @if (formRegistro.get('email')?.errors?.['required']) {
+            <small>El correo es obligatorio.</small>
+          }
+          @if (formRegistro.get('email')?.errors?.['email']) {
+            <small>Formato de correo no válido.</small>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Contraseña</label>
+      <input type="password" formControlName="password" placeholder="Mínimo 8 caracteres">
+        @if (formRegistro.get('password')?.invalid && formRegistro.get('password')?.touched) {
+      <div class="error-msg">
+        @if (formRegistro.get('password')?.errors?.['required']) {
+          <small>La contraseña es obligatoria.</small>
+        }
+        @if (formRegistro.get('password')?.errors?.['minlength']) {
+          <small>Debe tener al menos 8 caracteres.</small>
+        }
+      </div>
+    }
+  </div>
+    <button type="submit" [disabled]="formRegistro.invalid">
+      Crear Cuenta
+    </button>
+
+  </form>
+  
+</div>

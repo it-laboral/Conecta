@@ -1,0 +1,61 @@
+@use '../../../styles/variables';
+
+header {
+  background: linear-gradient(
+    90deg,
+    #06245c,
+    #0aa7b8
+  );
+
+  color: white;
+
+  padding: 1.5rem 2rem;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2rem;
+
+  border-radius: 32px;
+
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+img {
+  width: 140px;
+  height: auto;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+nav a {
+  color: #ffffff;
+
+  text-decoration: none;
+
+  padding: 0.75rem 1.2rem;
+
+  font-family: variables.$font-family-base;
+
+  font-size: 1.2rem;
+  font-weight: 600;
+
+  border-radius: 999px;
+
+  transition: 0.3s;
+}
+
+nav a:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+
+  color: #dffcff;
+
+  transform: translateY(-2px);
+}

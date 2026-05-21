@@ -1,0 +1,16 @@
+Conexion fronted, backend y BD
+
+1)Abrir terminal en la carpeta del proyecto Conecta e ingresar: cd backend. 
+(una vez dentro, escribir: node server.js)
+..\..\backend>node server.js
+(Aparecerá algo como: )
+◇ injected env (5) from .env // tip: ⌘ override existing { override: true }
+◇ injected env (0) from .env // tip: ⌘ suppress logs { quiet: true }
+Servidor corriendo en http://localhost:3000
+
+(luego ir al navegador y escribir)(para asegurarse que este corriendo)
+http://localhost:3000/test-db
+el mensaje que saldrá algo así: {"mensaje":"Conexión exitosa.","resultado":2}
+dejar la terminal abierta y corriendo.
+2)Tener abierto el xampp:Apache y MySQL
+3)y el localhost4200 del proyecto en otra terminal

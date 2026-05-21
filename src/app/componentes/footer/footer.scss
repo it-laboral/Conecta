@@ -1,0 +1,51 @@
+@use '../../../styles/variables';
+
+footer {
+  background: linear-gradient(
+    90deg,
+    #06245c,
+    #0aa7b8
+  );
+
+  color: white;
+
+  text-align: center;
+
+  padding: 1.5rem 1rem;
+
+  width: 100%;
+
+  margin-top: auto;
+
+  border-radius: 32px;
+
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+}
+
+footer h4 {
+  margin: 0.5rem 0;
+
+  font-size: 1rem;
+
+  color: white;
+}
+
+footer p {
+  margin: 0.5rem 0;
+
+  font-size: 0.95rem;
+
+  color: #e7f9fb;
+}
+
+footer a {
+  color: white;
+
+  text-decoration: none;
+
+  transition: 0.3s;
+}
+
+footer a:hover {
+  color: #dffcff;
+}

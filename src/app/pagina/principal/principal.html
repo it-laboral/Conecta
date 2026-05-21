@@ -1,0 +1,24 @@
+
+<h2>¡Bienvenidos a Nuestro Sistema de Intermediación Laboral del ITB!</h2>
+<p>En este sistema podrás encontrar las mejores oportunidades laborales. Registra tu cuenta para postular a las mismas.</p>
+<p>¡No pierdas la oportunidad de encontrar el trabajo de tus sueños!</p>
+
+<section class="destacados-seccion">
+  <h2>Oportunidades Laborales Destacadas</h2>
+  
+  <div class="ofertas-grid">
+    @for (oferta of ofertasDestacadas; track oferta.id) {
+      <div class="oferta-card">
+        <h3>{{ oferta.puesto }}</h3>
+        <p class="empresa">{{ oferta.empresa }}</p>
+        <div class="detalles">
+          <span>📍 {{ oferta.ubicacion }}</span>
+          <span>💰 {{ oferta.salario }}</span>
+        </div>
+        <button class="btn-ver">Ver Postulación</button>
+      </div>
+    } @empty {
+      <p>No hay ofertas destacadas en este momento.</p>
+    }
+  </div>
+</section>

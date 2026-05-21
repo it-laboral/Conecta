@@ -1,0 +1,105 @@
+@use '../../../styles/variables';
+
+img{
+    width: 200px;
+    height: auto;
+    margin-top: 1rem;
+    justify-content: center;
+}
+.destacados-seccion {
+  padding: 40px 20px;
+
+  h2 {
+    text-align: center;
+    color: #06245c;
+    margin-bottom: 30px;
+  }
+}
+
+.ofertas-grid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+  gap: 25px;
+
+  margin-top: 30px;
+}
+
+.oferta-card {
+  background: white;
+
+  border: 2px solid #0aa7b8;
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+  transition: 0.3s;
+}
+
+.oferta-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+
+  border-color: #06245c;
+}
+
+.oferta-card h3 {
+  color: #06245c;
+
+  margin-bottom: 10px;
+}
+
+.empresa {
+  color: #0aa7b8;
+
+  font-weight: bold;
+
+  margin-bottom: 15px;
+}
+
+.detalles {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-bottom: 20px;
+
+  color: #4c5b73;
+}
+
+.btn-ver {
+  width: 100%;
+
+  padding: 12px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    90deg,
+    #06245c,
+    #0aa7b8
+  );
+
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.btn-ver:hover {
+  transform: translateY(-2px);
+
+  opacity: 0.95;
+}
