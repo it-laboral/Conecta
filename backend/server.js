@@ -1,7 +1,7 @@
 // 1. IMPORTACIÓN DE LIBRERÍAS
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+//require('dotenv').config();
 
 // 2. IMPORTACIÓN DE CONFIGURACIONES LOCALES
 const db = require('./db'); // Tu archivo de conexión a la base de datos

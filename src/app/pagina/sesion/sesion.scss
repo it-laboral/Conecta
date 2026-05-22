@@ -224,3 +224,29 @@ button:disabled {
     align-items: center;
   }
 }
+/* OJITO PASSWORD */
+
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-container input {
+  width: 100%;
+}
+
+.ojo {
+  position: absolute;
+
+  right: 15px;
+
+  top: 38%;
+
+  transform: translateY(-50%);
+
+  cursor: pointer;
+
+  font-size: 20px;
+
+  user-select: none;
+}
