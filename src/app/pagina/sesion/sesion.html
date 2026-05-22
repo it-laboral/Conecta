@@ -1,56 +1,87 @@
 <div class="main-split-container">
   
-  <!-- COLUMNA IZQUIERDA: Texto e Imagen -->
+  <!-- COLUMNA IZQUIERDA -->
   <div class="info-column">
     <div class="info-content">
+
       <h2>Acceso al Sistema</h2>
+
       <p>
         Ingresa con el correo electrónico y contraseña que registraste previamente 
         para acceder al Sistema de Intermediación Laboral.
       </p>
 
-      <img src="img\plataforma.png" alt="ITB Conecta" class="img-fluida">
+      <img 
+        src="img/plataforma.png" 
+        alt="ITB Conecta" 
+        class="img-fluida">
+
     </div>
   </div>
 
-  <!-- COLUMNA DERECHA: Formulario y Enlace -->
+  <!-- COLUMNA DERECHA -->
   <div class="form-column">
+
     <div class="login-box">
 
       <form [formGroup]="loginForm" (ngSubmit)="ingresar()">
 
+        <!-- EMAIL -->
         <input 
-          type="email" 
-          formControlName="email" 
+          type="email"
+          formControlName="email"
           placeholder="Tu correo">
 
-        <!-- INPUT PASSWORD CON OJITO -->
+        <!-- PASSWORD -->
         <div class="password-container">
 
-          <input 
+          <input
             [type]="mostrarPassword ? 'text' : 'password'"
-            formControlName="password" 
+            formControlName="password"
             placeholder="Tu contraseña">
 
-      <span class="ojo" (click)="togglePassword()">
+          <!-- OJITO -->
+          <span class="ojo" (click)="togglePassword()">
 
-  <i 
-    class="fa-solid"
-    [class.fa-eye]="mostrarPassword"
-    [class.fa-eye-slash]="!mostrarPassword">
-  </i>
+            <i
+              class="fa-solid"
+              [class.fa-eye]="mostrarPassword"
+              [class.fa-eye-slash]="!mostrarPassword">
+            </i>
 
-</span>
+          </span>
 
         </div>
 
-        <button type="submit" [disabled]="loginForm.invalid">
+        <!-- ERROR PASSWORD -->
+        <div
+          class="error"
+          *ngIf="loginForm.get('password')?.errors?.['pattern']
+                  && loginForm.get('password')?.touched">
+
+          La contraseña debe tener:
+          <br>
+          • Al menos una mayúscula
+          <br>
+          • Un número
+          <br>
+          • Mínimo 8 caracteres
+        </div>
+
+        <!-- BOTON -->
+        <button 
+          type="submit"
+          [disabled]="loginForm.invalid">
+
           Iniciar Sesión
+
         </button>
 
       </form>
 
+      <!-- ENLACE -->
       <div class="contenedor-enlace">
+
         <p>
           Si aún no tienes una cuenta, puedes registrarte haciendo clic en el siguiente enlace.
         </p>
@@ -58,9 +89,11 @@
         <a routerLink="/registrar" class="mi-enlace">
           Ir a Registrarse
         </a>
+
       </div>
 
     </div>
+
   </div>
 
 </div>

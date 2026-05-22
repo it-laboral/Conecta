@@ -1,7 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
+
 import { RouterLink, Router } from '@angular/router';
+
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -34,8 +42,15 @@ export class Sesion {
     ]),
 
     password: new FormControl('', [
+
       Validators.required,
-      Validators.minLength(6)
+
+      // MINIMO 8 CARACTERES
+      Validators.minLength(8),
+
+      // 1 MAYUSCULA + 1 NUMERO
+      Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)
+
     ])
 
   });
@@ -93,6 +108,8 @@ export class Sesion {
     }
 
     else {
+
+      this.loginForm.markAllAsTouched();
 
       alert(
         'Por favor, completa los campos correctamente.'
