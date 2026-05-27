@@ -54,19 +54,18 @@
         </div>
 
         <!-- ERROR PASSWORD -->
-        <div
-          class="error"
-          *ngIf="loginForm.get('password')?.errors?.['pattern']
-                  && loginForm.get('password')?.touched">
-
-          La contraseña debe tener:
-          <br>
-          • Al menos una mayúscula
-          <br>
-          • Un número
-          <br>
-          • Mínimo 8 caracteres
-        </div>
+        @if (loginForm.get('password')?.errors?.['pattern']
+             && loginForm.get('password')?.touched) {
+          <div class="error">
+            La contraseña debe tener:
+            <br>
+            • Al menos una mayúscula
+            <br>
+            • Un número
+            <br>
+            • Mínimo 8 caracteres
+          </div>
+        }
 
         <!-- BOTON -->
         <button 

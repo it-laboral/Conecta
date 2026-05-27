@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-postulante-profile',
   imports: [],
   templateUrl: './postulante-profile.html',
-  styleUrl: './postulante-profile.css',
+  styleUrl: './postulante-profile.scss',
 })
 export class PostulanteProfile {}

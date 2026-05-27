@@ -1,3 +1,19 @@
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #f8f9fa; // O el color de ITB Conecta
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+}
+
 .sidebar {
   width: 240px;
   min-height: 100vh;
@@ -71,4 +87,9 @@ nav a:hover{
     width: 80px;;
     height: 80px;;
     object-fit:contain;
+}
+.main-content {
+  flex: 1; // Ocupa todo el resto de la pantalla
+  padding: 30px;
+  overflow-y: auto; // Por si el formulario de perfil es largo
 }

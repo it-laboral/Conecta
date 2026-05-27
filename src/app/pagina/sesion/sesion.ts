@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { NgClass } from '@angular/common';
 
 import {
   FormGroup,
@@ -15,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-sesion',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, NgClass],
+  imports: [RouterLink, ReactiveFormsModule],
   templateUrl: './sesion.html',
   styleUrl: './sesion.scss',
 })
