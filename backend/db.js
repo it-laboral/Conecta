@@ -5,7 +5,7 @@ const pool = mysql.createPool({
     user: 'root',
     password: String(''),
     database: 'conecta',
-    port:3306,
+    port:3308,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

@@ -15,9 +15,12 @@ app.use(express.json());
 
 // 5. RUTA DE PRUEBA
 app.get('/', (req, res) => {
+
     res.send('API de ITB Conecta funcionando correctamente.');
+
 });
 
+// TEST BASE DE DATOS
 app.get('/test-db', async (req, res) => {
 
     try {
@@ -53,7 +56,10 @@ app.get('/test-db', async (req, res) => {
 
 });
 
+// =======================
 // LOGIN
+// =======================
+
 app.post('/api/login', async (req, res) => {
 
     const { email, password } = req.body;
@@ -147,7 +153,10 @@ app.post('/api/login', async (req, res) => {
 
 });
 
+// =======================
 // REGISTRO POSTULANTE
+// =======================
+
 app.post('/api/registrar/postulante', async (req, res) => {
 
     const {
@@ -230,7 +239,10 @@ app.post('/api/registrar/postulante', async (req, res) => {
 
 });
 
+// =======================
 // REGISTRO EMPRESA
+// =======================
+
 app.post('/api/registrar/empresa', async (req, res) => {
 
     const {
@@ -335,7 +347,125 @@ app.post('/api/registrar/empresa', async (req, res) => {
 
 });
 
+// =======================
+// PERFILES
+// =======================
+
+// OBTENER PERFILES
+app.get('/api/perfiles', async (req, res) => {
+
+    try {
+
+        const [perfiles] = await db.query(
+
+            'SELECT * FROM perfiles'
+
+        );
+
+        res.json({
+
+            success: true,
+
+            perfiles
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: 'Error al obtener perfiles.'
+
+        });
+
+    }
+
+});
+
+// CREAR PERFIL
+app.post('/api/perfiles', async (req, res) => {
+
+    const {
+
+        usuario_id,
+        nombre,
+        apellido,
+        foto,
+        descripcion,
+        habilidades,
+        linkedin,
+        github
+
+    } = req.body;
+
+    try {
+
+        await db.query(
+
+            `INSERT INTO perfiles
+            (
+                usuario_id,
+                nombre,
+                apellido,
+                foto,
+                descripcion,
+                habilidades,
+                linkedin,
+                github
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+
+            [
+
+                usuario_id,
+                nombre,
+                apellido,
+                foto || '',
+                descripcion || '',
+                habilidades || '',
+                linkedin || '',
+                github || ''
+
+            ]
+
+        );
+
+        res.status(201).json({
+
+            success: true,
+
+            message: 'Perfil creado con éxito.'
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: 'Error al crear perfil.'
+
+        });
+
+    }
+
+});
+
+// =======================
 // INICIO SERVIDOR
+// =======================
+
 app.listen(PORT, () => {
 
     console.log(
