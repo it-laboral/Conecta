@@ -1,1 +1,190 @@
-<h2>Oportunidades Laborales</h2>
+<div class="modulo-ofertas-container">
+
+  <div class="header-ofertas">
+    <div>
+      <h2>Portal de Ofertas Técnicas</h2>
+      <p>Uniendo talento y oportunidades en el ITB</p>
+    </div>
+    
+    @if (!mostrarFormulario && rolUsuario === 'EMPRESA') {
+      <button (click)="toggleVista(true)" class="btn-primary">
+        <i class="fa-solid fa-plus-circle"></i> Publicar Nueva Oferta
+      </button>
+    }
+  </div>
+
+  @if (!mostrarFormulario) {
+    <div class="vista-exploracion">
+      
+      <div class="filtros-container">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar por puesto, empresa o habilidad (ej: SQL)..." class="search-input">
+        
+        <div class="botones-modalidad">
+          <button (click)="filtroModalidad = 'todos'" [class.active]="filtroModalidad === 'todos'">Todos</button>
+          <button (click)="filtroModalidad = 'Remoto'" [class.active]="filtroModalidad === 'Remoto'">Remoto</button>
+          <button (click)="filtroModalidad = 'Híbrido'" [class.active]="filtroModalidad === 'Híbrido'">Híbrido</button>
+          <button (click)="filtroModalidad = 'Presencial'" [class.active]="filtroModalidad === 'Presencial'">Presencial</button>
+        </div>
+      </div>
+
+      <div class="exploracion-split">
+        
+        <aside class="lista-ofertas-scroll">
+          @for (oferta of ofertasFiltradas; track oferta.id) {
+            <div 
+              class="tarjeta-oferta" 
+              [class.activa]="ofertaSeleccionada?.id === oferta.id"
+              (click)="seleccionarOferta(oferta)"
+            >
+              <div class="tarjeta-badge">{{ oferta.experiencia }}</div>
+              <h3>{{ oferta.titulo }}</h3>
+              
+              <p class="empresa-text"><i class="fa-solid fa-building"></i> {{ oferta.empresa }}</p>
+              <p class="modalidad-text"><i class="fa-solid fa-laptop-code"></i> {{ oferta.modalidad }}</p>
+              
+              <div class="skills-tags">
+                @for (skill of oferta.skills; track skill) {
+                  <span class="tag">{{ skill }}</span>
+                }
+              </div>
+            </div>
+          } @empty {
+            <p class="help-text" style="text-align: center; margin-top: 20px; color: #cbd5e1;">
+              No se encontraron ofertas que coincidan con la búsqueda.
+            </p>
+          }
+        </aside>
+
+        <main class="panel-detalle-oferta">
+          @if (ofertaSeleccionada) {
+            <div class="detalle-header">
+              <h1>{{ ofertaSeleccionada.titulo }}</h1>
+              <p class="empresa-detalle"><i class="fa-solid fa-building"></i> {{ ofertaSeleccionada.empresa }}</p>
+              
+              <div class="meta-badges">
+                <span class="badge-info"><i class="fa-solid fa-laptop-code"></i> Modalidad: {{ ofertaSeleccionada.modalidad }}</span>
+                <span class="badge-info"><i class="fa-solid fa-graduation-cap"></i> Nivel: {{ ofertaSeleccionada.experiencia }}</span>
+              </div>
+            </div>
+
+            <div class="detalle-body">
+              <h4>Detalles de la Propuesta (Tareas y Beneficios)</h4>
+              <p>{{ ofertaSeleccionada.descripcion }}</p>
+
+              <h4>Habilidades e Instrumentales Requeridas</h4>
+              <div class="skills-tags">
+                @for (skill of ofertaSeleccionada.skills; track skill) {
+                  <span class="tag" style="background-color: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #38bdf8; font-weight: 600; font-size: 0.85rem; padding: 6px 12px; margin-right: 6px; display: inline-block; border-radius: 6px;">
+                    {{ skill }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="detalle-footer">
+              @if (rolUsuario === 'POSTULANTE') {
+                <button class="btn-postularse" (click)="guardarPostulacion()">
+                  <i class="fa-solid fa-paper-plane"></i> Postularme ahora
+                </button>
+              }
+
+              @if (rolUsuario === 'EMPRESA') {
+                <button class="btn-editar-oferta">
+                  <i class="fa-solid fa-pen-to-square"></i> Editar Publicación
+                </button>
+              }
+            </div>
+
+          } @else {
+            <p class="sin-seleccion-msg">Selecciona una oferta técnica de la izquierda para analizar sus requerimientos.</p>
+          }
+        </main>
+
+      </div>
+    </div>
+  }
+
+  @if (mostrarFormulario) {
+    <div class="vista-formulario">
+      <form [formGroup]="ofertaForm" (ngSubmit)="guardarOferta()">
+        
+        <div class="form-group" [class.has-error]="esCampoInvalido('titulo')">
+          <label>Título de la Publicación *</label>
+          <input formControlName="titulo" type="text" placeholder="Ej: Analista de Sistemas o Desarrollador IA" required>
+          @if (esCampoInvalido('titulo')) {
+            <span class="error-message">
+              El título es obligatorio y debe tener al menos 5 caracteres.
+            </span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Modalidad *</label>
+            <select formControlName="modalidad" required>
+              <option value="Híbrido">Híbrido</option>
+              <option value="Remoto">Remoto</option>
+              <option value="Presencial">Presencial</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Nivel de Experiencia Requerido *</label>
+            <select formControlName="experiencia" required>
+              <option value="Trainee">Trainee (Sin experiencia laboral)</option>
+              <option value="Junior">Junior (Experiencia inicial)</option>
+              <option value="Semi-Senior">Semi-Senior</option>
+              <option value="Senior">Senior</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Habilidades Técnicas e Instrumentales *</label>
+          <p class="help-text">Seleccione las tecnologías o competencias que requiere para el puesto:</p>
+          
+          <div class="selector-habilidades-wrapper">
+            @for (grupo of habilidadesSugeridas; track grupo.categoria) {
+              <div class="grupo-categoria">
+                <h4>{{ grupo.categoria }}</h4>
+                <div class="skills-chips-grid">
+                  @for (hab of grupo.items; track hab) {
+                    <button 
+                      type="button" 
+                      (click)="alternarHabilidad(hab)"
+                      [class.selected]="skillsSeleccionadas.includes(hab)"
+                      class="chip-button">
+                      {{ hab }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (ofertaForm.touched && skillsSeleccionadas.length === 0) {
+            <span class="error-message">
+              De Debe seleccionar al menos una habilidad obligatoria para los alumnos.
+            </span>
+          }
+        </div>
+
+        <div class="form-group" [class.has-error]="esCampoInvalido('descripcion')">
+          <label>Detalles de la Propuesta (Tareas y Beneficios) *</label>
+          <textarea formControlName="descripcion" rows="5" placeholder="Describa brevemente qué tareas realizará el estudiante..." required></textarea>
+          @if (esCampoInvalido('descripcion')) {
+            <span class="error-message">
+              La descripción es obligatoria y debe tener al menos 20 caracteres.
+            </span>
+          }
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" (click)="toggleVista(false)">Cancelar</button>
+          <button type="submit" [disabled]="ofertaForm.invalid || skillsSeleccionadas.length === 0">Publicar Oferta</button>
+        </div>
+      </form>
+    </div>
+  }
+
+</div>

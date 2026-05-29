@@ -1,10 +1,523 @@
-@use '../../../styles/variables';
-body {
-    font-family: variables.$font-family-base;
-    background-color: variables.$body-bg;
-    margin: 0;
-    min-height: 100vh;
+
+$bg-gradient-start: #1e293b;  // Azul oscuro de base
+$bg-gradient-end: #38bdf8;    // Azul celeste luminoso
+$form-light-bg: #ffffff;     // Fondo del formulario completamente BLANCO
+$text-dark-main: #0f172a;    // Texto principal del formulario
+$text-dark-muted: #475569;   // Texto secundario del formulario
+$border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
+
+.modulo-ofertas-container {
+  padding: 40px;
+  background: linear-gradient(135deg, $bg-gradient-start 0%, $bg-gradient-end 100%);
+  color: #f8fafc;
+  min-height: 100vh;
+  font-size: 16px;
+
+  // Cabecera compartida
+  .header-ofertas {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+
+    h2 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    p {
+      color: #f1f5f9;
+      font-size: 1rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // Botón Principal de Publicar
+  .btn-primary {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff !important;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      background: #0f172a;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+    
+    &:disabled {
+      background: #94a3b8;
+      color: #cbd5e1 !important;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+  // ==========================================
+  // VISTA 1: EXPLORACIÓN (DOS COLUMNAS)
+  // ==========================================
+  .vista-exploracion {
+    
+    .filtros-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      gap: 15px;
+
+      .search-input {
+        background-color: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 8px;
+        width: 320px;
+        font-size: 0.95rem;
+        backdrop-filter: blur(4px);
+        
+        &::placeholder {
+          color: #e2e8f0;
+        }
+        
+        &:focus {
+          border-color: #ffffff;
+          background-color: rgba(255, 255, 255, 0.25);
+          outline: none;
+        }
+      }
+
+      .botones-modalidad {
+        display: flex;
+        gap: 8px;
+
+        button {
+          background-color: rgba(15, 23, 42, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+          padding: 10px 20px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.913rem;
+          font-weight: 600;
+          transition: all 0.2s;
+
+          &:hover {
+            background-color: rgba(15, 23, 42, 0.6);
+          }
+
+          &.active {
+            background-color: #ffffff;
+            border-color: #ffffff;
+            color: #0f172a;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+          }
+        }
+      }
+    }
+
+    // Contenedor Split Screen (Tarjetas + Detalle)
+    .exploracion-split {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 25px;
+      align-items: start;
+    }
+
+    // Scroll vertical independiente de las tarjetas
+    .lista-ofertas-scroll {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-height: calc(100vh - 240px);
+      overflow-y: auto;
+      padding-right: 8px;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+    }
+
+    // Tarjeta de oferta individual compacta
+    .tarjeta-oferta {
+      background-color: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      &.activa {
+        background-color: rgba(15, 23, 42, 0.9);
+        border-color: #38bdf8;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+      }
+
+      .tarjeta-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: #38bdf8;
+        color: #0f172a;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: #ffffff;
+        padding-right: 75px;
+      }
+
+      .empresa-text {
+        font-size: 0.95rem;
+        color: #f1f5f9;
+        font-weight: 500;
+        margin: 0 0 4px 0;
+      }
+
+      .modalidad-text {
+        font-size: 0.85rem;
+        color: #38bdf8;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .skills-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+
+        .tag {
+          background-color: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+        }
+      }
+    }
+
+    // Panel derecho de detalle fijo
+    .panel-detalle-oferta {
+      background-color: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 30px;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 240px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+
+      .detalle-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+
+        h1 {
+          font-size: 1.6rem;
+          color: #ffffff;
+          margin: 0 0 8px 0;
+        }
+
+        .empresa-detalle {
+          font-size: 1.1rem;
+          color: #38bdf8;
+          font-weight: 600;
+          margin: 0 0 12px 0;
+        }
+
+        .meta-badges {
+          display: flex;
+          gap: 10px;
+          
+          .badge-info {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .detalle-body {
+        flex-grow: 1;
+
+        h4 {
+          font-size: 1rem;
+          color: #ffffff;
+          margin: 20px 0 10px 0;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        p {
+          color: #cbd5e1;
+          line-height: 1.6;
+          font-size: 0.95rem;
+          white-space: pre-line;
+        }
+      }
+
+      .detalle-footer {
+        margin-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+
+        .btn-postularse {
+          @extend .btn-primary;
+          background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+          color: #0f172a !important;
+          
+          &:hover {
+            background: #38bdf8;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+          }
+        }
+
+        .btn-editar-oferta {
+          @extend .btn-primary;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+          }
+        }
+      }
+
+      .sin-seleccion-msg {
+        text-align: center;
+        color: #94a3b8;
+        padding: 40px 0;
+        font-style: italic;
+        margin: auto;
+      }
+    }
+  }
+
+  // ==========================================
+  // VISTA 2: FORMULARIO DE CARGA (MODO CLARO)
+  // ==========================================
+  .vista-formulario {
+    max-width: 680px;
+    margin: 0 auto;
+    background-color: $form-light-bg;
+    padding: 40px;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      position: relative;
+
+      label {
+        display: block;
+        font-size: 0.85rem;
+        color: $text-dark-main;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+      }
+
+      .help-text {
+        color: $text-dark-muted;
+        font-size: 0.9rem;
+        margin-bottom: 14px;
+      }
+
+      input, select, textarea {
+        width: 100%;
+        background-color: #f8fafc;
+        border: 1px solid $border-light-form;
+        color: $text-dark-main;
+        padding: 14px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &::placeholder {
+          color: #94a3b8;
+        }
+
+        &:focus {
+          border-color: #0284c7;
+          background-color: #ffffff;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+      }
+
+      &.has-error {
+        input, textarea {
+          border-color: #dc2626 !important;
+          background-color: #fef2f2;
+        }
+      }
+
+      .error-message {
+        color: #b91c1c;
+        font-size: 0.8rem;
+        margin-top: 6px;
+        display: block;
+        font-weight: 600;
+      }
+    }
+
+    // Selector de habilidades oscuro
+    .selector-habilidades-wrapper {
+      background-color: #0f172a;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+
+      .grupo-categoria {
+        h4 {
+          font-size: 0.9rem;
+          color: #38bdf8;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 12px;
+        }
+
+        .skills-chips-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+
+          .chip-button {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+              border-color: #38bdf8;
+              background-color: #334155;
+              color: #fff;
+            }
+
+            &.selected {
+              background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+              border-color: #38bdf8;
+              color: #ffffff;
+              font-weight: 700;
+              box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+            }
+          }
+        }
+      }
+    }
+
+    // Botones del formulario
+    .form-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 30px;
+      border-top: 1px solid $border-light-form;
+      padding-top: 24px;
+
+      button[type="submit"] {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        color: #ffffff;
+        font-weight: 700;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+        transition: all 0.2s;
+
+        &:hover {
+          filter: brightness(1.1);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+        }
+
+        &:disabled {
+          background: #cbd5e1;
+          color: #94a3b8;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+      }
+
+      button[type="button"] {
+        background-color: transparent;
+        color: $text-dark-muted;
+        border: 1px solid $border-light-form;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #f1f5f9;
+          color: $text-dark-main;
+          border-color: $text-dark-main;
+        }
+      }
+    }
+  }
 }
