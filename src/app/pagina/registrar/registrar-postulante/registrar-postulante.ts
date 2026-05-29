@@ -9,12 +9,16 @@ import {
 } from '@angular/forms';
 
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-postulante',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+  ReactiveFormsModule,
+  CommonModule,
+  RouterLink
+],
   templateUrl: './registrar-postulante.html',
   styleUrl: './registrar-postulante.scss',
 })

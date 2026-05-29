@@ -204,15 +204,33 @@
 
 </div>
 
-    <!-- BOTON -->
-    <button
-      type="submit"
-      [disabled]="formRegistro.invalid">
-
-      Crear Cuenta
-
-    </button>
+    <!-- BOTON crear cuenta -->
+    <button type="submit">
+  Crear Cuenta
+</button>
 
   </form>
-  
+  <div class="acciones-extra">
+
+  <!-- VOLVER -->
+  <button
+    type="button"
+    class="btn-volver"
+    routerLink="/registrar">
+
+    ← Volver
+
+  </button>
+
+  <!-- YA TENGO CUENTA -->
+  <button
+    type="button"
+    class="btn-login"
+    routerLink="/sesion">
+
+    Ya tengo cuenta
+
+  </button>
+
+
 </div>

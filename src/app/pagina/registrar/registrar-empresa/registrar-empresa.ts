@@ -9,12 +9,16 @@ import {
 } from '@angular/forms';
 
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-empresa',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+  ReactiveFormsModule,
+  CommonModule,
+  RouterLink
+],
   templateUrl: './registrar-empresa.html',
   styleUrl: './registrar-empresa.scss',
 })
