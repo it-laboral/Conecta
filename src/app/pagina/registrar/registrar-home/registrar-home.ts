@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 
@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   templateUrl: './registrar-home.html',
   styleUrl: './registrar-home.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class RegistrarHome {
   
