@@ -7,7 +7,7 @@ router.get('/vigentes', async (req, res) => {
     try {
         // Traemos las ofertas cruzando los datos con la tabla empresa
         const [ofertas] = await db.query(`
-            SELECT o.id_oferta AS id, o.titulo, o.descripcion, o.modalidad, o.experiencia, o.dias_duracion, o.id_empresa, e.RazonSocial as razonSocial
+            SELECT o.id_oferta, o.titulo, o.descripcion, o.modalidad, o.experiencia, o.dias_duracion, o.id_empresa, e.RazonSocial as razonSocial
             FROM ofertas o
             JOIN empresa e ON o.id_empresa = e.id_empresa
             ORDER BY o.id_oferta DESC
@@ -20,7 +20,7 @@ router.get('/vigentes', async (req, res) => {
                 FROM oferta_skill os
                 JOIN skill s ON os.skill_id = s.skill_id
                 WHERE os.id_oferta = ?
-            `, [oferta.id]);
+            `, [oferta.id_oferta]);
             
             oferta.skills_nombres = skill.map(s => s.nombre);
         }
@@ -34,20 +34,23 @@ router.get('/vigentes', async (req, res) => {
 
 // POST: Crear una nueva oferta e insertar en la tabla intermedia oferta_skill
 router.post('/crear', async (req, res) => {
-    const { id_empresa, titulo, descripcion, modalidad, experiencia, dias_duracion, skill } = req.body;
+    const { id_empresa, titulo, descripcion, modalidad, experiencia, dias_duracion, skill, skills } = req.body;
 
     try {
         // 1. Insertar la oferta principal
+        const fecha_publicacion = new Date();
+
         const [resultado] = await db.query(`
-            INSERT INTO ofertas (id_empresa, titulo, descripcion, modalidad, experiencia, dias_duracion) 
-            VALUES (?, ?, ?, ?, ?, ?)
-        `, [id_empresa, titulo, descripcion, modalidad, experiencia, dias_duracion]);
+            INSERT INTO ofertas (id_empresa, titulo, descripcion, modalidad, experiencia, dias_duracion, fecha_publicacion) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [id_empresa, titulo, descripcion, modalidad, experiencia, dias_duracion, fecha_publicacion]);
 
         const nuevoIdOferta = resultado.insertId;
 
         // 2. Insertar las relaciones en la tabla intermedia oferta_skill (PK skill_id)
-        if (skill && skill.length > 0) {
-            for (let skillId of skill) {
+        const listaSkills = skill || skills; // Aceptamos ambos nombres de campo para compatibilidad
+        if (listaSkills && listaSkills.length > 0) {
+            for (let skillId of listaSkills) {
                 await db.query(`
                     INSERT INTO oferta_skill (id_oferta, skill_id) 
                     VALUES (?, ?)

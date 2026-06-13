@@ -11,7 +11,7 @@ export class OfertaService {
   constructor(private http: HttpClient) {}
 
   publicarOferta(oferta: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/ofertas`, oferta);
+    return this.http.post(`${this.apiUrl}/ofertas/crear`, oferta);
   }
 
   getOfertasVigentes(): Observable<any[]> {

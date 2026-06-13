@@ -2,12 +2,25 @@
   <div class="vista-principal">
     
     <div class="ofertas-header-seccion">
-      <h2>Bolsa de Trabajo - ITB Conecta</h2>
+      <h2>Intermediación Laboral - ITB Conecta</h2>
       @if (rolUsuario === 'EMPRESA') {
         <button class="btn-crear-oferta" (click)="toggleVista(true)">
           <i class="fa-solid fa-plus"></i> Publicar Nueva Oferta
         </button>
       }
+    </div>
+
+    <div class="buscador-container">
+    <div class="buscador-wrapper">
+    <i class="fa-solid fa-magnifying-glass buscador-icono"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="filtrarOfertasLocal()" 
+        placeholder="Buscar por título, empresa o habilidad (ej. Angular)..."
+        class="buscador-input"
+    />
+    </div>
     </div>
 
     <div class="split-screen-container">
@@ -50,11 +63,11 @@
             <h4>Habilidades e Instrumentales Requeridas</h4>
             <div class="skills-tags">
               @for (skill of ofertaSeleccionada.skills_nombres; track skill) {
-                <span class="tag" style="background-color: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #38bdf8; font-weight: 600; font-size: 0.85rem; padding: 6px 12px; margin-right: 6px; display: inline-block; border-radius: 6px;">
+                <span class="tag" style="background-color: rgba(175, 171, 192, 0.15); border-color: #064d6b; color: #166d92; font-weight: 600; font-size: 0.85rem; padding: 6px 12px; margin-right: 6px; display: inline-block; border-radius: 6px;">
                   {{ skill }}
                 </span>
               } @empty {
-                <p style="color: #64748b; font-style: italic;">No se especificaron tecnologías para esta oferta.</p>
+                <p style="color: #2c405c; font-style: italic;">No se especificaron tecnologías para esta oferta.</p>
               }
             </div>
           </div>
@@ -88,7 +101,7 @@
 @if (mostrarFormulario) {
   <div class="vista-formulario">
     <h2>Publicar una Nueva Oferta de Empleo</h2>
-    <p class="subtitulo-form">Cargue los requisitos para los estudiantes del ITB.</p>
+    <p class="subtitulo-form">Cargue los requisitos que solicita de los futuros Postulantes.</p>
 
     <form [formGroup]="ofertaForm" (ngSubmit)="guardarOferta()">
       
@@ -143,7 +156,7 @@
       
       <div class="form-group">
         <label>Habilidades Técnicas e Instrumentales (Selección por categorías) *</label>
-        <p class="help-text">Hacé clic en los chips para activarlos en la oferta:</p>
+        <p class="help-text">Haga clic en los chips para activarlos en la oferta:</p>
         
         <div class="selector-habilidades-wrapper">
           @for (cat of categoriasConSkills; track cat.categoria_id) {
@@ -162,10 +175,33 @@
             </div>
           }
         </div>
+      </div>
+
+       @if (skillsSeleccionadasIds.length > 0) {
+          <div class="resumen-seleccionados-box">
+            <span class="titulo-resumen">Habilidades seleccionadas para la oferta:</span>
+            <div class="tags-resumen-flex">
+              
+              @for (cat of categoriasConSkills; track cat.categoria_id) {
+                @for (skill of cat.skills; track skill.skill_id) {
+                  @if (skillsSeleccionadasIds.includes(skill.skill_id)) {
+                    <span class="tag-seleccionado">
+                      {{ skill.nombre }}
+                      <button type="button" class="btn-quitar-tag" (click)="alternarHabilidad(skill.skill_id)">
+                        <i class="fa-solid fa-xmark"></i>
+                      </button>
+                    </span>
+                  }
+                }
+              }
+
+            </div>
+          </div>
+        }
+
         @if (ofertaForm.touched && skillsSeleccionadasIds.length === 0) {
           <span class="error-message">Debe seleccionar al menos una tecnología requerida.</span>
         }
-      </div>
 
       <div class="form-group" [class.has-error]="esCampoInvalido('descripcion')">
         <label>Detalles de la Propuesta (Tareas y Beneficios) *</label>
@@ -176,9 +212,17 @@
       </div>
 
       <div class="form-buttons">
-        <button type="button" class="btn-cancelar" (click)="toggleVista(false)">Cancelar</button>
-        <button type="submit" class="btn-publicar" [disabled]="ofertaForm.invalid || skillsSeleccionadasIds.length === 0">Publicar Oferta</button>
-      </div>
+      <button type="button" class="btn-limpiar" (click)="toggleVista(false)">
+      <i class="fa-solid fa-broom"></i> Cancelar / Limpiar
+      </button>
+
+      <button 
+      type="submit" 
+     class="btn-publicar" 
+     [disabled]="ofertaForm.invalid || skillsSeleccionadasIds.length === 0">
+     <i class="fa-solid fa-paper-plane"></i> Publicar Oferta
+      </button>
+    </div>
     </form>
   </div>
 }

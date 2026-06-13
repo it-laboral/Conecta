@@ -1,20 +1,21 @@
 
 $bg-gradient-start: #2d4c7e;  // Azul oscuro de base
 $bg-gradient-end: #38bdf8;    // Azul celeste luminoso
-$form-light-bg: #ffffff;     // Fondo del formulario completamente BLANCO
+$form-light-bg: #e2edf0;     // Fondo del formulario completamente BLANCO
 $text-dark-main: #0f172a;    // Texto principal del formulario
 $text-dark-muted: #475569;   // Texto secundario del formulario
 $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
 
 :host {
   display: block;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: $text-dark-main; // 🔑 Aplicada tu variable de texto principal
+  font-family: 'lucida grande', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: $text-dark-main; 
 }
 
 // --- Contenedores Principales ---
 .vista-principal {
   padding: 20px;
+  
 }
 
 .ofertas-header-seccion {
@@ -22,13 +23,62 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 15px;
+  border-bottom: 2px solid #92e4cb;
+  padding-bottom: 25px;
 
   h2 {
     margin: 0;
     color: $bg-gradient-start; // 🔑 Usamos tu azul institucional para el título principal
     font-size: 1.5rem;
+  }
+}
+.buscador-container {
+  margin: 1.5rem 0; 
+  display: flex;
+  width: 100%;
+
+  .buscador-wrapper {
+    position: relative; 
+    width: 100%;
+    max-width: 550px; 
+    display: flex;
+    align-items: center;
+  }
+
+  .buscador-icono {
+    position: absolute;
+    left: 16px; 
+    color: #3a5a96; 
+    font-size: 1.1rem;
+    pointer-events: none; 
+    transition: color 0.3s ease;
+  }
+
+  .buscador-input {
+    width: 100%;
+    padding: 12px 16px 12px 45px; 
+    font-size: 0.95rem;
+    color: #2d3748;
+    background-color: #ffffff;
+    border: 2px solid #e2e8f0; 
+    border-radius: 10px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); 
+    transition: all 0.3s ease;
+
+    &::placeholder {
+      color: #062146; 
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #3182ce; 
+      box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.15); 
+      background-color: #fff;
+
+      ~ .buscador-icono {
+        color: #3182ce;
+      }
+    }
   }
 }
 
@@ -43,8 +93,7 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
 .panel-lista-ofertas {
   flex: 0 0 350px;
   overflow-y: auto;
-  padding-right: 10px;
-
+  padding-right: 20px;
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -55,37 +104,29 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
 }
 
 // Estilo de la Tarjeta (Card)
+// Estilo de la Tarjeta (Card) - ¡REEMPLAZÁ ESTE BLOQUE COMPLETO!
 .oferta-card {
-  background-color: $form-light-bg; // 🔑 Fondo blanco limpio
-  border: 1px solid $border-light-form; // 🔑 Borde sutil
+  // 1. EL DEGRADADO: Mezclamos tu azul oscuro de base con tu celeste luminoso
+  background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 50%, $bg-gradient-end 100%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.15); // Borde sutil y traslúcido para que no sature
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 15px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-color: $bg-gradient-end; // 🔑 Resalta con tu celeste luminoso
-  }
-
-  &.active {
-    background-color: #f0f9ff;
-    border-color: $bg-gradient-start; // 🔑 Borde activo con el azul oscuro
-    box-shadow: 0 0 0 2px rgba(45, 76, 126, 0.2);
-  }
-
+  // 2. TEXTOS INTERNOS CUANDO LA TARJETA NO ESTÁ SELECCIONADA (Fondo Oscuro -> Letras Claras)
   h3 {
     margin: 0 0 8px 0;
     font-size: 1.1rem;
-    color: $text-dark-main; // 🔑 Texto oscuro
+    color: #ffffff; // Blanco puro para que resalte el título de la vacante
   }
 
   .empresa-nombre {
     margin: 0 0 12px 0;
-    color: $text-dark-muted; // 🔑 Texto secundario mutado
+    color: #e2edf0; // Usamos tu tono claro ($form-light-bg) para la empresa
     font-size: 0.9rem;
     font-weight: 600;
   }
@@ -94,36 +135,77 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
     display: flex;
     gap: 15px;
     font-size: 0.8rem;
-    color: $text-dark-muted;
+    color: #f1f5f9; // Gris bien claro para los textos técnicos
 
     span {
       display: flex;
       align-items: center;
       gap: 5px;
+
+      i {
+        color: #92e4cb; // Combinamos con el verde menta de tu cabecera para los íconos
+      }
+    }
+  }
+
+  // 3. EFECTO AL PASAR EL MOUSE
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(56, 189, 248, 0.2); // Brillo sutil con tu celeste
+    border-color: $bg-gradient-end; 
+  }
+
+  // 4. ESTADO ACTIVO (Cuando hacés clic y se muestra a la derecha)
+  &.active {
+    background: #ffffff; // Cambia a fondo blanco impecable para romper el patrón
+    border-color: $bg-gradient-start; // Borde marcado con tu azul oscuro institucional
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+    transform: translateX(4px); // Se desplaza un toque hacia el panel de detalle
+
+    // Invertimos los colores internos para que se lean sobre fondo blanco:
+    h3 {
+      color: $text-dark-main; // Tu azul/negro oscuro principal
+    }
+
+    .empresa-nombre {
+      color: $text-dark-muted; // Tu gris oscuro secundario
+    }
+
+    .card-meta {
+      color: $text-dark-muted;
+
+      span i {
+        color: $bg-gradient-start; // Los íconos pasan a tu azul de base
+      }
     }
   }
 }
 
 // --- Columna Derecha: Panel de Detalle ---
+// ==========================================
+// PANEL DE DETALLE DE LA OFERTA (DERECHA)
+// ==========================================
+
 .panel-detalle-oferta {
   flex: 1;
-  background-color: $form-light-bg;
+  background-color: #ffffff; // 💡 Blanco real: Máxima claridad para textos largos
   border: 1px solid $border-light-form;
   border-radius: 12px;
-  padding: 30px;
+  padding: 35px; // Un toque más de aire para que se vea premium
   overflow-y: auto;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04); // Sombra muy suave y moderna
 }
 
 .detalle-header {
   margin-bottom: 25px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 2px solid #f1f5f9; // Línea divisoria más sutil y limpia
   padding-bottom: 20px;
 
   h1 {
     margin: 0 0 10px 0;
     font-size: 1.8rem;
-    color: $text-dark-main;
+    color: $bg-gradient-start; // 🔑 Tu azul de marca para destacar el nombre del puesto
+    font-weight: 700;
   }
 
   .empresa-detalle {
@@ -133,6 +215,10 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
     display: flex;
     align-items: center;
     gap: 8px;
+
+    i {
+      color: $bg-gradient-end; // El ícono de la empresa en tu celeste luminoso
+    }
   }
 }
 
@@ -142,31 +228,38 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   flex-wrap: wrap;
 
   .badge-info {
-    background-color: #f1f5f9;
+    background-color: #f8fafc; // Gris/azul tiza muy suave
     color: $text-dark-muted;
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.85rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 6px;
     border: 1px solid #e2e8f0;
+
+    i {
+      color: $bg-gradient-start; // Íconos internos en azul base
+    }
   }
 }
 
 .detalle-body {
   h4 {
-    margin: 25px 0 15px 0;
+    margin: 30px 0 15px 0;
     color: $text-dark-main;
     font-size: 1.1rem;
-    border-left: 4px solid $bg-gradient-end; // 🔑 Detalle visual con tu celeste de marca
-    padding-left: 10px;
+    font-weight: 700;
+    border-left: 4px solid #92e4cb; // 🔑 ¡Acá brilla tu verde menta institucional! Un acento hermoso
+    padding-left: 12px;
   }
 
   p {
-    line-height: 1.6;
-    color: $text-dark-main;
+    line-height: 1.7; // Más interlineado para que leer la descripción sea un placer
+    color: $text-dark-muted; // El gris oscuro cansa menos el ojo en textos largos que el negro puro
     margin-bottom: 20px;
+    font-size: 0.98rem;
   }
 }
 
@@ -176,60 +269,72 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   gap: 8px;
 
   .tag {
-    background-color: rgba(56, 189, 248, 0.1); 
-    border: 1px solid $bg-gradient-end; // 🔑 Borde del chip celeste
-    color: $bg-gradient-start; // 🔑 Texto del chip azul oscuro
+    background-color: #f0fdfa; // Fondo menta ultra suave, a tono con el resumen del formulario
+    border: 1px solid #92e4cb; // Borde menta
+    color: $bg-gradient-start; // Texto en tu azul de base para que se lea perfecto
     font-weight: 600; 
     font-size: 0.85rem; 
-    padding: 6px 12px; 
+    padding: 6px 14px; 
     border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   }
 }
 
 .detalle-footer {
   margin-top: 40px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 2px solid #f1f5f9;
   padding-top: 25px;
   display: flex;
   justify-content: flex-end;
 }
 
 .sin-seleccion-msg {
-  color: $text-dark-muted;
+  color: #94a3b8;
   font-style: italic;
   text-align: center;
-  margin-top: 100px;
+  margin-top: 120px;
+  font-size: 1.05rem;
 }
 
 // ====================================================================
 // DISAÑO DEL FORMULARIO DE ALTA (Usando tus variables estrictas)
 // ====================================================================
+// ==========================================
+// FORMULARIO DE PUBLICACIÓN PROFESIONAL
+// ==========================================
+
 .vista-formulario {
-  padding: 30px;
+  padding: 35px;
   max-width: 800px;
   margin: 0 auto;
-  background-color: $form-light-bg; // 🔑 Formulario completamente BLANCO
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  border: 1px solid $border-light-form; // 🔑 Bordes claros sutiles
+  background-color: #ffffff; // Blanco real impecable para máxima pulcritud
+  border-radius: 16px; // Bordes un toque más modernos y curvos
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06); // Sombra premium difuminada
+  border: 1px solid $border-light-form;
 
   h2 {
-    color: $bg-gradient-start; // 🔑 Encabezado en azul oscuro
+    color: $bg-gradient-start; // Tu azul oscuro institucional
     margin-top: 0;
+    font-weight: 700;
+    font-size: 1.6rem;
   }
+  
   .subtitulo-form {
     color: $text-dark-muted;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
   }
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 
   label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: $text-dark-main; // 🔑 Etiquetas en texto principal oscuro
+    font-size: 0.9rem;
+    color: $text-dark-main; 
   }
 
   input[type="text"],
@@ -237,18 +342,22 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   select,
   textarea {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid $border-light-form; // 🔑 Bordes claros sutiles
-    border-radius: 6px;
-    font-size: 1rem;
+    padding: 12px 14px; // Más aire interno para que respire el texto
+    border: 1px solid $border-light-form; 
+    border-radius: 8px; // Consistente con el resto del diseño
+    font-size: 0.95rem;
     color: $text-dark-main;
-    background-color: #ffffff;
-    transition: border-color 0.2s;
+    background-color: #ffffff; // 💡 CAMBIO CLAVE: Blanco limpio en vez de azul opaco
+    transition: all 0.2s ease-in-out;
 
     &:focus {
       outline: none;
-      border-color: $bg-gradient-start; // 🔑 Foco usa tu azul oscuro institucional
-      box-shadow: 0 0 0 3px rgba(45, 76, 126, 0.15);
+      border-color: $bg-gradient-start; 
+      box-shadow: 0 0 0 4px rgba(45, 76, 126, 0.12); // Aura azul traslúcida elegante
+    }
+    
+    &::placeholder {
+      color: #94a3b8; // Un gris claro limpio para las sugerencias
     }
   }
 }
@@ -264,14 +373,15 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
 
 // --- Selector de Habilidades (Chips) ---
 .selector-habilidades-wrapper {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 20px;
+  background-color: #f8fafc; // 💡 ADIÓS CHILLÓN: Un gris/azul pizarra sutilísimo y corporativo
+  border: 1px solid $border-light-form;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 25px;
 }
 
 .grupo-categoria {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 
   &:last-child {
     margin-bottom: 0;
@@ -279,10 +389,11 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
 
   h4 {
     margin: 0 0 12px 0;
-    color: $text-dark-muted;
-    font-size: 0.95rem;
+    color: $bg-gradient-start; // Identificadores en tu azul corporativo
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-weight: 700;
   }
 }
 
@@ -292,26 +403,85 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   gap: 8px;
 }
 
+// Botón de habilidad (Desconectado del enredo anterior)
 .chip-button {
-  background-color: #ffffff;
+  background-color: #ffffff; 
   border: 1px solid $border-light-form;
-  color: $text-dark-main;
-  padding: 8px 14px;
+  color: $text-dark-muted;
+  padding: 8px 16px;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s ease-in-out;
 
   &:hover {
     border-color: $bg-gradient-end;
-    background-color: #f0f9ff;
+    background-color: #f0f9ff; // Sutil iluminación celeste al pasar el mouse
+    color: $bg-gradient-start;
   }
 
   &.selected {
-    background-color: $bg-gradient-start; // 🔑 Chip seleccionado se pinta con tu azul institucional
+    // Reutilizamos tu degradado insignia para destacar lo seleccionado
+    background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%); 
     border-color: $bg-gradient-start;
-    color: #ffffff;
+    color: #ffffff; // Blanco puro para legibilidad
+    box-shadow: 0 4px 8px rgba(45, 76, 126, 0.15);
+  }
+}
+
+// --- Caja de Resumen de Chips Seleccionados (Estructura arreglada fuera del botón) ---
+.resumen-seleccionados-box {
+  margin-top: 20px;
+  padding: 18px;
+  background-color: #f0fdfa; // Fondo menta pastel ultra suave
+  border: 1px dashed #92e4cb; // 🔑 Usamos el verde menta de tu cabecera para el borde punteado
+  border-radius: 10px;
+
+  .titulo-resumen {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $text-dark-muted;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.tags-resumen-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-seleccionado {
+  background-color: $bg-gradient-start; 
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.2s ease-in-out;
+
+  .btn-quitar-tag {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #fca5a5; // Rojo pastel refinado al querer borrar
+    }
   }
 }
 
@@ -322,9 +492,15 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   gap: 15px;
 }
 
+// --- Animación global ---
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
 // ====================================================================
 // BOTONES GENERALES
 // ====================================================================
+
 .btn-crear-oferta {
   background-color: $bg-gradient-start;
   color: white;
@@ -336,7 +512,7 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
 
   &:hover {
     background-color: #1e3a63;
@@ -355,28 +531,66 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   align-items: center;
   gap: 8px;
   font-size: 1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #1e3a63;
+    transform: translateY(-1px);
+  }
 }
 
-.btn-cancelar {
-  background-color: #ffffff;
+// Agrupamos ambos nombres para que use el que tengas en el HTML sin romper nada
+.btn-cancelar, .btn-limpiar {
+  background-color: #f1f5f9; // Gris claro corporativo muy limpio
   color: $text-dark-muted;
   border: 1px solid $border-light-form;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.btn-publicar {
-  background-color: $bg-gradient-start;
-  color: white;
-  border: none;
-  padding: 10px 20px;
+  padding: 12px 22px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease-in-out;
 
+  &:hover {
+    background-color: #e2e8f0; // Se oscurece un toque al pasar el mouse
+    color: $text-dark-main;
+  }
+}
+
+.btn-publicar {
+  // Tu degradado insignia con letras blancas para un contraste perfecto
+  background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%);
+  color: #ffffff; 
+  border: none;
+  padding: 12px 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(45, 76, 126, 0.12);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px); // Efecto flotante profesional
+    box-shadow: 0 6px 12px rgba(45, 76, 126, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // El estado deshabilitado (Disabled) blindado con !important para que no se pise
   &:disabled {
-    background-color: $border-light-form;
-    cursor: not-allowed;
+    background: #cbd5e1 !important; 
+    color: #94a3b8 !important;
+    cursor: not-allowed !important; 
+    transform: none !important; 
+    box-shadow: none !important;
   }
 }

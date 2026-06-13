@@ -1,24 +1,71 @@
-
-<h2>¡Bienvenidos a Nuestro Sistema de Intermediación Laboral del ITB!</h2>
-<p>En este sistema podrás encontrar las mejores oportunidades laborales. Registra tu cuenta para postular a las mismas.</p>
-<p>¡No pierdas la oportunidad de encontrar el trabajo de tus sueños!</p>
-
-<section class="destacados-seccion">
-  <h2>Oportunidades Laborales Destacadas</h2>
+<div class="portada-container">
   
-  <div class="ofertas-grid">
-    @for (oferta of ofertasDestacadas; track oferta.id) {
-      <div class="oferta-card">
-        <h3>{{ oferta.puesto }}</h3>
-        <p class="empresa">{{ oferta.empresa }}</p>
-        <div class="detalles">
-          <span>📍 {{ oferta.ubicacion }}</span>
-          <span>💰 {{ oferta.salario }}</span>
-        </div>
-        <button class="btn-ver">Ver Postulación</button>
+  <header class="hero-section">
+    <div class="hero-content">
+      <span class="badge-tech">Plataforma de Intermediación Laboral</span>
+      <h2>¡Bienvenidos a ITB Conecta!</h2>
+
+      <h3>Uniendo talento y oportunidades en el ITB</h3>
+      
+      <p>
+        El puente digital exclusivo que conecta a estudiantes y graduados de 
+        <strong>Análisis de Sistemas</strong> e <strong>Inteligencia Artificial</strong> 
+        con los proyectos más innovadores de empresas tecnológicas y de comunicación.
+      </p>
+      
+      <div class="hero-actions">
+        <button class="btn-principal-hero" routerLink="/ofertas">
+          Bucear en las Ofertas <i class="fa-solid fa-compass"></i>
+        </button>
       </div>
-    } @empty {
-      <p>No hay ofertas destacadas en este momento.</p>
-    }
-  </div>
-</section>
+    </div>
+
+    <div class="hero-visual">
+      <div class="glow-orb"></div>
+      <div class="tech-mockup">
+        <i class="fa-solid fa-network-wired main-icon-fallback"></i>
+        
+        <div class="floating-badge border-menta">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Conexión Directa</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="razones-section">
+    <div class="section-title">
+      <h2>¿Por qué registrarte en ITB Conecta?</h2>
+      <p class="subtitulo">Diseñado específicamente para las demandas del ecosistema tech actual.</p>
+    </div>
+
+    <div class="razones-grid">
+      
+      <div class="razon-card">
+        <div class="icon-box">
+          <i class="fa-solid fa-user-astronaut"></i>
+        </div>
+        <h3>Perfil Especializado</h3>
+        <p>Mostrá tus proyectos, tus tecnologías preferidas y el estado de tu carrera. Acá las empresas buscan talento técnico específico, no perfiles genéricos.</p>
+      </div>
+
+      <div class="razon-card destacado">
+        <div class="icon-box">
+          <i class="fa-solid fa-laptop-code"></i>
+        </div>
+        <h3>Oportunidades Reales</h3>
+        <p>Accedé a pasantías, modalidades híbridas o remotas y posiciones pensadas para tu crecimiento profesional en empresas de software y comunicación.</p>
+      </div>
+
+      <div class="razon-card">
+        <div class="icon-box">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <h3>Impulsado por IA</h3>
+        <p>Un entorno moderno optimizado para que los algoritmos de búsqueda unan la necesidad de la empresa con tus habilidades de forma inteligente y transparente.</p>
+      </div>
+
+    </div>
+  </section>
+
+</div>

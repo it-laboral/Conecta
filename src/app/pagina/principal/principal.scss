@@ -1,105 +1,243 @@
-@use '../../../styles/variables';
+// ====================================================================
+// PORTADA PRINCIPAL FUTURISTA (ITB CONECTA)
+// ====================================================================
+$bg-gradient-start: #2d4c7e;  // Tu azul institucional base
+$bg-gradient-end: #38bdf8;    // Tu celeste de marca
+$text-dark-main: #0f172a;     // El que te estaba tirando el error 
+$text-dark-muted: #475569;    // Gris para textos
+$border-light-form: #e2e8f0;  // Gris claro para bordes
 
-img{
-    width: 200px;
-    height: auto;
-    margin-top: 1rem;
-    justify-content: center;
-}
-.destacados-seccion {
+.portada-container {
   padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  // Descontamos la altura aproximada de tu header y footer fijos para que calce perfecto
+  min-height: calc(100vh - 140px); 
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
 
-  h2 {
+// --- 1. HERO SECTION ---
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  position: relative;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
     text-align: center;
-    color: #06245c;
-    margin-bottom: 30px;
   }
 }
 
-.ofertas-grid {
-  display: grid;
+.hero-content {
+  flex: 1;
+  max-width: 600px;
 
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  .badge-tech {
+    background-color: rgba(146, 228, 203, 0.15); // Tu verde menta traslúcido
+    color: #14b8a6; // Un tono menta más oscuro para legibilidad
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
 
-  gap: 25px;
+  h2,h3 {
+    font-size: 2.8rem;
+    line-height: 1.2;
+    color: $text-dark-main;
+    margin: 0 0 20px 0;
+    font-weight: 800;
 
-  margin-top: 30px;
+    @media (max-width: 480px) {
+      font-size: 2.2rem;
+    }
+  }
+
+  p {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: $text-dark-muted;
+    margin-bottom: 30px;
+
+    strong {
+      color: $bg-gradient-start; // Destaca las carreras en tu azul fuerte
+    }
+  }
 }
 
-.oferta-card {
-  background: white;
-
-  border: 2px solid #0aa7b8;
-
-  border-radius: 20px;
-
-  padding: 25px;
-
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-
-  transition: 0.3s;
-}
-
-.oferta-card:hover {
-  transform: translateY(-5px);
-
-  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
-
-  border-color: #06245c;
-}
-
-.oferta-card h3 {
-  color: #06245c;
-
-  margin-bottom: 10px;
-}
-
-.empresa {
-  color: #0aa7b8;
-
-  font-weight: bold;
-
-  margin-bottom: 15px;
-}
-
-.detalles {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 8px;
-
-  margin-bottom: 20px;
-
-  color: #4c5b73;
-}
-
-.btn-ver {
-  width: 100%;
-
-  padding: 12px;
-
+// Botón de acción principal de la Portada
+.btn-principal-hero {
+  background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%);
+  color: #ffffff;
   border: none;
-
-  border-radius: 12px;
-
-  background: linear-gradient(
-    90deg,
-    #06245c,
-    #0aa7b8
-  );
-
-  color: white;
-
-  font-weight: bold;
-
+  padding: 16px 32px;
+  border-radius: 30px; // Estilo píldora más moderno para portadas
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 10px 20px rgba(45, 76, 126, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
 
-  transition: 0.3s;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(45, 76, 126, 0.3);
+  }
 }
 
-.btn-ver:hover {
-  transform: translateY(-2px);
+// Componente Visual Derecho
+.hero-visual {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: 350px;
 
-  opacity: 0.95;
+  .glow-orb {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(146, 228, 203, 0.05) 70%);
+    filter: blur(40px);
+    z-index: 1;
+  }
+
+  .tech-mockup {
+    position: relative;
+    z-index: 2;
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2edf0 100%);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .main-icon-fallback {
+      font-size: 6rem;
+      display: inline-block;
+      background: linear-gradient(135deg, $bg-gradient-start, $bg-gradient-end);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .floating-badge {
+    position: absolute;
+    bottom: 30px;
+    right: -20px;
+    background: #ffffff;
+    border-left: 4px solid #92e4cb; // Detalle con el verde menta
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: $text-dark-main;
+    animation: float 4s ease-in-out infinite;
+
+    i { color: #14b8a6; }
+  }
+}
+
+// --- 2. SECCIÓN DE RAZONES / VALOR ---
+.razones-section {
+  .section-title {
+    text-align: center;
+    margin-bottom: 50px;
+
+    h2 {
+      font-size: 2rem;
+      color: $bg-gradient-start;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .subtitulo {
+      color: $text-dark-muted;
+      font-size: 1rem;
+    }
+  }
+}
+
+.razones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.razon-card {
+  background-color: #ffffff;
+  border: 1px solid $border-light-form;
+  border-radius: 16px;
+  padding: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.02);
+
+  .icon-box {
+    width: 50px;
+    height: 50px;
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    color: $bg-gradient-start;
+    transition: all 0.3s ease;
+  }
+
+  h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.25rem;
+    color: $text-dark-main;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    color: $text-dark-muted;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.06);
+    border-color: $bg-gradient-end;
+
+    .icon-box {
+      background-color: rgba(56, 189, 248, 0.1);
+      color: $bg-gradient-end;
+    }
+  }
+
+  // Tarjeta del medio con un sutil destaque futurista
+  &.destacado {
+    border-top: 4px solid #92e4cb; // Línea superior menta institucional
+  }
+}
+
+// Animación de flotado para la tarjeta del Hero
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }

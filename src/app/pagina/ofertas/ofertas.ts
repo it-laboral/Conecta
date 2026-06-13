@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common'; // Agregado para soportar directivas estructurales si hiciese falta
-import { OfertaService } from '../../services/oferta_service'; // Asegúrate de que esta ruta sea la de tu servicio
+import { CommonModule} from '@angular/common'; // Agregado para soportar directivas estructurales si hiciese falta
+import { OfertaService } from '../../services/oferta_service'; // Ruta de servicio
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs, 'es');
 
 @Component({
   selector: 'app-ofertas',
@@ -21,7 +25,7 @@ export class Ofertas implements OnInit {
   ofertaForm!: FormGroup;
   
   // Manejo de habilidades dinámicas (BD)
-  categoriasConSkills: any[] = []; // Reemplaza al viejo banco estático
+  categoriasConSkills: any[] = []; 
   skillsSeleccionadasIds: number[] = []; // Guardamos los IDs numéricos para la tabla intermedia de MySQL
 
   // Listados de ofertas reales provenientes del Backend
@@ -34,7 +38,8 @@ export class Ofertas implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private ofertaService: OfertaService
+    private ofertaService: OfertaService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +50,7 @@ export class Ofertas implements OnInit {
    // this.nombreUsuario = localStorage.getItem('nombre');
     
     this.rolUsuario = 'EMPRESA';  // <--- Poné 'POSTULANTE' o 'ADMIN' según lo que quieras maquetar
-    this.idUsuario = '1';         // Simula que la empresa con ID 1 está logueada
+    this.idUsuario = '3';         // Simula que la empresa con ID 1 está logueada
     this.nombreUsuario = 'Empresa de Prueba';
 
     // 2. Inicializar controles reactivos
@@ -75,6 +80,7 @@ export class Ofertas implements OnInit {
         this.ofertasDeBaseDeDatos = data;
         this.ofertasFiltradas = [...data];
         this.seleccionarPrimeraDisponible(this.ofertasFiltradas);
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar ofertas del backend:', err)
     });
@@ -88,24 +94,25 @@ export class Ofertas implements OnInit {
     // Simulación alineada a tu nueva estructura relacional de 3 tablas de XAMPP:
     this.categoriasConSkills = [
       {
-        id: 1,
+        categoria_id: 1,
         nombre: 'Análisis de Sistemas & Desarrollo',
         skills: [
-          { id: 1, nombre: 'Angular' }, { id: 2, nombre: 'Node.js' }, 
-          { id: 3, nombre: 'MySQL' }, { id: 4, nombre: 'PostgreSQL' },
-          { id: 5, nombre: 'Git / GitHub' }, { id: 6, nombre: 'Metodologías Ágiles' },
-          { id: 7, nombre: 'TypeScript' }, { id: 8, nombre: 'JavaScript'}, {id: 9, nombre: 'HTML & CSS / SCSS' }
+          { skill_id: 1, nombre: 'Angular' }, { skill_id: 2, nombre: 'Node.js' }, 
+          { skill_id: 3, nombre: 'MySQL' }, { skill_id: 4, nombre: 'PostgreSQL' },
+          { skill_id: 5, nombre: 'Git / GitHub' }, { skill_id: 6, nombre: 'Metodologías Ágiles' },
+          { skill_id: 7, nombre: 'TypeScript' }, { skill_id: 8, nombre: 'JavaScript'}, 
+          { skill_id: 9, nombre: 'HTML & CSS / SCSS' }
         ]
       },
       {
-        id: 2,
+        categoria_id: 2,
         nombre: 'Inteligencia Artificial & Datos',
         skills: [
-          { id: 10, nombre: 'Python' }, { id: 11, nombre: 'TensorFlow' }, 
-          { id: 12, nombre: 'Machine Learning' }, { id: 13, nombre: 'Deep Learning' },
-          { id: 14, nombre: 'Prompt Engineering' }, { id: 15, nombre: 'Power BI' },
-          { id: 16, nombre: 'Ciencia de Datos' }, { id: 17, nombre: 'SQL Server' }, 
-          { id: 18, nombre: 'Modelos de Lenguaje' }
+          { skill_id: 10, nombre: 'Python' }, { skill_id: 11, nombre: 'TensorFlow' }, 
+          { skill_id: 12, nombre: 'Machine Learning' }, { skill_id: 13, nombre: 'Deep Learning' },
+          { skill_id: 14, nombre: 'Prompt Engineering' }, { skill_id: 15, nombre: 'Power BI' },
+          { skill_id: 16, nombre: 'Ciencia de Datos' }, { skill_id: 17, nombre: 'SQL Server' }, 
+          { skill_id: 18, nombre: 'Modelos de Lenguaje' }
         ]
       }
     ];
@@ -128,7 +135,7 @@ export class Ofertas implements OnInit {
   // Alterna la selección de IDs en los Chips
   alternarHabilidad(skill_Id: number): void {
     const index = this.skillsSeleccionadasIds.indexOf(skill_Id);
-    if (index >= -1) {
+    if (index > -1) {
       this.skillsSeleccionadasIds.splice(index, 1);
     } else {
       this.skillsSeleccionadasIds.push(skill_Id);
@@ -138,7 +145,13 @@ export class Ofertas implements OnInit {
   }
 
   seleccionarOferta(oferta: any): void {
-    this.ofertaSeleccionada = oferta;
+    if (!oferta) return; // Evitamos seleccionar una oferta nula o indefinida
+    this.ofertaSeleccionada = {
+      ...oferta,id_oferta: oferta.id_oferta, 
+      dias_duracion: oferta.dias_duracion || oferta.diasDuracion || 10,
+      skills_nombres: oferta.skills_nombres || []
+    };
+
   }
 
   private seleccionarPrimeraDisponible(lista: any[]): void {
@@ -192,17 +205,24 @@ export class Ofertas implements OnInit {
       return;
     }
 
+    const confirmar = confirm('¡Atención! Por favor, revise detalladamente los datos ingresados y habilidades seleccionadas antes de publicar. ¿Está todo correcto?');
+  
+    if (!confirmar) {
+    return; // Si el usuario toca "Cancelar"
+    }
+
     const fValue = this.ofertaForm.value;
     // Determinamos si van 10 días fijos o el número personalizado digitado por la empresa
     const diasFinales = fValue.tipoDuracion === 'personalizado' ? fValue.diasPersonalizados : 10;
 
     const payloadNuevaOferta = {
-      id_empresa: Number(this.idUsuario), // ID real del localStorage
+      id_empresa:Number(this.idUsuario), // ID real del localStorage
       titulo: fValue.titulo,
       descripcion: fValue.descripcion,
       modalidad: fValue.modalidad,
       experiencia: fValue.experiencia,
       dias_duracion: diasFinales,
+      skill: [...this.skillsSeleccionadasIds], // Enviamos el array de IDs enteros [1, 4, 7]
       skills: [...this.skillsSeleccionadasIds] // Enviamos el array de IDs enteros [1, 4, 7]
     };
 
