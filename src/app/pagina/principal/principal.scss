@@ -37,8 +37,8 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
   max-width: 600px;
 
   .badge-tech {
-    background-color: rgba(146, 228, 203, 0.15); // Tu verde menta traslúcido
-    color: #14b8a6; // Un tono menta más oscuro para legibilidad
+    background-color: rgba(146, 228, 203, 0.15); 
+    color: #16079e; 
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -49,15 +49,15 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
     margin-bottom: 20px;
   }
 
-  h2,h3 {
-    font-size: 2.8rem;
+  h2 {
+    font-size: 1.5rem;
     line-height: 1.2;
     color: $text-dark-main;
     margin: 0 0 20px 0;
     font-weight: 800;
 
     @media (max-width: 480px) {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
     }
   }
 
@@ -68,7 +68,7 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
     margin-bottom: 30px;
 
     strong {
-      color: $bg-gradient-start; // Destaca las carreras en tu azul fuerte
+      color: $bg-gradient-start; 
     }
   }
 }
@@ -79,7 +79,7 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
   color: #ffffff;
   border: none;
   padding: 16px 32px;
-  border-radius: 30px; // Estilo píldora más moderno para portadas
+  border-radius: 30px; 
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -95,7 +95,7 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
   }
 }
 
-// Componente Visual Derecho
+// Componente Visual Derecho (Contenedor Padre)
 .hero-visual {
   flex: 1;
   display: flex;
@@ -113,47 +113,61 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
     z-index: 1;
   }
 
+  // La caja contenedora del logo
   .tech-mockup {
     position: relative;
     z-index: 2;
-    width: 300px;
-    height: 300px;
+    width: 340px;
+    height: 340px;
+    flex-shrink: 0; // Evita que se estire
     background: linear-gradient(135deg, #f8fafc 0%, #e2edf0 100%);
     border: 2px solid rgba(255, 255, 255, 0.8);
-    border-radius: 24px;
+    border-radius: 32px;
     box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
     display: flex;
     justify-content: center;
     align-items: center;
+    backdrop-filter: blur(8px);
+    
+    .logo-itb-futurista {
+      max-width: 70%;
+      max-height: 70%;
+      object-fit: contain;
+      opacity: 0.75; 
+      mix-blend-mode: multiply; 
+      
+      filter: drop-shadow(0 0 20px rgba($bg-gradient-end, 0.4)) 
+              drop-shadow(0 0 40px rgba($bg-gradient-start, 0.1));
+      
+      transition: all 0.4s ease;
 
-    .main-icon-fallback {
-      font-size: 6rem;
-      display: inline-block;
-      background: linear-gradient(135deg, $bg-gradient-start, $bg-gradient-end);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      &:hover {
+        opacity: 0.95;
+        transform: scale(1.03);
+        filter: drop-shadow(0 0 25px rgba($bg-gradient-end, 0.6));
+      }
     }
-  }
 
-  .floating-badge {
-    position: absolute;
-    bottom: 30px;
-    right: -20px;
-    background: #ffffff;
-    border-left: 4px solid #92e4cb; // Detalle con el verde menta
-    padding: 12px 20px;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: $text-dark-main;
-    animation: float 4s ease-in-out infinite;
+    // Acomodamos la tarjeta de éxito adentro del mockup como tenés en el HTML
+    .floating-badge {
+      position: absolute;
+      bottom: 20px;
+      right: -20px;
+      background: #ffffff;
+      border-left: 4px solid #92e4cb; 
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: $text-dark-main;
+      animation: float 4s ease-in-out infinite;
 
-    i { color: #14b8a6; }
+      i { color: #14b8a6; }
+    }
   }
 }
 
@@ -240,4 +254,73 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
   0% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0px); }
+}
+
+// --- 3. SECCIÓN FAQ ---
+.faq-section {
+  margin-top: 20px;
+  
+  .faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .faq-item {
+    background: #ffffff;
+    border: 1px solid $border-light-form;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &.faq-abierta {
+      border-color: $bg-gradient-end;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
+      
+      .faq-pregunta {
+        color: $bg-gradient-start;
+        background-color: rgba(56, 189, 248, 0.03);
+      }
+    }
+  }
+
+  .faq-pregunta {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: $text-dark-main;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+
+    i {
+      font-size: 0.9rem;
+      color: $text-dark-muted;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .faq-respuesta {
+    padding: 0 20px 20px 20px;
+    background-color: rgba(248, 250, 252, 0.5);
+    
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: $text-dark-muted;
+    }
+  }
 }

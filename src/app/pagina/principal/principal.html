@@ -5,7 +5,7 @@
       <span class="badge-tech">Plataforma de Intermediación Laboral</span>
       <h2>¡Bienvenidos a ITB Conecta!</h2>
 
-      <h3>Uniendo talento y oportunidades en el ITB</h3>
+      <h2>Uniendo talento y oportunidades en el ITB</h2>
       
       <p>
         El puente digital exclusivo que conecta a estudiantes y graduados de 
@@ -15,22 +15,22 @@
       
       <div class="hero-actions">
         <button class="btn-principal-hero" routerLink="/ofertas">
-          Bucear en las Ofertas <i class="fa-solid fa-compass"></i>
+          Bucear en las Ofertas Laborales <i class="fa-solid fa-compass"></i>
         </button>
       </div>
     </div>
 
-    <div class="hero-visual">
-      <div class="glow-orb"></div>
-      <div class="tech-mockup">
-        <i class="fa-solid fa-network-wired main-icon-fallback"></i>
-        
-        <div class="floating-badge border-menta">
-          <i class="fa-solid fa-bolt"></i>
-          <span>Conexión Directa</span>
-        </div>
-      </div>
+    <div class="hero-visual"> <div class="tech-mockup">
+    
+    <img src="Logo.png" alt="ITB Conecta" class="logo-itb-futurista">
+    
+    <div class="floating-badge">
+      <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+      <span>Conexión Exitosa</span>
     </div>
+    
+  </div>
+</div>
   </header>
 
   <section class="razones-section">
@@ -68,4 +68,29 @@
     </div>
   </section>
 
+  <section class="faq-section">
+  <div class="section-title">
+    <h2>Preguntas Frecuentes</h2>
+    <p class="subtitulo">Todo lo que necesitás saber sobre ITB Conecta</p>
+  </div>
+
+  <div class="faq-container">
+    @for (faq of faqs; track $index) {
+      <div class="faq-item" [class.faq-abierta]="faq.abierta">
+        
+        <button class="faq-pregunta" (click)="toggleFaq($index)">
+          <span>{{ faq.pregunta }}</span>
+          <i class="fa-solid" [class.fa-chevron-down]="!faq.abierta" [class.fa-chevron-up]="faq.abierta"></i>
+        </button>
+
+        @if (faq.abierta) {
+          <div class="faq-respuesta">
+            <p>{{ faq.respuesta }}</p>
+          </div>
+        }
+
+      </div>
+    }
+  </div>
+</section>
 </div>
