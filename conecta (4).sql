@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-06-2026 a las 18:41:52
+-- Tiempo de generación: 20-06-2026 a las 14:20:19
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -106,7 +106,7 @@ INSERT INTO `ofertas` (`id_oferta`, `id_empresa`, `titulo`, `descripcion`, `moda
 (100, 1, 'Desarrollador IA', 'Jovenes para integrarse al equipo de desarrolladores y entrenadores\nExcelente remuneracion y beneficios', 'Híbrido', 'Junior', '2026-06-11 18:32:26', 19),
 (101, 1, 'Analista de Sistemas', 'Sus tareas serán:liderar y coordinar equipos, interactuar con clientes, analizar proyectos.\nExcelente remuneracion y multiple beneficios acorde a la tarea y cargo', 'Híbrido', 'Semi-Senior', '2026-06-11 19:36:04', 20),
 (102, 1, 'Desarrollador y Analista', 'Tareas cumplir con requerimientos, diseños, diagramas, documentacion. \nBeneficios acordes a sus tareas. \nExcelente clima de trabajo', 'Presencial', 'Junior', '2026-06-11 20:06:54', 10),
-(103, 3, 'Analista IA y Machine Learning', 'Persona capacitada para: Analizar grandes volúmenes de datos para identificar patrones, tendencias y oportunidades de negocio.\nDiseñar, entrenar y optimizar modelos de Deep Learning (redes neuronales, CNN, RNN, Transformers, etc.).\nRealizar limpieza, transformación y preparación de datos para modelado.', 'Remoto', 'Semi-Senior', '2026-06-12 16:32:21', 15);
+(103, 3, 'Analista IA y Machine Learning', 'Tareas: Analizar grandes volúmenes de datos para identificar patrones, tendencias y oportunidades de negocio.\r\nDiseñar, entrenar y optimizar modelos de Deep Learning (redes neuronales, CNN, RNN, Transformers, etc.).\r\nRealizar limpieza, transformación y preparación de datos para modelado.\r\nExcelente ambiente laboral\r\nRemuneraciones a Convenir', 'Remoto', 'Semi-Senior', '2026-06-12 16:32:21', 15);
 
 -- --------------------------------------------------------
 
@@ -145,6 +145,37 @@ INSERT INTO `oferta_skill` (`id_oferta`, `skill_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `perfil_empresa`
+--
+
+CREATE TABLE `perfil_empresa` (
+  `id_perfil` int(11) NOT NULL,
+  `id_empresa` int(11) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `trayectoria` text DEFAULT NULL,
+  `logo` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `perfil_postulante`
+--
+
+CREATE TABLE `perfil_postulante` (
+  `id_perfil` int(11) NOT NULL,
+  `id_postulante` int(11) NOT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `linkedin` varchar(255) DEFAULT NULL,
+  `github` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `postulante`
 --
 
@@ -170,6 +201,17 @@ INSERT INTO `postulante` (`id_postulante`, `nombres`, `apellidos`, `dni`, `legaj
 (4, 'Carlos', 'Castaño', 15333444, 8500, 'IA', 'carlosc@itbeltran.com.ar', 'Carlos2026'),
 (5, 'Maria Mercedes', 'Marin', 30222333, 9999, 'IA', '30222333@ibeltran.com.ar', 'Mecha2026'),
 (6, 'Aida', 'Juarez', 29222333, 9500, 'IA', 'aidaj@ibeltran.com.ar', 'Aida2028');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `postulante_skill`
+--
+
+CREATE TABLE `postulante_skill` (
+  `id_postulante` int(11) NOT NULL,
+  `skill_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -238,10 +280,31 @@ ALTER TABLE `oferta_skill`
   ADD KEY `skill_id` (`skill_id`);
 
 --
+-- Indices de la tabla `perfil_empresa`
+--
+ALTER TABLE `perfil_empresa`
+  ADD PRIMARY KEY (`id_perfil`),
+  ADD KEY `id_empresa` (`id_empresa`);
+
+--
+-- Indices de la tabla `perfil_postulante`
+--
+ALTER TABLE `perfil_postulante`
+  ADD PRIMARY KEY (`id_perfil`),
+  ADD KEY `id_postulante` (`id_postulante`);
+
+--
 -- Indices de la tabla `postulante`
 --
 ALTER TABLE `postulante`
   ADD PRIMARY KEY (`id_postulante`);
+
+--
+-- Indices de la tabla `postulante_skill`
+--
+ALTER TABLE `postulante_skill`
+  ADD PRIMARY KEY (`id_postulante`,`skill_id`),
+  ADD KEY `skill_id` (`skill_id`);
 
 --
 -- Indices de la tabla `skill`
@@ -300,6 +363,13 @@ ALTER TABLE `ofertas`
 ALTER TABLE `oferta_skill`
   ADD CONSTRAINT `oferta_skill_ibfk_1` FOREIGN KEY (`id_oferta`) REFERENCES `ofertas` (`id_oferta`) ON DELETE CASCADE,
   ADD CONSTRAINT `oferta_skill_ibfk_2` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`skill_id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `postulante_skill`
+--
+ALTER TABLE `postulante_skill`
+  ADD CONSTRAINT `postulante_skill_ibfk_1` FOREIGN KEY (`id_postulante`) REFERENCES `postulante` (`id_postulante`) ON DELETE CASCADE,
+  ADD CONSTRAINT `postulante_skill_ibfk_2` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`skill_id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `skill`
