@@ -1,88 +1,178 @@
-.profile-card {
-  background: rgb(255, 255, 255);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 30px;
+@use '../../../../styles/variables';
 
-  .profile-header {
+/* ==========================================================================
+   1. ESTILOS BASE (Computadora y Notebooks)
+   ========================================================================== */
+.perfil-container {
+  max-width: 1180px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: grid;
+  // Define 3 columnas simétricas en escritorio
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 1.5rem;
+}
+
+// Estilo común para TODAS las tarjetas del perfil
+.perfil-card {
+  background: variables.$surface-bg;
+  border: 1px solid variables.$surface-border;
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(103, 87, 176, 0.05);
+
+  // 🛠️ NUEVO CONTENEDOR: Maneja el título y el lápiz en la misma línea
+  .card-header-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
+    margin-bottom: 1rem;
+    border-bottom: 2px solid variables.$body-bg; // El borde ahora lo tiene la barra entera
+    padding-bottom: 0.5rem;
 
-  .user-info {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-
-    img {
-      width: 90px;
-      height: 90px;
-      border-radius: 20px;
-    }
-  }
-
-  .profile-body {
-    display: flex;
-    gap: 30px;
-    margin-top: 30px;
-
-    .left {
-      flex: 2;
+    // Tu h3 ahora vive acá adentro
+    h3 {
+      color: variables.$color-text-dark-main;
+      font-size: 1.3rem;
+      margin: 0; // Limpiamos los márgenes para que quede perfectamente alineado con el emoji
+      text-align: left;
     }
 
-    .right {
-      flex: 1;
-    }
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin: 20px 0;
-
-    .box {
-      border: 1px solid #000a42;
-      border-radius: 15px;
-      padding: 20px;
-    }
-  }
-
-  .tags {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-
-    span {
-      background: #e7e7e7;
-      padding: 10px 15px;
-      border-radius: 20px;
-    }
-  }
-
-  .info {
-    border: 1px solid #000a42;
-    border-radius: 15px;
-    padding: 20px;
-  }
-
-  .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-
-    button {
-      padding: 15px;
-      border-radius: 12px;
+    // Estilo exclusivo para el botoncito del lápiz
+    .btn-link-editar {
+      background: none;
       border: none;
       cursor: pointer;
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+      
+      &:hover {
+        transform: scale(1.2); // Hace un pequeño efecto de lupa al pasar el mouse
+      }
     }
+  }
+}
 
-    .primary {
-      background: #00bf5f;
-      color: white;
+// Modificadores específicos para ordenar la grilla
+.card-main {
+  grid-column: span 3; // La tarjeta principal ocupa todo el ancho arriba
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  .foto-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border: 3px solid variables.$surface-bg; // Hace un efecto de borde blanco flotante
+  flex-shrink: 0; // Evita que se deforme en pantallas chicas
+
+  // Versión Postulante: Degradado Violeta/Índigo (Fiel a sus variables)
+  &.avatar-postulante {
+    background: linear-gradient(135deg, #6757b0, #4a3b91);
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    
+    svg {
+      width: 55px;
+      height: 55px;
+      fill: rgba(255, 255, 255, 0.9);
+      }
+    }
+  }
+  .user-info h2 {
+    text-align: left;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .ubicacion {
+    margin: 0 0 1rem 0;
+    color: variables.$muted-text;
+  }
+}
+
+.card-sobre-mi {
+  grid-column: span 2; // Ocupa 2 columnas de espacio
+}
+
+// Estilos de los Tags de Habilidades
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  .tag {
+    background-color: variables.$link-hover-bg;
+    color: variables.$link-color;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+}
+
+// Botón de edición y links
+.btn-editar {
+  background-color: variables.$button-bg;
+  color: variables.$button-text;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: color-mix(in srgb, variables.$button-bg 85%, black);
+  }
+}
+
+.links-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  a {
+    font-weight: 600;
+  }
+}
+
+
+/* ==========================================================================
+   2. ADAPTACIONES RESPONSIVE (Abajo de todo, seguro para tu notebook)
+   ========================================================================== */
+
+// 📑 TABLETS Y NOTEBOOKS CHICAS
+@include variables.responder-a(tablet) {
+  .perfil-container {
+    grid-template-columns: repeat(2, 1fr); // Pasa a 2 columnas
+  }
+  
+  .card-sobre-mi {
+    grid-column: span 2; // Se reacomoda
+  }
+}
+
+// 📱 CELULARES (Todo en una sola columna vertical limpia)
+@include variables.responder-a(celular) {
+  .perfil-container {
+    grid-template-columns: 1fr; // Una sola columna
+    gap: 1rem;
+  }
+
+  .card-main, .card-sobre-mi {
+    grid-column: span 1; // Todas ocupan el ancho total del celu
+    flex-direction: column; // La foto se pone arriba del nombre
+    text-align: center;
+    
+    .user-info h2 {
+      text-align: center;
     }
   }
 }

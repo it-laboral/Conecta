@@ -1,85 +1,76 @@
-<div class="profile-card">
+<div class="perfil-container">
 
-  <div class="profile-header">
-
-    <div class="user-info">
-
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/5968/5968267.png"
-      />
-
-      <div>
-        <h1>ITB Paraguay</h1>
-        <p>Tecnología y Servicios</p>
-        <span>📍 Asunción, Paraguay</span>
-      </div>
-
+  <div class="perfil-card card-main">
+    <div class="foto-placeholder avatar-empresa">
+      <svg viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+      </svg>
     </div>
-
-    <button>Volver</button>
-
+    <div class="user-info">
+      <h2>{{ perfil.nombreFantasia }}</h2>
+      
+      @if (perfil.razonSocial) {
+        <p style="color: gray; margin: -5px 0 10px 0;"><small>({{ perfil.razonSocial }})</small></p>
+      }
+      
+      <p class="ubicacion">
+        💼 {{ perfil.rubro || 'Rubro no especificado' }} 
+        <br>📍 {{ perfil.ciudad ? perfil.ciudad + ', ' + perfil.provincia : 'Ubicación no cargada' }}
+      </p>
+      
+      <button class="btn-editar" (click)="editarDatosPrincipales()">Editar Datos</button>
+    </div>
   </div>
 
-  <div class="profile-body">
-
-    <div class="left">
-
-      <h3>Sobre la empresa</h3>
-
-      <p>
-        Empresa dedicada al desarrollo de software y soluciones digitales.
-      </p>
-
-      <div class="grid">
-
-        <div class="box">
-          <h4>Tamaño</h4>
-          <p>51-200 empleados</p>
-        </div>
-
-        <div class="box">
-          <h4>Fundación</h4>
-          <p>2012</p>
-        </div>
-
-        <div class="box">
-          <h4>Sitio web</h4>
-          <p>www.itb.com.py</p>
-        </div>
-
-        <div class="box">
-          <h4>Redes</h4>
-          <p>LinkedIn</p>
-        </div>
-
-      </div>
-
-      <h3>Áreas</h3>
-
-      <div class="tags">
-        <span>Software</span>
-        <span>UX/UI</span>
-        <span>Data</span>
-      </div>
-
+  <div class="perfil-card card-sobre-mi">
+    <div class="card-header-actions">
+      <h3>Sobre nosotros</h3>
+      <button class="btn-link-editar" (click)="editarSobreNosotros()">✏️</button>
     </div>
+    <p>{{ perfil.sobreNosotros || 'Escriba aquí lo que quiere dar a conocer sobre la misión y cultura de la empresa...' }}</p>
+  </div>
 
-    <div class="right">
-
-      <div class="info">
-        <h3>Información adicional</h3>
-
-        <p><strong>Correo:</strong> rrhh@itb.com.py</p>
-        <p><strong>Teléfono:</strong> +595 21 123456</p>
-      </div>
-
-      <div class="actions">
-        <button>Ver ofertas</button>
-        <button class="primary">Seguir empresa</button>
-      </div>
-
+  <div class="perfil-card">
+    <div class="card-header-actions">
+      <h3>Modalidad de Trabajo</h3>
     </div>
+    <p style="font-weight: 600; color: #0aa7b8; font-size: 1.1rem;">
+      💻 {{ perfil.modalidad || 'No especificada aún' }}
+    </p>
+  </div>
 
+  <div class="perfil-card card-skills">
+    <div class="card-header-actions">
+      <h3>Tecnologías que usamos</h3>
+      <button class="btn-link-editar" (click)="editarTechStack()">✏️</button>
+    </div>
+    
+    <div class="tags-container">
+      @for (tech of perfil.techStack; track tech) {
+        <span class="tag" style="background-color: #e0f7fa; color: #006064;">{{ tech }}</span>
+      } @empty {
+        <p style="color: gray; font-size: 0.9rem; font-style: italic;">Cargá el ecosistema tecnológico de la empresa.</p>
+      }
+    </div>
+  </div>
+
+  <div class="perfil-card card-redes">
+    <div class="card-header-actions">
+      <h3>Enlaces Institucionales</h3>
+      <button class="btn-link-editar" (click)="editarEnlaces()">✏️</button>
+    </div>
+    
+    <div class="links-grid">
+      @if (perfil.sitioWeb) {
+        <a [href]="perfil.sitioWeb" target="_blank">🌐 Sitio Web Oficial</a>
+      }
+      @if (perfil.linkedin) {
+        <a [href]="perfil.linkedin" target="_blank">💼 LinkedIn Corporativo</a>
+      }
+      @if (!perfil.sitioWeb && !perfil.linkedin) {
+        <p style="color: gray; font-size: 0.9rem; font-style: italic;">No hay enlaces externos cargados.</p>
+      }
+    </div>
   </div>
 
 </div>

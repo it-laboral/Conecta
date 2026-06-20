@@ -85,4 +85,16 @@ $font-family-base: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
     transition: background-color 0.2s ease;
   }
 }
-                   
+// 🔑 El motor de pantallas para ITB Conecta
+$breakpoint-celular-max: 767px;
+$breakpoint-tablet-min:  768px;
+$breakpoint-tablet-max:  1024px;
+
+@mixin responder-a($dispositivo) {
+  @if $dispositivo == celular {
+    @media (max-width: $breakpoint-celular-max) { @content; }
+  }
+  @if $dispositivo == tablet {
+    @media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) { @content; }
+  }
+}

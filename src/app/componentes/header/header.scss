@@ -1,26 +1,18 @@
 @use '../../../styles/variables';
 
+/* ==========================================================================
+   1. ESTILOS BASE (Tu computadora y Notebooks normales)
+   ========================================================================== */
 header {
-  background: linear-gradient(
-    90deg,
-    #06245c,
-    #0aa7b8
-  );
-
+  background: linear-gradient(90deg, #06245c, #0aa7b8);
   color: white;
-
   padding: 1.5rem 2rem;
-
   width: 100%;
-
   display: flex;
   align-items: center;
-  justify-content: center;
-
+  justify-content: center; // Centrado clásico en escritorio
   gap: 2rem;
-
   border-radius: 32px;
-
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
@@ -37,25 +29,64 @@ nav {
 
 nav a {
   color: #ffffff;
-
   text-decoration: none;
-
   padding: 0.75rem 1.2rem;
-
   font-family: variables.$font-family-base;
-
   font-size: 1.2rem;
   font-weight: 600;
-
   border-radius: 999px;
-
   transition: 0.3s;
 }
 
 nav a:hover {
   background-color: rgba(255, 255, 255, 0.18);
-
   color: #dffcff;
-
   transform: translateY(-2px);
+}
+
+
+/* ==========================================================================
+   2. ADAPTACIONES DE PANTALLA (Debajo de todo, como a vos te gusta)
+   ========================================================================== */
+
+// 📑 PARA TABLETS (O Notebooks con pantallas más compactas)
+@include variables.responder-a(tablet) {
+  header {
+    justify-content: space-between; // Separa el logo a la izquierda y menú a la derecha
+    padding: 1.2rem 1.5rem;
+    gap: 1rem;
+  }
+
+  img {
+    width: 110px; // Achicamos un pelín el logo para notebooks chicas
+  }
+
+  nav a {
+    font-size: 1.05rem; // Letra más cómoda para que no desborde
+    padding: 0.6rem 1rem;
+  }
+}
+
+// 📱 PARA CELULARES (Pantallas bien chicas - Formato horizontal elegante)
+@include variables.responder-a(celular) {
+  header {
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    gap: 0.5rem;
+    border-radius: 16px;
+  }
+
+  img {
+    width: 85px; // Logo sutil en la esquina
+  }
+
+  nav {
+    gap: 0.2rem; // Enlaces bien juntitos
+  }
+
+  nav a {
+    font-size: 0.85rem; 
+    padding: 0.4rem 0.6rem;
+    font-weight: 700;
+  }
 }

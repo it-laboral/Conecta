@@ -1,93 +1,133 @@
-.profile-card {
-  background: rgb(255, 255, 255);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 30px;
+@use '../../../../styles/variables';
 
-  .profile-header {
+.perfil-container {
+  max-width: 1180px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: grid;
+  // Define 3 columnas simétricas en escritorio
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 1.5rem;
+}
+
+.perfil-card {
+  background: variables.$surface-bg;
+  border: 1px solid variables.$surface-border;
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(103, 87, 176, 0.05);
+
+  // 1. Cabeceras de tarjetas internas
+  .card-header-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
+    margin-bottom: 1rem;
+    border-bottom: 2px solid variables.$body-bg;
+    padding-bottom: 0.5rem;
 
-  .user-info {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-
-    img {
-      width: 90px;
-      height: 90px;
-      border-radius: 20px;
-    }
-  }
-
-  .profile-body {
-    display: flex;
-    gap: 30px;
-    margin-top: 30px;
-
-    .left {
-      flex: 2;
+    h3 {
+      color: variables.$color-text-dark-main;
+      font-size: 1.3rem;
+      margin: 0;
+      text-align: left;
     }
 
-    .right {
-      flex: 1;
-    }
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin: 20px 0;
-
-    .box {
-      border: 1px solid #000a42;
-      border-radius: 15px;
-      padding: 20px;
-    }
-  }
-
-  .tags {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-
-    span {
-      background: #e7e7e7;
-      padding: 10px 15px;
-      border-radius: 20px;
-    }
-  }
-
-  .info {
-    border: 1px solid #000a42;
-    border-radius: 15px;
-    padding: 20px;
-  }
-
-  .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-
-    button {
-      padding: 15px;
-      border-radius: 12px;
+    .btn-link-editar {
+      background: none;
       border: none;
       cursor: pointer;
-      transition: 0.3s;
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+      
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  // 2. Contenedor de Habilidades (Tags)
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+
+    .tag {
+      background-color: variables.$link-hover-bg;
+      color: variables.$link-color;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+  }
+
+  // 3. Contenedor de Redes y Enlaces
+  .links-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+
+    a {
+      color: variables.$link-color;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0;
+      transition: color 0.2s;
 
       &:hover {
-        transform: translateY(-2px);
+        color: color-mix(in srgb, variables.$link-color 80%, black);
+      }
+    }
+  }
+
+  // 🚨 CORRECCIÓN ACÁ: Usamos & para modificar la tarjeta principal
+  &.card-main {
+    grid-column: span 3; // ¡Ahora sí ocupa todo el ancho de la pantalla!
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    .foto-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border: 3px solid variables.$surface-bg;
+      flex-shrink: 0;
+
+      // 🚨 El avatar de la empresa va ACÁ ADENTRO para controlar el tamaño del logo
+      &.avatar-empresa {
+        background: linear-gradient(135deg, #0aa7b8, #007986);
+        
+        svg {
+          width: 55px;
+          height: 55px;
+          fill: rgba(255, 255, 255, 0.9);
+        }
       }
     }
 
-    .primary {
-      background: #00bf5f;
-      color: white;
+    // Le damos una pintada rápida a los textos principales del perfil corporativo
+    .user-info {
+      h2 {
+        margin: 0 0 0.5rem 0;
+        color: variables.$color-text-dark-main;
+      }
+      .ubicacion {
+        margin: 0 0 1rem 0;
+        color: gray;
+        line-height: 1.4;
+      }
     }
   }
 }

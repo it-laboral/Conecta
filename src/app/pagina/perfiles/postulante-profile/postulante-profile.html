@@ -1,86 +1,83 @@
-<div class="profile-card">
+<div class="perfil-container">
 
-  <div class="profile-header">
-
-    <div class="user-info">
-
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-      />
-
-      <div>
-        <h1>María Fernanda López</h1>
-        <p>Ingeniera en Sistemas</p>
-        <span>📍 Asunción, Paraguay</span>
-      </div>
-
+  <div class="perfil-card card-main">
+    <div class="foto-placeholder avatar-postulante">
+      <svg viewBox="0 0 24 24">
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
     </div>
-
-    <button>Volver</button>
-
+    <div class="user-info">
+      <h2>{{ perfil.nombres }} {{ perfil.apellidos }}</h2>
+      
+      <p class="ubicacion">
+        📍 {{ perfil.ciudad ? perfil.ciudad + ', ' + perfil.pais : 'Ubicación no especificada' }}
+      </p>
+      
+      <button class="btn-editar" (click)="editarDatosPrincipales()">Editar Info</button>
+    </div>
   </div>
 
-  <div class="profile-body">
-
-    <div class="left">
-
+  <div class="perfil-card card-sobre-mi">
+    <div class="card-header-actions">
       <h3>Sobre mí</h3>
+      <button class="btn-link-editar" (click)="editarSobreMi()">✏️</button>
+    </div>
+    <p>{{ perfil.sobreMi || 'Contale a las empresas un poco sobre vos y tus intereses...' }}</p>
+  </div>
 
-      <p>
-        Ingeniera en Sistemas con experiencia en desarrollo web.
-      </p>
+  <div class="perfil-card card-estudios">
+    <div class="card-header-actions">
+      <h3>Estudios y Cursos</h3>
+      <button class="btn-link-editar" (click)="editarEstudios()">✏️</button>
+    </div>
+    
+    <ul class="lista-estudios" style="list-style: none; padding: 0;">
+      @for (estudio of perfil.estudios; track estudio.titulo) {
+        <li style="margin-bottom: 10px;">
+          <strong>{{ estudio.titulo }}</strong> - {{ estudio.institucion }} 
+          <br><small style="color: gray;">({{ estudio.estado }})</small>
+        </li>
+      } @empty {
+        <li style="color: gray; font-style: italic;">No tenés estudios registrados todavía.</li>
+      }
+    </ul>
+  </div>
 
-      <div class="grid">
-
-        <div class="box">
-          <h4>Experiencia</h4>
-          <p>3 años</p>
-        </div>
-
-        <div class="box">
-          <h4>Educación</h4>
-          <p>Ingeniería en Sistemas</p>
-        </div>
-
-        <div class="box">
-          <h4>Disponibilidad</h4>
-          <p>Inmediata</p>
-        </div>
-
-        <div class="box">
-          <h4>Modalidad</h4>
-          <p>Híbrida</p>
-        </div>
-
-      </div>
-
+  <div class="perfil-card card-skills">
+    <div class="card-header-actions">
       <h3>Habilidades</h3>
-
-      <div class="tags">
-        <span>Angular</span>
-        <span>Node.js</span>
-        <span>MySQL</span>
-        <span>Git</span>
-      </div>
-
+      <button class="btn-link-editar" (click)="editarSkills()">✏️</button>
     </div>
-
-    <div class="right">
-
-      <div class="info">
-        <h3>Información adicional</h3>
-
-        <p><strong>Correo:</strong> maria@email.com</p>
-        <p><strong>Teléfono:</strong> +595 981 123456</p>
-      </div>
-
-      <div class="actions">
-        <button>Enviar mensaje</button>
-        <button class="primary">Guardar</button>
-      </div>
-
+    
+    <div class="tags-container">
+      @for (skill of perfil.skills; track skill) {
+        <span class="tag">{{ skill }}</span>
+      } @empty {
+        <p style="color: gray; font-size: 0.9rem; font-style: italic;">Hacé clic en el lápiz para elegir tus habilidades.</p>
+      }
     </div>
+  </div>
 
+  <div class="perfil-card card-redes">
+    <div class="card-header-actions">
+      <h3>Contacto y Redes</h3>
+      <button class="btn-link-editar" (click)="editarRedes()">✏️</button>
+    </div>
+    
+    <div class="links-grid">
+      @if (perfil.redes.github) {
+        <a [href]="perfil.redes.github" target="_blank">📁 GitHub</a>
+      }
+      @if (perfil.redes.linkedin) {
+        <a [href]="perfil.redes.linkedin" target="_blank">💼 LinkedIn</a>
+      }
+      @if (perfil.redes.portfolio) {
+        <a [href]="perfil.redes.portfolio" target="_blank">🌐 Web/Portfolio</a>
+      }
+      @if (!perfil.redes.github && !perfil.redes.linkedin && !perfil.redes.portfolio) {
+        <p style="color: gray; font-size: 0.9rem; font-style: italic;">No vinculaste ninguna red social aún.</p>
+      }
+    </div>
   </div>
 
 </div>
