@@ -1,16 +1,33 @@
 <header>
     
 <nav>
+    <!-- Logo e Inicio (siempre visibles) -->
     <a routerLink="/principal">
-        <img src="Logo.png" alt="Logo ITB" class="logo-header">
+      <img src="Logo.png" alt="Logo ITB" class="logo-header">
     </a>  
-     <a routerLink="/principal">Inicio</a> 
-     <a routerLink="/registrar">Registrarse</a>
-     <a routerLink="/ofertas">Oportunidades</a>
-     <a routerLink="/perfil">Ir al Perfil</a>
-     <a routerLink="/sesion">Iniciar sesión</a>
-     
-</nav>
+    <a routerLink="/principal">Inicio</a> 
+    <a routerLink="/ofertas">Oportunidades</a>
 
+    <!-- SI NO HAY SESIÓN ACTIVA -->
+    @if (!authService.isLoggedIn()) {
+      <a routerLink="/registrar">Registrarse</a>
+      <a routerLink="/sesion">Iniciar sesión</a>
+    } 
+    <!-- SI HAY SESIÓN ACTIVA -->
+    @else {
+      <!-- Solo si es Admin -->
+      @if (authService.getTipoUsuario() === 'admin') {
+        <a routerLink="/panel-admin">Panel Admin</a>
+      }
+
+      <!-- Solo si es Postulante o Empresa -->
+      @if (authService.getTipoUsuario() === 'postulante' || authService.getTipoUsuario() === 'empresa') {
+        <a routerLink="/perfil">Ir al Perfil</a>
+      }
+
+      <!-- Opción para salir -->
+      <a (click)="cerrarSesion()" style="cursor: pointer;">Cerrar sesión</a>
+    }
+  </nav>
 
 </header>

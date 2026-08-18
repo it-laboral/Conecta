@@ -1,56 +1,94 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {
 
-  // HTTP
   private http = inject(HttpClient);
-
-  // URL API
+  private platformId = inject(PLATFORM_ID);
   private API_URL = 'http://localhost:3000/api';
 
+  // Signals de estado inicializados de forma segura para SSR
+  tipoUsuario = signal<string | null>(null);
+  isLoggedIn = signal<boolean>(false);
+
+  constructor() {
+    // La lectura de localStorage SOLO ocurre una vez en el cliente (navegador)
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const tipo = localStorage.getItem('tipoUsuario');
+
+      if (token) {
+        this.isLoggedIn.set(true);
+        this.tipoUsuario.set(tipo);
+      }
+    }
+  }
+
+  // ==========================================
   // LOGIN
+  // ==========================================
   login(credenciales: any): Observable<any> {
-
-    return this.http.post(
-
-      `${this.API_URL}/login`,
-
-      credenciales
-
+    return this.http.post<any>(`${this.API_URL}/login`, credenciales).pipe(
+      tap(respuesta => {
+        if (respuesta.success && respuesta.token) {
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('token', respuesta.token);
+            localStorage.setItem('tipoUsuario', respuesta.tipo);
+            localStorage.setItem('usuario', JSON.stringify(respuesta.user));
+          }
+          this.tipoUsuario.set(respuesta.tipo);
+          this.isLoggedIn.set(true); // 👈 Actualiza la señal
+        }
+      })
     );
-
   }
 
-  // REGISTRO POSTULANTE
+  // ==========================================
+  // REGISTROS
+  // ==========================================
   registrarPostulante(datos: any): Observable<any> {
-
-    return this.http.post(
-
-      `${this.API_URL}/registrar/postulante`,
-
-      datos
-
-    );
-
+    return this.http.post(`${this.API_URL}/registrar/postulante`, datos);
   }
 
-  // REGISTRO EMPRESA
   registrarEmpresa(datos: any): Observable<any> {
-
-    return this.http.post(
-
-      `${this.API_URL}/registrar/empresa`,
-
-      datos
-
-    );
-
+    return this.http.post(`${this.API_URL}/registrar/empresa`, datos);
   }
 
+  // ==========================================
+  // CONSULTAS Y LOGOUT
+  // ==========================================
+  getToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('token');
+    }
+    return null;
+  }
+
+  getTipoUsuario(): string | null {
+    return this.tipoUsuario();
+  }
+
+  getUsuarioActual(): any {
+    if (isPlatformBrowser(this.platformId)) {
+      const user = localStorage.getItem('usuario');
+      return user ? JSON.parse(user) : null;
+    }
+    return null;
+  }
+
+  logout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('tipoUsuario');
+      localStorage.removeItem('usuario');
+    }
+    this.tipoUsuario.set(null);
+    this.isLoggedIn.set(false); // 👈 Limpia la señal
+  }
 }

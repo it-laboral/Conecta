@@ -1,0 +1,117 @@
+<div class="admin-container">
+  <h2>🛠️ Panel de Control Institucional ITBCONECTA</h2>
+  <p class="subtitulo">Gestión de usuarios, empresas y moderación de la plataforma</p>
+
+  <!-- TARJETAS DE MÉTRICAS -->
+  <div class="metricas-grid">
+    <div class="card-kpi">
+      <span class="numero">{{ metricas.totalOfertas }}</span>
+      <span class="label">Ofertas Publicadas</span>
+    </div>
+    <div class="card-kpi">
+      <span class="numero">{{ metricas.totalEmpresas }}</span>
+      <span class="label">Empresas Registradas</span>
+    </div>
+    <div class="card-kpi">
+      <span class="numero">{{ metricas.totalPostulantes }}</span>
+      <span class="label">Alumnos / Egresados</span>
+    </div>
+    <div class="card-kpi highlight">
+      <span class="numero">{{ metricas.totalPostulaciones }}</span>
+      <span class="label">Postulaciones Totales</span>
+    </div>
+  </div>
+
+  <!-- SECCIÓN GESTIÓN DE EMPRESAS -->
+  <div class="tabla-seccion">
+    <h3>🏢 Empresas Registradas</h3>
+
+    @if (cargando) {
+      <div class="loading">Cargando empresas...</div>
+    }
+
+    @if (!cargando && empresas.length > 0) {
+      <table class="tabla-admin">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Razón Social</th>
+          <th>CUIT</th>
+          <th>Email</th>
+          <th>Estado</th>
+          <th>Detalle</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        @for (emp of empresas; track emp.id_empresa) {
+            <tr>
+              <td>#{{ emp.id_empresa }}</td>
+              <td><strong>{{ emp.RazonSocial || emp.razon_social }}</strong></td>
+              <td>{{ emp.CUIT || emp.cuit }}</td>
+              <td>{{ emp.email }}</td>
+              <td>
+            <span class="badge" [class.activo]="emp.estado === 'Activo'" [class.inactivo]="emp.estado !== 'Activo'">
+              {{ emp.estado }}
+            </span>
+          </td>
+          <td>
+            <button class="btn-info" (click)="verDetalle(emp)">
+              🔍 Ver Detalle
+            </button>
+          </td>
+          <td>
+            <button 
+              class="btn-estado" 
+              [class.btn-desactivar]="emp.estado === 'Activo'"
+              [class.btn-activar]="emp.estado !== 'Activo'"
+              (click)="cambiarEstado(emp.id_empresa, emp.estado)">
+              {{ emp.estado === 'Activo' ? 'Desactivar' : 'Activar' }}
+            </button>
+          </td>
+        </tr>
+      }
+      </tbody>
+    </table>
+  }
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL DINÁMICO DE DETALLE DE EMPRESA -->
+<!-- ========================================== -->
+@if (mostrarModal){
+<div class="modal-overlay" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>🏢 Ficha de Registro de Empresa</h3>
+      <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
+    </div>
+    @if (empresaSeleccionada) {
+  <div class="modal-body">
+    <div class="grid-datos">
+      @for (item of empresaSeleccionada | keyvalue; track item.key) {
+        @if (esCampoVisible(normalizarClave(item.key.toString()))) {
+          <div class="dato-item">
+            <label>{{ formatearClave(normalizarClave(item.key.toString())) }}:</label>
+            <span>{{ item.value !== null && item.value !== '' ? item.value : 'No especificado' }}</span>
+          </div>
+        }
+      }
+    </div>
+  </div>
+}
+    <div class="modal-footer">
+      <button 
+        class="btn-estado" 
+        [class.btn-desactivar]="empresaSeleccionada?.estado === 'Activo'"
+        [class.btn-activar]="empresaSeleccionada?.estado !== 'Activo'"
+        (click)="cambiarEstado(empresaSeleccionada.id_empresa, empresaSeleccionada.estado)">
+        {{ empresaSeleccionada?.estado === 'Activo' ? 'Desactivar Empresa' : 'Activar Empresa' }}
+      </button>
+      <button class="btn-secundario" (click)="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+}

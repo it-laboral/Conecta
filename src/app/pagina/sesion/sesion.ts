@@ -62,60 +62,43 @@ export class Sesion {
       const credenciales = this.loginForm.value;
 
       console.log(
-        'Enviando datos al servidor:',
-        credenciales.email
-      );
+        'Enviando datos al servidor:',credenciales.email);
 
       this.authService.login(credenciales).subscribe({
 
         next: (res) => {
+          console.log('¡Éxito! Respuesta completa del servidor:',res);
 
-          console.log(
-            '¡Éxito! Respuesta completa del servidor:',
-            res
-          );
-
-          let saludo = 'Usuario';
-
-          if (res.tipo === 'postulante') {
-            saludo = 'Postulante';
-          }
-
+       // REDIRECCIÓN SEGÚN EL ROL DE USUARIO
+          if (res.tipo === 'admin') {
+            alert('¡Bienvenido/a Administrador/a!');
+            this.router.navigate(['/panel-admin']);
+          } 
           else if (res.tipo === 'empresa') {
-            saludo = 'Empresa';
+            alert('¡Bienvenida Empresa!');
+            this.router.navigate(['/perfil/empresa']);
+          } 
+          else if (res.tipo === 'postulante') {
+            alert('¡Bienvenido/a Postulante!');
+            this.router.navigate(['/ofertas']);
+          } 
+          else {
+            alert('¡Bienvenido/a!');
+            this.router.navigate(['/']);
           }
-
-          alert(`¡Bienvenido/a ${saludo}!`);
-
-          this.router.navigate(['/principal']);
-
         },
 
         error: (err) => {
-
           console.error('Error en el login:', err);
-
           alert(
             'Error: ' +
-            (err.error.message || 'No se pudo iniciar sesión')
+            (err.error?.message || 'No se pudo iniciar sesión')
           );
-
         }
-
       });
-
-    }
-
-    else {
-
+    } else {
       this.loginForm.markAllAsTouched();
-
-      alert(
-        'Por favor, completa los campos correctamente.'
-      );
-
+      alert('Por favor, completa los campos correctamente.');
     }
-
   }
-
 }

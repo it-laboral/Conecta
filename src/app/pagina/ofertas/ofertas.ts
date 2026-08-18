@@ -4,6 +4,7 @@ import { CommonModule} from '@angular/common'; // Agregado para soportar directi
 import { OfertaService } from '../../services/oferta_service'; // Ruta de servicio
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { AuthService } from '../../services/auth.service';
 
 registerLocaleData(localeEs, 'es');
 
@@ -39,19 +40,19 @@ export class Ofertas implements OnInit {
   constructor(
     private fb: FormBuilder,
     private ofertaService: OfertaService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    //  (Lo dejamos en Stand by hasta que definamos usuario ahora tiene vista empresa)
-    // 1. Capturar credenciales reales de la sesión 
-   // this.rolUsuario = localStorage.getItem('rol') || 'POSTULANTE'; // Fallback seguro
-   // this.idUsuario = localStorage.getItem('id');
-   // this.nombreUsuario = localStorage.getItem('nombre');
+    // 1. Capturar credenciales REALES desde el AuthService (localStorage)
+    const usuarioLogueado = this.authService.getUsuarioActual();
     
-    this.rolUsuario = 'EMPRESA';  // <--- Poné 'POSTULANTE' o 'ADMIN' según lo que quieras maquetar
-    this.idUsuario = '3';         // Simula que la empresa con ID 1 está logueada
-    this.nombreUsuario = 'Empresa de Prueba';
+    // Convertimos 'empresa' / 'postulante' a mayúsculas para mantener tu lógica de vista
+    this.rolUsuario = (this.authService.getTipoUsuario() || 'POSTULANTE').toUpperCase(); 
+    this.idUsuario = usuarioLogueado ? String(usuarioLogueado.id) : null;
+    this.nombreUsuario = usuarioLogueado ? usuarioLogueado.nombre : 'Usuario';
+    
 
     // 2. Inicializar controles reactivos
     this.inicializarFormulario();
@@ -155,7 +156,17 @@ export class Ofertas implements OnInit {
   }
 
   private seleccionarPrimeraDisponible(lista: any[]): void {
-    this.ofertaSeleccionada = lista.length > 0 ? lista[0] : null;
+    if (lista.length > 0) {
+      const primera = lista[0];
+      this.ofertaSeleccionada = {
+        ...primera,
+        id_oferta: primera.id_oferta || primera.id, 
+        dias_duracion: primera.dias_duracion || primera.diasDuracion || 10,
+        skills_nombres: primera.skills_nombres || []
+      };
+    } else {
+      this.ofertaSeleccionada = null;
+    }
   }
 
   esCampoInvalido(campo: string): boolean {
@@ -216,7 +227,7 @@ export class Ofertas implements OnInit {
     const diasFinales = fValue.tipoDuracion === 'personalizado' ? fValue.diasPersonalizados : 10;
 
     const payloadNuevaOferta = {
-      id_empresa:Number(this.idUsuario), // ID real del localStorage
+      id_empresa: Number(this.idUsuario || 0), // ID real extraído del AuthService
       titulo: fValue.titulo,
       descripcion: fValue.descripcion,
       modalidad: fValue.modalidad,
