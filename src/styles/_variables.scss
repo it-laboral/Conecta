@@ -1,4 +1,6 @@
-//Colores
+// ==========================================
+// 1. VARIABLES DE COLOR
+// ==========================================
 $header-bg: #c19cff;
 $header-text: #2a1f4c;
 $link-color: #5b44c2;
@@ -15,77 +17,14 @@ $button-text: #ffffff;
 $muted-text: #5d4b7a;
 $color-text-dark-main: #321f57;
 
-// Tipografía
-$font-family-base: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
-                   'Lucida Sans Unicode', 'Geneva', 'Verdana';
+// ==========================================
+// 2. TIPOGRAFÍA
+// ==========================================
+$font-family-base: 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 
-.destacados-seccion {
-  padding: 40px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-
-  h2 {
-    margin-bottom: 30px;
-    color: $header-bg;
-  }
-}
-
-.ofertas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); // Esto las hace responsivas
-  gap: 20px;
-}
-
-.oferta-card {
-  background: $surface-bg;
-  border: 1px solid $form-border;
-  border-radius: 20px;
-  padding: 24px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 16px 30px rgba(103, 87, 176, 0.08);
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 35px rgba(103, 87, 176, 0.12);
-  }
-
-  h3 {
-    font-size: 1.2rem;
-    color: $header-text;
-    margin-bottom: 10px;
-    text-align: center; // Aquí sí nos sirve a la izquierda
-  }
-
-  .empresa {
-    color: $button-bg;
-    font-weight: bold;
-    margin-bottom: 15px;
-  }
-
-  .detalles {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    font-size: 0.9rem;
-    color: $muted-text;
-    margin-bottom: 20px;
-  }
-
-  .btn-ver {
-    background-color: $button-bg;
-    color: $button-text;
-    border: none;
-    padding: 12px;
-    border-radius: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-  }
-}
-// 🔑 El motor de pantallas para ITB Conecta
+// ==========================================
+// 3. RESPONSIVE / BREAKPOINTS & MIXINS
+// ==========================================
 $breakpoint-celular-max: 767px;
 $breakpoint-tablet-min:  768px;
 $breakpoint-tablet-max:  1024px;
@@ -93,8 +32,7 @@ $breakpoint-tablet-max:  1024px;
 @mixin responder-a($dispositivo) {
   @if $dispositivo == celular {
     @media (max-width: $breakpoint-celular-max) { @content; }
-  }
-  @if $dispositivo == tablet {
+  } @else if $dispositivo == tablet {
     @media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) { @content; }
   }
 }

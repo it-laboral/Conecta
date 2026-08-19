@@ -1,130 +1,42 @@
-@use '../../../styles/variables';
-
-.btn-info {
-  background-color: #ebf8ff;
-  color: #2b6cb0;
-  border: 1px solid #bee3f8;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #bee3f8;
-  }
-}
-
-// Estilos de la Ventana Modal
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(2px);
-}
-
-.modal-content {
-  background: #ffffff;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 650px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
-  animation: fadeIn 0.2s ease-out;
-
-  .modal-header {
-    background-color: #f7fafc;
-    padding: 1.2rem 1.5rem;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    h3 {
-      margin: 0;
-      color: #2d3748;
-      font-size: 1.15rem;
-    }
-
-    .btn-cerrar {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: #a0aec0;
-      &:hover { color: #e53e3e; }
-    }
-  }
-
-  .modal-body {
-    padding: 1.5rem;
-
-    .grid-datos {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-
-      .dato-item {
-        display: flex;
-        flex-direction: column;
-
-        &.full-width {
-          grid-column: span 2;
-        }
-
-        label {
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          color: #718096;
-          font-weight: 700;
-          margin-bottom: 0.2rem;
-        }
-
-        span {
-          color: #2d3748;
-          font-size: 0.95rem;
-          font-weight: 500;
-        }
-      }
-    }
-  }
-
-  .modal-footer {
-    padding: 1rem 1.5rem;
-    background-color: #f7fafc;
-    border-top: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-
-    .btn-secundario {
-      background: #e2e8f0;
-      color: #4a5568;
-      border: none;
-      padding: 0.5rem 1.2rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-  }
-}
-
+// ==========================================
+// 1. IMPORTACIONES
+// ==========================================
+@use '../../../styles/variables' as *;
+@use 'sass:color';
+// ==========================================
+// 2. ANIMACIONES
+// ==========================================
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}.admin-container {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes modalEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ==========================================
+// 3. CONTENEDOR PRINCIPAL (.admin-container)
+// ==========================================
+.admin-container {
   padding: 30px 20px;
   max-width: 1200px;
   margin: 0 auto;
   font-family: $font-family-base;
+  animation: fadeIn 0.3s ease-in-out;
 
   h2 {
     color: $header-text;
@@ -138,66 +50,78 @@
     margin-bottom: 25px;
   }
 
-  /* ========================================== */
-  /* TARJETAS DE MÉTRICAS                       */
-  /* ========================================== */
+  /* TARJETAS DE MÉTRICAS */
   .metricas-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     margin-bottom: 35px;
-
+  }
+  
     .card-kpi {
-      background: $surface-bg;
-      border: 1px solid $surface-border;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(103, 87, 176, 0.06);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: $surface-bg;
+  border: 1px solid $surface-border;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(103, 87, 176, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
 
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 14px 28px rgba(103, 87, 176, 0.1);
-      }
-
-      .numero {
-        font-size: 2.2rem;
-        font-weight: bold;
-        color: $button-bg;
-        line-height: 1.1;
-        margin-bottom: 6px;
-      }
-
-      .label {
-        font-size: 0.9rem;
-        color: $muted-text;
-        font-weight: 600;
-      }
-
-      &.highlight {
-        background: linear-gradient(135deg, $surface-bg 0%, $link-hover-bg 100%);
-        border-color: $form-border;
-
-        .numero {
-          color: $color-text-dark-main;
-        }
-      }
-    }
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(103, 87, 176, 0.1);
   }
 
-  /* ========================================== */
-  /* SECCIÓN TABLA DE EMPRESAS                 */
-  /* ========================================== */
+  // Pestaña Activa / Seleccionada
+  &.activa {
+    border-color: $button-bg;
+    background-color: $link-hover-bg;
+    box-shadow: 0 12px 26px rgba(103, 87, 176, 0.12);
+  }
+
+  .numero {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: $button-bg;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .label {
+    font-size: 0.9rem;
+    color: $muted-text;
+    font-weight: 600;
+  }
+
+  // Tarjeta de métrica global (No cliqueable)
+  &.highlight {
+    background: linear-gradient(135deg, $surface-bg 0%, $link-hover-bg 100%);
+    border-color: $form-border;
+    cursor: default;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 10px 25px rgba(103, 87, 176, 0.06);
+    }
+
+    .numero {
+      color: $color-text-dark-main;
+    }
+  }
+}
+
+  /* SECCIÓN TABLA DE EMPRESAS */
   .tabla-seccion {
     background: $surface-bg;
     border: 1px solid $form-border;
     border-radius: 20px;
     padding: 24px;
     box-shadow: 0 16px 30px rgba(103, 87, 176, 0.08);
-    overflow-x: auto; // Permite desplazamiento horizontal en pantallas reducidas
+    overflow-x: auto;
 
     h3 {
       color: $header-text;
@@ -259,9 +183,7 @@
     }
   }
 
-  /* ========================================== */
-  /* BADGES Y BOTONES DE TABLA                  */
-  /* ========================================== */
+  /* BADGES Y BOTONES EN TABLA */
   .badge {
     display: inline-block;
     padding: 5px 12px;
@@ -292,7 +214,7 @@
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: darken($link-hover-bg, 5%);
+      background-color: color.adjust($link-hover-bg, $lightness: -5%);
     }
   }
 
@@ -323,13 +245,13 @@
       color: $button-text;
 
       &:hover {
-        background-color: darken($button-bg, 8%);
+        background-color: color.adjust($button-bg, $lightness: -8%);
       }
     }
   }
 
-  /* Adaptabilidad con el mixin */
-  @include responder-a(tablet) {
+  /* ADAPTABILIDAD RESPONSIVE (Sin necesidad de mixins) */
+  @media (max-width: 768px) {
     padding: 20px 15px;
 
     .metricas-grid {
@@ -337,7 +259,7 @@
     }
   }
 
-  @include responder-a(celular) {
+  @media (max-width: 576px) {
     padding: 15px 10px;
 
     h2 {
@@ -354,9 +276,9 @@
   }
 }
 
-/* ========================================== */
-/* MODAL DINÁMICO FICHA DE EMPRESA            */
-/* ========================================== */
+// ==========================================
+// 4. VENTANA MODAL FICHA DE EMPRESA
+// ==========================================
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -457,20 +379,9 @@
         cursor: pointer;
 
         &:hover {
-          background-color: darken($link-hover-bg, 4%);
+          background-color: color.adjust($link-hover-bg, $lightness: -4%);
         }
       }
     }
-  }
-}
-
-@keyframes modalEntrada {
-  from {
-    opacity: 0;
-    transform: translateY(15px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }

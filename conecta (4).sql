@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-06-2026 a las 14:20:19
+-- Tiempo de generación: 19-08-2026 a las 23:40:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,27 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `conecta`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `administrador`
+--
+
+CREATE TABLE `administrador` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `creado_en` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `administrador`
+--
+
+INSERT INTO `administrador` (`id`, `nombre`, `email`, `password`, `creado_en`) VALUES
+(3, 'Admin Conecta', 'admin@itbconecta.com.ar', '$2b$10$tY2SMNfv0Kg1ITVzZeeg9uHtW97M7y7xNS8hwLnMafr/i4AW5Q.H6', '2026-08-14 18:06:26');
 
 -- --------------------------------------------------------
 
@@ -65,19 +86,18 @@ CREATE TABLE `empresa` (
   `web` varchar(40) NOT NULL,
   `telefono` varchar(40) NOT NULL,
   `responsable` varchar(30) NOT NULL,
-  `password` varchar(20) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `estado` enum('Pendiente','Activo','Inactivo') DEFAULT 'Activo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `empresa`
 --
 
-INSERT INTO `empresa` (`id_empresa`, `razonSocial`, `fantasia`, `organizacion`, `cuit`, `sector`, `pais`, `provincia`, `ciudad`, `cp`, `calle`, `numero`, `piso`, `dpto`, `email`, `web`, `telefono`, `responsable`, `password`) VALUES
-(1, 'Tecnosolution', 'Conectando', 'S.H.', '33-18999777-0', 'Tecnologia', 'Argentina', 'Buenos Aires', 'Valentin Alsina', 1822, 'Chile', 1200, 0, '0', 'info@tecnosolution.com.ar', 'tecnosolution.com.ar', '011-7575-5757', 'Marisa Morales', 'Tecno2026'),
-(2, 'TecMach', 'Nexora', 'S.R.L.', '30-33444555-6', 'Tecnologia', 'Argentina', 'Buenos Aires', 'San Martin', 1753, 'Roca', 1000, 1, 'A', 'rrhh@nexora.com.ar', 'nexora.com.ar', '011-7373-2525', 'Alba Angular', 'Nexora26'),
-(3, 'Orbita', '', 'S.A.', '33-30999888-3', 'Comunicacion', 'Argentina', 'Córdoba', 'Dolores', 3050, 'Pampa', 3500, 0, '0', 'admin@orbita.com.ar', 'orbita.com.ar', '0353-303030', 'Luis Campos', 'Orbita26'),
-(4, 'Luminar ', 'LumiLoks', 'S.A.', '33-25444222-4', 'Comunicacion', 'Argentina', 'Buenos Aires', 'Mar del Plata', 2888, 'Costanera Sur', 222, 0, '0', 'rrhh@luminar.com.ar', 'luminar.com.ar', '02228-333333', 'Maximo Paz', 'Lumi2026'),
-(5, 'Telecentro', 'CableTele', 'S.A', '30-30333666-5', 'Comunicaciones', 'Argentina', 'Santa Fe', 'Rosario', 4300, 'Belgrano', 200, 3, 'A', 'rrhh@telecentro.com.ar', 'telecentro@com.ar', '0344-5555533', 'Mariano Sanchez', 'Cable2026');
+INSERT INTO `empresa` (`id_empresa`, `razonSocial`, `fantasia`, `organizacion`, `cuit`, `sector`, `pais`, `provincia`, `ciudad`, `cp`, `calle`, `numero`, `piso`, `dpto`, `email`, `web`, `telefono`, `responsable`, `password`, `estado`) VALUES
+(6, 'TecnoSolution', '', 'S.A.', '30-22333444-1', 'Tecnologia', 'Argentina', 'Buenos Aires', 'Avellaneda', 1870, 'Av. Belgrano', 1800, 0, '0', 'info@tecnosolution.com.ar', 'www,tecnosolution.com.ar', '011-2223234444', 'Alba Gonzalez', '$2b$10$Osiqm3NsY/Ni59Khg.k..efY.2Uh0qj.uWVEo3UCl04c.x2.m46ie', 'Activo'),
+(7, 'Nexora', 'TechMach', 'S.R.L', '30-25444555-6', 'Comunicaciones', 'Argentina', 'Buenos Aires', 'Lomas de Zamora', 1832, 'Amancay', 1555, 1, 'A', 'rrhh@nexora.com.ar', 'www.nexora.com.ar', '011-78896565', 'Alberto Facundo', '$2b$10$tpNppIVQ/R/QWmmN5A5j6.nDGvi0jGYV.iY53QqPgdT0.cn7ETCry', 'Activo'),
+(8, 'Orbita', '', 'S.R.L', '30-27666555-4', 'Tecnologia', 'Argentina', 'Buenos Aires', 'Lanus', 1824, '25 de Mayo', 2000, 0, '0', 'admin@orbita.com.ar', 'www.orbita.com.ar', '011-76764545', 'Sonia Aguirre', '$2b$10$ZH07scYGJKB.ocs4CLxjXe4DjwbI8HHsw0BO8TttZkMh/w9a6meHq', 'Activo');
 
 -- --------------------------------------------------------
 
@@ -101,12 +121,9 @@ CREATE TABLE `ofertas` (
 --
 
 INSERT INTO `ofertas` (`id_oferta`, `id_empresa`, `titulo`, `descripcion`, `modalidad`, `experiencia`, `fecha_publicacion`, `dias_duracion`) VALUES
-(1, 1, 'Desarrollador Angular 21', 'Buscamos estudiantes en su ultimo año de la carrera para sumarse al equipo de proyectos', 'Remoto', 'Junior', '2026-06-09 18:12:10', 15),
-(3, 2, 'Asistente de Base de Datos', 'Pruebas soporte de scripts en SQL Server y documentación... Ejecutar y validar scripts. Documentar resultados. Colaborar con equipo desarrollo. Ofrecemos remuneracion acorde carga horaria y experiencia. Capacitación constante. Ambiente de aprendizaje', 'Híbrido', 'Trainee', '2026-06-09 18:18:00', 15),
-(100, 1, 'Desarrollador IA', 'Jovenes para integrarse al equipo de desarrolladores y entrenadores\nExcelente remuneracion y beneficios', 'Híbrido', 'Junior', '2026-06-11 18:32:26', 19),
-(101, 1, 'Analista de Sistemas', 'Sus tareas serán:liderar y coordinar equipos, interactuar con clientes, analizar proyectos.\nExcelente remuneracion y multiple beneficios acorde a la tarea y cargo', 'Híbrido', 'Semi-Senior', '2026-06-11 19:36:04', 20),
-(102, 1, 'Desarrollador y Analista', 'Tareas cumplir con requerimientos, diseños, diagramas, documentacion. \nBeneficios acordes a sus tareas. \nExcelente clima de trabajo', 'Presencial', 'Junior', '2026-06-11 20:06:54', 10),
-(103, 3, 'Analista IA y Machine Learning', 'Tareas: Analizar grandes volúmenes de datos para identificar patrones, tendencias y oportunidades de negocio.\r\nDiseñar, entrenar y optimizar modelos de Deep Learning (redes neuronales, CNN, RNN, Transformers, etc.).\r\nRealizar limpieza, transformación y preparación de datos para modelado.\r\nExcelente ambiente laboral\r\nRemuneraciones a Convenir', 'Remoto', 'Semi-Senior', '2026-06-12 16:32:21', 15);
+(106, 6, 'Asistente de Base de Datos', 'Buscamos estudiantes avanzados o graduados, Para incorporarse al equipo dedicados al analisis de datos y BD. Excelente ambiente de trabajo. Remuneracion y beneficios a convenir', 'Presencial', 'Trainee', '2026-08-13 18:30:31', 15),
+(109, 6, 'Analista de Sistema', 'Jovenes estudiantes avanzados o graduados para integrarse al equipo de desarrolloParticipar en la implementación y mantenimiento de sistemas.\nColaborar con equipos de desarrollo, infraestructura y negocio.\nGenerar reportes e indicadores para la toma de decisiones.\nDar seguimiento a proyectos tecnológicos y mejoras continuas. Salario competitivo acorde a la experiencia y formación.', 'Híbrido', 'Junior', '2026-08-13 19:09:52', 14),
+(110, 7, 'Analista de Datos', 'Buscamos personas con vocación por el análisis de datos, el aprendizaje automático y las nuevas tecnologías, con ganas de desarrollarse profesionalmente en proyectos de alto impacto.\nDiseñar y desarrollar modelos predictivos y algoritmos de Machine Learning.\nAnalizar grandes volúmenes de información para detectar patrones y tendencias.\nCrear dashboards e informes ejecutivos.\nParticipar en proyectos de Inteligencia Artificial Generativa.\nSalario competitivo acorde al mercado.\nRevisión salarial periódica.\nBono anual por objetivos.', 'Híbrido', 'Trainee', '2026-08-14 13:12:41', 19);
 
 -- --------------------------------------------------------
 
@@ -124,23 +141,15 @@ CREATE TABLE `oferta_skill` (
 --
 
 INSERT INTO `oferta_skill` (`id_oferta`, `skill_id`) VALUES
-(1, 1),
-(1, 2),
-(3, 3),
-(3, 4),
-(100, 13),
-(100, 14),
-(100, 18),
-(101, 3),
-(101, 4),
-(101, 5),
-(101, 6),
-(102, 4),
-(102, 5),
-(102, 6),
-(103, 12),
-(103, 13),
-(103, 15);
+(109, 1),
+(109, 2),
+(109, 3),
+(109, 9),
+(110, 10),
+(110, 12),
+(110, 13),
+(110, 16),
+(110, 18);
 
 -- --------------------------------------------------------
 
@@ -176,6 +185,20 @@ CREATE TABLE `perfil_postulante` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `postulacion`
+--
+
+CREATE TABLE `postulacion` (
+  `id_postulacion` int(11) NOT NULL,
+  `id_postulante` int(11) NOT NULL,
+  `id_oferta` int(11) NOT NULL,
+  `fecha_postulacion` datetime DEFAULT current_timestamp(),
+  `estado` enum('Pendiente','En Revisión','Aceptado','Rechazado') DEFAULT 'Pendiente'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `postulante`
 --
 
@@ -187,20 +210,16 @@ CREATE TABLE `postulante` (
   `legajo` int(11) NOT NULL,
   `carrera` varchar(30) NOT NULL,
   `email` varchar(40) NOT NULL,
-  `password` varchar(20) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `estado` enum('Pendiente','Activo','Inactivo') DEFAULT 'Activo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `postulante`
 --
 
-INSERT INTO `postulante` (`id_postulante`, `nombres`, `apellidos`, `dni`, `legajo`, `carrera`, `email`, `password`) VALUES
-(1, 'Juan Pablo', 'Perez Perez', 10000000, 10000, 'Analista de Sistema', '10000000@itbeltran.com.ar', 'Beltran2026'),
-(2, 'Ana', 'Beltran', 12444555, 8008, 'Analista de Sistemas', 'anabel@itbeltran.com.ar', 'Beltran2026'),
-(3, 'Alba', 'Amanecer', 12444555, 8000, 'Analista de Sistemas', 'albaam@itbeltran.com.ar', 'Alba2026'),
-(4, 'Carlos', 'Castaño', 15333444, 8500, 'IA', 'carlosc@itbeltran.com.ar', 'Carlos2026'),
-(5, 'Maria Mercedes', 'Marin', 30222333, 9999, 'IA', '30222333@ibeltran.com.ar', 'Mecha2026'),
-(6, 'Aida', 'Juarez', 29222333, 9500, 'IA', 'aidaj@ibeltran.com.ar', 'Aida2028');
+INSERT INTO `postulante` (`id_postulante`, `nombres`, `apellidos`, `dni`, `legajo`, `carrera`, `email`, `password`, `estado`) VALUES
+(7, 'Azucena', 'Garcia', 19200200, 10106, 'Analista de Sistema', 'azucenag@itbeltran.com.ar', '$2b$10$jdYY3GdaIdRBxk8o9y1hhOQMgkKIOXJ/aX6esYncM6t2ECu4CA7IG', 'Activo');
 
 -- --------------------------------------------------------
 
@@ -254,6 +273,13 @@ INSERT INTO `skill` (`skill_id`, `categoria_id`, `nombre`) VALUES
 --
 
 --
+-- Indices de la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- Indices de la tabla `categoria_skill`
 --
 ALTER TABLE `categoria_skill`
@@ -294,6 +320,14 @@ ALTER TABLE `perfil_postulante`
   ADD KEY `id_postulante` (`id_postulante`);
 
 --
+-- Indices de la tabla `postulacion`
+--
+ALTER TABLE `postulacion`
+  ADD PRIMARY KEY (`id_postulacion`),
+  ADD UNIQUE KEY `unique_postulacion` (`id_postulante`,`id_oferta`),
+  ADD KEY `id_oferta` (`id_oferta`);
+
+--
 -- Indices de la tabla `postulante`
 --
 ALTER TABLE `postulante`
@@ -318,6 +352,12 @@ ALTER TABLE `skill`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de la tabla `categoria_skill`
 --
 ALTER TABLE `categoria_skill`
@@ -327,19 +367,25 @@ ALTER TABLE `categoria_skill`
 -- AUTO_INCREMENT de la tabla `empresa`
 --
 ALTER TABLE `empresa`
-  MODIFY `id_empresa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_empresa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `ofertas`
 --
 ALTER TABLE `ofertas`
-  MODIFY `id_oferta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `id_oferta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+
+--
+-- AUTO_INCREMENT de la tabla `postulacion`
+--
+ALTER TABLE `postulacion`
+  MODIFY `id_postulacion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `postulante`
 --
 ALTER TABLE `postulante`
-  MODIFY `id_postulante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_postulante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `skill`
@@ -363,6 +409,13 @@ ALTER TABLE `ofertas`
 ALTER TABLE `oferta_skill`
   ADD CONSTRAINT `oferta_skill_ibfk_1` FOREIGN KEY (`id_oferta`) REFERENCES `ofertas` (`id_oferta`) ON DELETE CASCADE,
   ADD CONSTRAINT `oferta_skill_ibfk_2` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`skill_id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `postulacion`
+--
+ALTER TABLE `postulacion`
+  ADD CONSTRAINT `postulacion_ibfk_1` FOREIGN KEY (`id_postulante`) REFERENCES `postulante` (`id_postulante`) ON DELETE CASCADE,
+  ADD CONSTRAINT `postulacion_ibfk_2` FOREIGN KEY (`id_oferta`) REFERENCES `ofertas` (`id_oferta`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `postulante_skill`

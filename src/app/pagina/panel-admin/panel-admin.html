@@ -2,116 +2,152 @@
   <h2>🛠️ Panel de Control Institucional ITBCONECTA</h2>
   <p class="subtitulo">Gestión de usuarios, empresas y moderación de la plataforma</p>
 
-  <!-- TARJETAS DE MÉTRICAS -->
+  <!-- TARJETAS DE MÉTRICAS (Pestañas Interactivas) -->
   <div class="metricas-grid">
-    <div class="card-kpi">
-      <span class="numero">{{ metricas.totalOfertas }}</span>
-      <span class="label">Ofertas Publicadas</span>
-    </div>
-    <div class="card-kpi">
+    <div 
+      class="card-kpi" 
+      [class.activa]="pestanaActiva === 'empresas'" 
+      (click)="cambiarPestana('empresas')">
       <span class="numero">{{ metricas.totalEmpresas }}</span>
       <span class="label">Empresas Registradas</span>
     </div>
-    <div class="card-kpi">
-      <span class="numero">{{ metricas.totalPostulantes }}</span>
-      <span class="label">Alumnos / Egresados</span>
+
+    <div 
+      class="card-kpi" 
+      [class.activa]="pestanaActiva === 'ofertas'" 
+      (click)="cambiarPestana('ofertas')">
+      <span class="numero">{{ metricas.totalOfertas }}</span>
+      <span class="label">Ofertas Publicadas</span>
     </div>
+
+    <div 
+      class="card-kpi" 
+      [class.activa]="pestanaActiva === 'postulantes'" 
+      (click)="cambiarPestana('postulantes')">
+      <span class="numero">{{ metricas.totalPostulantes }}</span>
+      <span class="label">Postulantes Registrados</span>
+    </div>
+
     <div class="card-kpi highlight">
       <span class="numero">{{ metricas.totalPostulaciones }}</span>
       <span class="label">Postulaciones Totales</span>
     </div>
   </div>
 
-  <!-- SECCIÓN GESTIÓN DE EMPRESAS -->
+  <!-- SECCIÓN DINÁMICA DE CONTENIDO -->
   <div class="tabla-seccion">
-    <h3>🏢 Empresas Registradas</h3>
 
-    @if (cargando) {
-      <div class="loading">Cargando empresas...</div>
+    <!-- VISTA 1: EMPRESAS -->
+    @if (pestanaActiva === 'empresas') {
+      <h3>🏢 Empresas Registradas</h3>
+
+      @if (cargando) {
+        <div class="loading">⏳ Cargando empresas desde el servidor...</div>
+      } @else if (empresas.length > 0) {
+        <table class="tabla-admin">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Razón Social</th>
+              <th>CUIT</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Detalle</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (emp of empresas; track emp.id_empresa) {
+              <tr>
+                <td>#{{ emp.id_empresa }}</td>
+                <td><strong>{{ emp.razonSocial }}</strong></td>
+                <td>{{ emp.cuit }}</td>
+                <td>{{ emp.email }}</td>
+                <td>
+                  <span class="badge" [class.activo]="emp.estado === 'Activo'" [class.inactivo]="emp.estado !== 'Activo'">
+                    {{ emp.estado }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-info" (click)="verDetalle(emp)">
+                    🔍 Ver Detalle
+                  </button>
+                </td>
+                <td>
+                  <button 
+                    class="btn-estado" 
+                    [class.btn-desactivar]="emp.estado === 'Activo'"
+                    [class.btn-activar]="emp.estado !== 'Activo'"
+                    (click)="cambiarEstado(emp.id_empresa, emp.estado)">
+                    {{ emp.estado === 'Activo' ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <div class="no-datos">
+          ⚠️ No se encontraron empresas en la base de datos.
+        </div>
+      }
     }
 
-    @if (!cargando && empresas.length > 0) {
-      <table class="tabla-admin">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Razón Social</th>
-          <th>CUIT</th>
-          <th>Email</th>
-          <th>Estado</th>
-          <th>Detalle</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        
-        @for (emp of empresas; track emp.id_empresa) {
-            <tr>
-              <td>#{{ emp.id_empresa }}</td>
-              <td><strong>{{ emp.RazonSocial || emp.razon_social }}</strong></td>
-              <td>{{ emp.CUIT || emp.cuit }}</td>
-              <td>{{ emp.email }}</td>
-              <td>
-            <span class="badge" [class.activo]="emp.estado === 'Activo'" [class.inactivo]="emp.estado !== 'Activo'">
-              {{ emp.estado }}
-            </span>
-          </td>
-          <td>
-            <button class="btn-info" (click)="verDetalle(emp)">
-              🔍 Ver Detalle
-            </button>
-          </td>
-          <td>
-            <button 
-              class="btn-estado" 
-              [class.btn-desactivar]="emp.estado === 'Activo'"
-              [class.btn-activar]="emp.estado !== 'Activo'"
-              (click)="cambiarEstado(emp.id_empresa, emp.estado)">
-              {{ emp.estado === 'Activo' ? 'Desactivar' : 'Activar' }}
-            </button>
-          </td>
-        </tr>
+    <!-- VISTA 2: OFERTAS -->
+    @if (pestanaActiva === 'ofertas') {
+      <h3>💼 Moderación de Ofertas de Empleo</h3>
+      @if (cargando) {
+        <div class="loading">⏳ Cargando ofertas...</div>
+      } @else {
+        <div class="no-datos">🛠️ Módulo de moderación de ofertas listo para vincular.</div>
       }
-      </tbody>
-    </table>
-  }
+    }
+
+    <!-- VISTA 3: POSTULANTES -->
+    @if (pestanaActiva === 'postulantes') {
+      <h3>🎓 Padrón de Postulantes (Alumnos y Egresados)</h3>
+      @if (cargando) {
+        <div class="loading">⏳ Cargando postulantes...</div>
+      } @else {
+        <div class="no-datos">🛠️ Módulo de padrón de postulantes listo para vincular.</div>
+      }
+    }
+
   </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL DINÁMICO DE DETALLE DE EMPRESA -->
-<!-- ========================================== -->
-@if (mostrarModal){
-<div class="modal-overlay" (click)="cerrarModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>🏢 Ficha de Registro de Empresa</h3>
-      <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
-    </div>
-    @if (empresaSeleccionada) {
-  <div class="modal-body">
-    <div class="grid-datos">
-      @for (item of empresaSeleccionada | keyvalue; track item.key) {
-        @if (esCampoVisible(normalizarClave(item.key.toString()))) {
-          <div class="dato-item">
-            <label>{{ formatearClave(normalizarClave(item.key.toString())) }}:</label>
-            <span>{{ item.value !== null && item.value !== '' ? item.value : 'No especificado' }}</span>
-          </div>
-        }
-      }
+<!-- MODAL DINÁMICO DE DETALLE DE EMPRESA (FLOTANTE AL FINAL) -->
+@if (mostrarModal && empresaSeleccionada) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>🏢 Ficha de Registro de Empresa</h3>
+        <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="grid-datos">
+          @for (item of empresaSeleccionada | keyvalue; track item.key) {
+            @if (esCampoVisible(normalizarClave(item.key.toString()))) {
+              <div class="dato-item">
+                <label>{{ formatearClave(normalizarClave(item.key.toString())) }}:</label>
+                <span>{{ item.value !== null && item.value !== '' ? item.value : 'No especificado' }}</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button 
+          class="btn-estado" 
+          [class.btn-desactivar]="empresaSeleccionada.estado === 'Activo'"
+          [class.btn-activar]="empresaSeleccionada.estado !== 'Activo'"
+          (click)="cambiarEstado(empresaSeleccionada.id_empresa, empresaSeleccionada.estado)">
+          {{ empresaSeleccionada.estado === 'Activo' ? 'Desactivar Empresa' : 'Activar Empresa' }}
+        </button>
+        <button class="btn-secundario" (click)="cerrarModal()">Cerrar</button>
+      </div>
     </div>
   </div>
-}
-    <div class="modal-footer">
-      <button 
-        class="btn-estado" 
-        [class.btn-desactivar]="empresaSeleccionada?.estado === 'Activo'"
-        [class.btn-activar]="empresaSeleccionada?.estado !== 'Activo'"
-        (click)="cambiarEstado(empresaSeleccionada.id_empresa, empresaSeleccionada.estado)">
-        {{ empresaSeleccionada?.estado === 'Activo' ? 'Desactivar Empresa' : 'Activar Empresa' }}
-      </button>
-      <button class="btn-secundario" (click)="cerrarModal()">Cerrar</button>
-    </div>
-  </div>
-</div>
 }

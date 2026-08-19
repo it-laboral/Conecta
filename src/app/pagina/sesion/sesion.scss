@@ -1,34 +1,27 @@
-@use '../../../styles/variables';
+@use '../../../styles/variables' as *;
 
 .main-split-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh; // Fija la altura exacta de la pantalla
   width: 100%;
+  overflow: hidden; // Evita scroll innecesario en escritorio
 }
 
-/* PANEL IZQUIERDO */
-
+/* ========================================== */
+/* PANEL IZQUIERDO (Información)              */
+/* ========================================== */
 .info-column {
   flex: 1;
-
-  background: linear-gradient(
-    135deg,
-    #06245c,
-    #0aa7b8
-  );
-
+  background: linear-gradient(135deg, #06245c, #0aa7b8);
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 40px;
+  padding: 20px;
 }
 
 .info-content {
-  max-width: 500px;
-
+  max-width: 360px;
   text-align: left;
-
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -36,8 +29,9 @@
 
   h2 {
     color: white;
-    font-size: 2.7rem;
-    margin-bottom: 15px;
+    font-size: 2.1rem;
+    margin-bottom: 10px;
+    line-height: 1.2;
   }
 
   h3 {
@@ -47,38 +41,31 @@
 
   p {
     color: white;
-    line-height: 1.7;
-    font-size: 1.1rem;
+    line-height: 1.5;
+    font-size: 0,98rem;
+    margin-bottom: 10px;
   }
 }
 
-/* IMAGEN */
-
 .img-fluida {
   width: 100%;
-  max-width: 400px;
-
+  max-width: 240px;
   height: auto;
-
-  border-radius: 24px;
-
-  margin-top: 20px;
-
-  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+  border-radius: 18px;
+  margin-top: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
-/* PANEL DERECHO */
-
+/* ========================================== */
+/* PANEL DERECHO (Formulario)                 */
+/* ========================================== */
 .form-column {
   flex: 1;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   background-color: #eefafb;
-
   padding: 40px;
 }
 
@@ -88,103 +75,89 @@
 }
 
 /* FORMULARIO */
-
 form {
   display: flex;
   flex-direction: column;
-
   padding: 40px;
-
   border-radius: 28px;
-
   margin-bottom: 20px;
-
   background: rgba(227, 229, 238, 0.75);
-
   border: 1px solid #b8ece5;
-
   backdrop-filter: blur(10px);
-
-  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   transition: 0.3s;
-}
 
-form:hover {
-  transform: translateY(-3px);
-
-  box-shadow: 0 25px 50px rgba(0,0,0,0.12);
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+  }
 }
 
 /* INPUTS */
-
 input {
   width: 100%;
-
   padding: 16px;
-
   margin-bottom: 25px;
-
   border: 1px solid #cfd9e2;
-
   border-radius: 14px;
-
   background-color: white;
-
   transition: 0.3s;
-
   font-size: 15px;
+
+  &:focus {
+    outline: none;
+    border-color: #0aa7b8;
+    box-shadow: 0 0 0 3px rgba(10, 167, 184, 0.2);
+  }
 }
 
-input:focus {
-  outline: none;
+/* OJITO PASSWORD (Corregido alineación perfecta) */
+.password-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px; // El margen se le da al contenedor
 
-  border-color: #0aa7b8;
+  input {
+    margin-bottom: 0; // El input ya no lleva margen para no desplazar el ojo
+  }
 
-  box-shadow: 0 0 0 3px rgba(10,167,184,0.2);
+  .ojo {
+    position: absolute;
+    right: 15px;
+    top: 50%; // Centrado vertical exacto
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+    color: #5d4b7a;
+  }
 }
 
 /* BOTÓN */
-
 button {
   width: 100%;
-
   padding: 16px;
-
-  background: linear-gradient(
-    90deg,
-    #06245c,
-    #0aa7b8
-  );
-
+  background: linear-gradient(90deg, #06245c, #0aa7b8);
   color: white;
-
   border: none;
-
   border-radius: 14px;
-
   cursor: pointer;
-
   font-weight: bold;
-
   font-size: 16px;
-
   transition: 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
-button:hover {
-  transform: translateY(-2px);
-
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* LINK */
-
+/* ENLACE REGISTRO */
 .contenedor-enlace {
   text-align: center;
   margin-top: 20px;
@@ -192,61 +165,96 @@ button:disabled {
 
 .mi-enlace {
   color: #06245c;
-
   text-decoration: none;
-
   font-size: 18px;
-
   font-weight: bold;
-
   transition: 0.3s;
+
+  &:hover {
+    color: #0aa7b8;
+  }
 }
 
-.mi-enlace:hover {
-  color: #0aa7b8;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 950px) {
-
+/* ========================================== */
+/* RESPONSIVE (Tablets y Laptops chicas)      */
+/* ========================================== */
+@media (max-width: 768px) {
   .main-split-container {
     flex-direction: column;
+    min-height: auto; // Evita problemas de scroll infinito
   }
 
   .info-column {
     padding: 30px 20px;
-
     text-align: center;
   }
 
   .info-content {
     align-items: center;
+
+    h2 {
+      font-size: 2.1rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  .img-fluida {
+    max-width: 250px; // Se achica la imagen para dar prioridad al login
+    margin-top: 15px;
+  }
+
+  .form-column {
+    padding: 25px 15px;
+  }
+
+  form {
+    padding: 25px 20px; // Reducción de padding para que los inputs quepan
   }
 }
-/* OJITO PASSWORD */
+    /* Ajuste fino para pantallas chicas manteniéndose en 2 columnas */
+  @media (min-width: 769px) and (max-width: 1100px) {
+  .info-column, .form-column {
+    padding: 25px; // Reduce el relleno interno para que no se apriete el texto
+  }
 
-.password-container {
-  position: relative;
-  width: 100%;
+  .info-content h2 {
+    font-size: 2.2rem;
+  }
 }
 
-.password-container input {
-  width: 100%;
-}
+/* ========================================== */
+/* RESPONSIVE (Celulares pequeños < 576px)     */
+/* ========================================== */
+@media (max-width: 576px) {
+  .info-column {
+    padding: 25px 15px;
+  }
 
-.ojo {
-  position: absolute;
+  .info-content h2 {
+    font-size: 1.7rem; // Tamaño de título perfectamente legible en celular
+  }
 
-  right: 15px;
+  .img-fluida {
+    max-width: 200px;
+  }
 
-  top: 38%;
+  .form-column {
+    padding: 20px 12px;
+  }
 
-  transform: translateY(-50%);
+  form {
+    padding: 20px 15px; // Maximiza el espacio útil del formulario
+    border-radius: 20px;
+  }
 
-  cursor: pointer;
+  input, button {
+    padding: 14px; // Inputs ligeramente más delgados para pantallas chicas
+  }
 
-  font-size: 20px;
-
-  user-select: none;
+  .mi-enlace {
+    font-size: 16px;
+  }
 }
