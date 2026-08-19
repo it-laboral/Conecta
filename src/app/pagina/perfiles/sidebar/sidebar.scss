@@ -27,31 +27,38 @@
 }
 
 
-.sidebar-top{
+.sidebar-top{  //aca centre Menu
+
     background:#0d3b66;
-    padding:20px;
+    padding:10px;
     border-radius:10px;
-    margin-bottom:30px;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  
 }
 
 .sidebar-top h2{
     color:white;
     margin:0;
     font-size:22px;
+    text-align: center;
+    
 }
 
 nav {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 }
 
 nav a {
   display: block;
   text-decoration: none;
   color: #333;
-  font-weight: 500;
-  padding: 12px;
+  font-weight: 300;
+  padding: 30px;
   border-radius: 8px;
   transition: 0.3s;
 }
@@ -74,9 +81,10 @@ nav a:hover{
 
 .sidebar-top{
     background:#0d3b66;
-    padding:20px;
-    border-radius:10px;
-    margin-bottom:30px;
+    padding:10px;
+    border-radius:100px;
+    margin-bottom:10px;
+    
 
     display:flex;
     align-items:center;
@@ -93,3 +101,4 @@ nav a:hover{
   padding: 30px;
   overflow-y: auto; // Por si el formulario de perfil es largo
 }
+
