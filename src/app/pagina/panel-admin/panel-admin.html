@@ -97,22 +97,108 @@
     @if (pestanaActiva === 'ofertas') {
       <h3>💼 Moderación de Ofertas de Empleo</h3>
       @if (cargando) {
-        <div class="loading">⏳ Cargando ofertas...</div>
+        <div class="loading">⏳ Cargando ofertas desde el servidor...</div>
+      } @else if (ofertas.length > 0) {
+        <table class="tabla-admin">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título / Empresa</th>
+              <th>Fecha Publicación</th>
+              <th>Vencimiento / Duración</th>
+              <th>Modalidad</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (oferta of ofertas; track (oferta.id_oferta || $index)) {
+              @let infoEstado = obtenerEstadoYConteo(oferta.fecha_publicacion, oferta.dias_duracion);
+              <tr>
+                <td>#{{ oferta.id_oferta }}</td>
+                <td>
+                  <strong>{{ oferta.titulo }}</strong><br>
+                  <small class="text-muted">{{ oferta.razonSocial || 'Empresa #' + oferta.id_empresa }}</small>
+                </td>
+                <td>{{ formatearFecha(oferta.fecha_publicacion) }}</td>
+                <td>
+                  @if (infoEstado.finalizada) {
+                    <span class="badge inactivo">Expiró ({{ oferta.dias_duracion || 10 }}d)</span>
+                  } @else {
+                    <span class="badge activo">⌛ Quedan {{ infoEstado.dias }} días</span>
+                  }
+                </td>
+                <td>{{ oferta.modalidad }} ({{ oferta.experiencia }})</td>
+                <td>
+                  <span class="badge" [class.activo]="!infoEstado.finalizada" [class.inactivo]="infoEstado.finalizada">
+                    {{ infoEstado.estadoText }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-estado btn-desactivar" (click)="bajaOfertaAdmin(oferta.id_oferta)">
+                    🗑️ Eliminar
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       } @else {
-        <div class="no-datos">🛠️ Módulo de moderación de ofertas listo para vincular.</div>
+        <div class="no-datos">
+          ⚠️ No se encontraron ofertas de empleo registradas en el sistema.
+        </div>
       }
     }
 
     <!-- VISTA 3: POSTULANTES -->
     @if (pestanaActiva === 'postulantes') {
       <h3>🎓 Padrón de Postulantes (Alumnos y Egresados)</h3>
+
       @if (cargando) {
-        <div class="loading">⏳ Cargando postulantes...</div>
+        <div class="loading">⏳ Cargando postulantes desde el servidor...</div>
+      } @else if (postulantes.length > 0) {
+        <table class="tabla-admin">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre y Apellido</th>
+              <th>DNI</th>
+              <th>Legajo</th>
+              <th>Carrera</th> 
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (post of postulantes; track (post.id_postulante || post.id || $index)) {
+              <tr>
+                <td>#{{ post.id_postulante || post.id }}</td>
+                <td><strong>{{ post.nombres || post.nombre }} {{ post.apellidos || post.apellido }}</strong></td>
+                <td>{{ post.dni || 'S/D' }}</td>
+                <td>{{ post.legajo || 'S/L' }}</td>
+                <td>{{ post.carrera || 'Analista de Sistema / IA' }}</td>
+                <td>{{ post.email }}</td>
+                <td>
+                  <span class="badge" [class.activo]="post.estado !== 'Inactivo'" [class.inactivo]="post.estado === 'Inactivo'">
+                    {{ post.estado || 'Activo' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-info" (click)="verDetallePostulante(post)">
+                    🔍 Ver Perfil/CV
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       } @else {
-        <div class="no-datos">🛠️ Módulo de padrón de postulantes listo para vincular.</div>
+        <div class="no-datos">
+          ⚠️ No se encontraron postulantes registrados en la base de datos.
+        </div>
       }
     }
-
   </div>
 </div>
 
@@ -147,6 +233,38 @@
           {{ empresaSeleccionada.estado === 'Activo' ? 'Desactivar Empresa' : 'Activar Empresa' }}
         </button>
         <button class="btn-secundario" (click)="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL FLOTANTE: VER PERFIL Y CV DEL POSTULANTE -->
+@if (mostrarModalPostulante && postulanteSeleccionado) {
+  <div class="modal-overlay" (click)="cerrarModalPostulante()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>🎓 Ficha del Postulante</h3>
+        <button class="btn-cerrar" (click)="cerrarModalPostulante()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <p><strong>Nombre completo:</strong> {{ postulanteSeleccionado.nombres }} {{ postulanteSeleccionado.apellidos }}</p>
+        <p><strong>DNI:</strong> {{ postulanteSeleccionado.dni || 'Sin DNI' }} | <strong>Legajo:</strong> {{ postulanteSeleccionado.legajo || 'Sin Legajo' }}</p>
+        <p><strong>Carrera:</strong> {{ postulanteSeleccionado.carrera || 'Análisis de Sistemas / IA' }}</p>
+        <p><strong>Email de contacto:</strong> {{ postulanteSeleccionado.email }}</p>
+        
+        <hr>
+        
+        <h4>📄 Currículum Vitae</h4>
+        <div class="cv-placeholder">
+          <p class="text-muted">
+            ℹ️ Módulo de visualización de CV / Adjuntos en desarrollo. Próximamente se listará la experiencia laboral o la vista previa del archivo PDF subido por el alumno.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secundario" (click)="cerrarModalPostulante()">Cerrar</button>
       </div>
     </div>
   </div>

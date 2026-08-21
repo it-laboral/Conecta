@@ -1,6 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminService, EmpresaAdmin, MetricasAdmin, RespuestaApi } from '../../services/admin';
+import { 
+  AdminService, 
+  EmpresaAdmin, 
+  OfertaAdmin,
+  PostulanteAdmin,
+  MetricasAdmin, 
+  RespuestaApi 
+} from '../../services/admin';
 
 export type PestanaAdmin = 'empresas' | 'ofertas' | 'postulantes';
 
@@ -14,7 +21,7 @@ export type PestanaAdmin = 'empresas' | 'ofertas' | 'postulantes';
 export class PanelAdmin implements OnInit {
   private adminService = inject(AdminService);
 
- // 1. Control de Pestaña Activa
+  // 1. Control de Pestaña Activa
   pestanaActiva: PestanaAdmin = 'empresas';
 
   // 2. Estado Global y Métricas
@@ -26,15 +33,18 @@ export class PanelAdmin implements OnInit {
     totalPostulaciones: 0 
   };
   
-  // 3. Arreglos Independientes (Fuertemente Tipados)
+  // 3. Arreglos Independientes
   empresas: EmpresaAdmin[] = [];
-  ofertas: any[] = [];   // Se Tipará al crear la interfaz OfertaAdmin
-  postulantes: any[] = [];   // Se Tipará al crear la interfaz AlumnoAdmin
+  ofertas: OfertaAdmin[] = [];
+  postulantes: PostulanteAdmin[] = [];
 
   // 4. Modales
   empresaSeleccionada: EmpresaAdmin | null = null;
   mostrarModal: boolean = false;
 
+  postulanteSeleccionado: PostulanteAdmin | null = null;
+  mostrarModalPostulante: boolean = false;
+  
   ngOnInit(): void {
     this.cargarDatos();
   }
@@ -78,16 +88,95 @@ export class PanelAdmin implements OnInit {
     });
   }
 
-  // Métodos Stub para las nuevas entidades
   cargarOfertas(): void {
-    // LLamada a adminService.getOfertas()
+    this.cargando = true;
+    this.adminService.getOfertas().subscribe({
+      next: (res: any) => {
+        if (res && res.success && res.ofertas) {
+          this.ofertas = res.ofertas;
+        } else if (Array.isArray(res)) {
+          this.ofertas = res;
+        }
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar ofertas en el admin:', err);
+        this.cargando = false;
+      }
+    });
   }
 
   cargarPostulantes(): void {
-    // LLamada a adminService.getPostulantes()
+    this.cargando = true;
+    this.adminService.getPostulantes().subscribe({
+      next: (res: any) => {
+        if (res && res.success && res.postulantes) {
+          this.postulantes = res.postulantes;
+        } else if (Array.isArray(res)) {
+          this.postulantes = res;
+        }
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar postulantes en el admin:', err);
+        this.cargando = false;
+      }
+    });
+  }
+  
+  // ACCIÓN DE MODERACIÓN DE OFERTAS
+  bajaOfertaAdmin(idOferta: number): void {
+    if (confirm(`¿Está seguro de que desea eliminar la oferta #${idOferta} de manera permanente?`)) {
+      this.adminService.eliminarOferta(idOferta).subscribe({
+        next: (res: RespuestaApi) => {
+          if (res.success) {
+            alert(`Oferta #${idOferta} eliminada con éxito.`);
+            this.ofertas = this.ofertas.filter(o => o.id_oferta !== idOferta);
+          }
+        },
+        error: (err) => console.error('Error al eliminar oferta:', err)
+      });
+    }
   }
 
-  // Cambiar Estado (Empresas)
+  // FUNCIONES AUXILIARES DE FECHAS Y ESTADOS DE OFERTAS
+  formatearFecha(fechaRaw: string | Date | null | undefined): string {
+    if (!fechaRaw) return 'Sin fecha';
+    const fecha = new Date(fechaRaw);
+    if (isNaN(fecha.getTime())) return 'Sin fecha';
+
+    return fecha.toLocaleDateString('es-AR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  obtenerEstadoYConteo(fechaPub: string | Date | null | undefined, diasDuracion: number = 10) {
+    if (!fechaPub) return { estadoText: 'Sin Fecha', dias: 0, finalizada: true };
+
+    const inicio = new Date(fechaPub);
+    if (isNaN(inicio.getTime())) return { estadoText: 'Sin Fecha', dias: 0, finalizada: true };
+
+    const fin = new Date(inicio);
+    fin.setDate(inicio.getDate() + Number(diasDuracion));
+
+    const hoy = new Date();
+    const diferenciaMs = fin.getTime() - hoy.getTime();
+    const diasRestantes = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+
+    if (diasRestantes <= 0) {
+      return { estadoText: 'Finalizada', dias: 0, finalizada: true };
+    }
+
+    return { 
+      estadoText: 'Vigente', 
+      dias: diasRestantes, 
+      finalizada: false 
+    };
+  }
+
+  // ACCIONES Y MODALES (EMPRESAS)
   cambiarEstado(idEmpresa: number, estadoActual: string): void {
     const nuevoEstado = estadoActual === 'Activo' ? 'Inactivo' : 'Activo';
     
@@ -106,7 +195,6 @@ export class PanelAdmin implements OnInit {
     });
   }
 
-  // Modal
   verDetalle(empresa: EmpresaAdmin): void {
     this.empresaSeleccionada = empresa;
     this.mostrarModal = true;
@@ -115,6 +203,17 @@ export class PanelAdmin implements OnInit {
   cerrarModal(): void {
     this.mostrarModal = false;
     this.empresaSeleccionada = null;
+  }
+
+  // ACCIONES Y MODALES (POSTULANTES)
+  verDetallePostulante(postulante: PostulanteAdmin): void {
+    this.postulanteSeleccionado = postulante;
+    this.mostrarModalPostulante = true;
+  }
+
+  cerrarModalPostulante(): void {
+    this.mostrarModalPostulante = false;
+    this.postulanteSeleccionado = null;
   }
 
   // Helpers para KeyValuePipe
