@@ -10,14 +10,15 @@ require('dotenv').config();
 const db = require('./db');
 const { verificarToken } = require('./middlewares/auth.middleware');
 
-const adminRoutes = require('./routes/admin');
-    
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+const adminRoutes = require('./routes/admin');
 app.use('/api/admin', adminRoutes);
+
 const SALT_ROUNDS = 10; // Nivel de seguridad para bcrypt
 
 // ====================================================================

@@ -1,0 +1,126 @@
+<div class="skills-container">
+  <header class="header-section">
+    <div>
+      <h3>🛠️ Gestión de Habilidades (Skills)</h3>
+      <p>Catálogo global de conocimientos técnicos e institucionales.</p>
+    </div>
+    <button class="btn-primary" (click)="abrirModalCrear()">
+      ➕ Nueva Habilidad
+    </button>
+  </header>
+
+  <!-- Tabla Principal de Ancho Completo -->
+  <section class="card-list">
+    <div class="list-header">
+      <h4>Listado de Habilidades ({{ skillsFiltradas.length }})</h4>
+
+      <div class="controles-busqueda">
+        <input
+          type="text"
+          class="input-search"
+          placeholder="🔍 Buscar skill..."
+          (input)="onBuscarTexto($event)"
+        />
+
+        <select class="select-cat" (change)="onSeleccionarCategoria($event)">
+          <option value="todas">Todas las categorías</option>
+          @for (cat of categorias; track cat.id) {
+            <option [value]="cat.id">{{ cat.nombre }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Habilidad</th>
+            <th>Categoría</th>
+            <th class="text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (skill of skillsFiltradas; track skill.id) {
+            <tr>
+              <td>#{{ skill.id }}</td>
+              <td><strong>{{ skill.nombre }}</strong></td>
+              <td>
+                <span class="badge-cat">{{ obtenerNombreCategoria(skill.categoria_id) }}</span>
+              </td>
+              <td class="text-right">
+                <button class="btn-icon edit" (click)="prepararEdicion(skill)" title="Editar">
+                  ✏️
+                </button>
+                <button class="btn-icon delete" (click)="eliminarSkill(skill.id)" title="Eliminar">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty-state">
+                {{ cargando ? 'Cargando habilidades...' : 'No se encontraron habilidades.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MODAL FLOTANTE DE REGISTRO / EDICIÓN -->
+  @if (modalAbierto) {
+    <div class="modal-backdrop" (click)="cerrarModal()">
+      <div class="modal-content card-form" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <h4>{{ modoEdicion ? '✏️ Editar Habilidad' : '➕ Nueva Habilidad' }}</h4>
+          <button type="button" class="btn-close" (click)="cerrarModal()">✕</button>
+        </header>
+
+        <form [formGroup]="skillForm" (ngSubmit)="guardarSkill()">
+          <div class="form-group">
+            <label for="nombre">Nombre de la Habilidad</label>
+            <input
+              type="text"
+              id="nombre"
+              formControlName="nombre"
+              placeholder="Ej: Angular, Python, SQL..."
+              [class.is-invalid]="skillForm.get('nombre')?.invalid && skillForm.get('nombre')?.touched"
+            />
+            @if (skillForm.get('nombre')?.invalid && skillForm.get('nombre')?.touched) {
+              <span class="error-msg">El nombre es obligatorio (mínimo 2 caracteres).</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="categoria_id">Categoría</label>
+            <select
+              id="categoria_id"
+              formControlName="categoria_id"
+              [class.is-invalid]="skillForm.get('categoria_id')?.invalid && skillForm.get('categoria_id')?.touched"
+            >
+              <option value="" disabled selected>Seleccioná una categoría</option>
+              @for (cat of categorias; track cat.id) {
+                <option [value]="cat.id">{{ cat.nombre }}</option>
+              }
+            </select>
+            @if (skillForm.get('categoria_id')?.invalid && skillForm.get('categoria_id')?.touched) {
+              <span class="error-msg">Seleccioná una categoría válida.</span>
+            }
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="cerrarModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary" [disabled]="skillForm.invalid">
+              {{ modoEdicion ? 'Guardar Cambios' : 'Crear Habilidad' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

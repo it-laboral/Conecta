@@ -1,0 +1,277 @@
+@use 'sass:color';
+@use '../../../../styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.skills-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      font-size: 1.4rem;
+      color: $color-text-dark-main;
+      margin-bottom: 0.2rem;
+    }
+
+    p {
+      color: $muted-text;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Botones base con tus variables */
+  .btn-primary {
+    background-color: $button-bg;
+    color: $button-text;
+    border: none;
+    padding: 0.6rem 1.1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: color.adjust($button-bg, $lightness: -8%);
+    }
+
+    &:disabled {
+      background-color: $input-border;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-secondary {
+    background-color: $link-hover-bg;
+    color: $color-text-dark-main;
+    border: 1px solid $form-border;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background-color: color.adjust($link-hover-bg, $lightness: -4%);
+    }
+  }
+
+  /* Tarjeta de Lista (Full Width) */
+  .card-list {
+    background: $surface-bg;
+    border: 1px solid $surface-border;
+    border-radius: 10px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      h4 {
+        font-size: 1.1rem;
+        color: $color-text-dark-main;
+      }
+
+      .controles-busqueda {
+        display: flex;
+        gap: 0.5rem;
+
+        .input-search,
+        .select-cat {
+          padding: 0.45rem 0.75rem;
+          border: 1px solid $input-border;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          outline: none;
+          color: $color-text-dark-main;
+          background-color: $surface-bg;
+
+          &:focus {
+            border-color: $button-bg;
+          }
+        }
+
+        .input-search {
+          min-width: 200px;
+        }
+      }
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+          padding: 0.8rem 1rem;
+          text-align: left;
+          border-bottom: 1px solid $surface-border;
+          font-size: 0.9rem;
+          color: $color-text-dark-main;
+        }
+
+        th {
+          background-color: $link-hover-bg;
+          color: $color-text-dark-main;
+          font-weight: 600;
+        }
+
+        .badge-cat {
+          background-color: $link-hover-bg;
+          color: $link-color;
+          padding: 0.25rem 0.6rem;
+          border-radius: 12px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          border: 1px solid $form-border;
+        }
+
+        .text-right {
+          text-align: right;
+        }
+
+        .btn-icon {
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 1rem;
+          padding: 0.3rem 0.5rem;
+          border-radius: 4px;
+
+          &:hover {
+            background-color: $link-hover-bg;
+          }
+        }
+
+        .empty-state {
+          text-align: center;
+          color: $muted-text;
+          padding: 2rem 0;
+        }
+      }
+    }
+  }
+
+  /* MODAL FLOTANTE */
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(42, 31, 76, 0.4);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    .modal-content {
+      background: $surface-bg;
+      width: 100%;
+      max-width: 450px;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid $surface-border;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      animation: modalFadeIn 0.2s ease-out;
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+
+        h4 {
+          font-size: 1.15rem;
+          color: $color-text-dark-main;
+        }
+
+        .btn-close {
+          background: none;
+          border: none;
+          font-size: 1.2rem;
+          color: $muted-text;
+          cursor: pointer;
+
+          &:hover {
+            color: $color-text-dark-main;
+          }
+        }
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+
+        label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: $color-text-dark-main;
+        }
+
+        input,
+        select {
+          padding: 0.65rem 0.8rem;
+          border: 1px solid $input-border;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          outline: none;
+          color: $color-text-dark-main;
+          background-color: $surface-bg;
+
+          &:focus {
+            border-color: $button-bg;
+          }
+
+          &.is-invalid {
+            border-color: #dc2626;
+          }
+        }
+
+        .error-msg {
+          color: #dc2626;
+          font-size: 0.75rem;
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+    }
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

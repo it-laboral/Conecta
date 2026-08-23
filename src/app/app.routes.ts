@@ -15,13 +15,16 @@ export const routes: Routes = [
   { path: 'registrar-empresa', component: RegistrarEmpresa },
   { path: 'ofertas', component: Ofertas },
   { path: 'sesion', component: Sesion },
+  { 
+    path: 'panel-admin', 
+    component: PanelAdmin, 
+    canActivate: [adminGuard],
+    
+  },
 
-  { path: 'panel-admin', component: PanelAdmin, canActivate: [adminGuard] },  // 👈 Guarda asignado aquí
-
-  
-
-  {path: 'perfil', // Esto es lo que se verá en la URL
-    loadComponent: () => import('./pagina/perfiles/sidebar/sidebar').then(m => m.Sidebar), // Ojo aquí: tu clase se llama 'Sidebar' (sin Component al final)
+  {
+    path: 'perfil',
+    loadComponent: () => import('./pagina/perfiles/sidebar/sidebar').then(m => m.Sidebar),
     children: [
       {
         path: 'postulante',
@@ -31,9 +34,8 @@ export const routes: Routes = [
         path: 'empresa',
         loadComponent: () => import('./pagina/perfiles/empresa-profile/empresa-profile').then(m => m.EmpresaProfile)
       },
-      { path: '', redirectTo: 'postulante', pathMatch: 'full' } // Si entran a /perfil, van por defecto a postulante
+      { path: '', redirectTo: 'postulante', pathMatch: 'full' }
     ]
   },
   { path: '**', redirectTo: '' }
-  
 ];

@@ -1,4 +1,20 @@
+<div class="dashboard-layout">
+  <!-- Sidebar de navegación -->
+  <aside class="sidebar">
+  <nav>
+    <a (click)="mostrarSkills = true" [class.active]="mostrarSkills" style="cursor: pointer;">🛠️ Skills y Categorías</a>
+    <a (click)="mostrarSkills = false; cambiarPestana('postulantes')" [class.active]="pestanaActiva === 'postulantes' && !mostrarSkills" style="cursor: pointer;">👥 Postulantes</a>
+    <a (click)="mostrarSkills = false; cambiarPestana('empresas')" [class.active]="pestanaActiva === 'empresas' && !mostrarSkills" style="cursor: pointer;">🏢 Empresas</a>
+    <a (click)="mostrarSkills = false; cambiarPestana('ofertas')" [class.active]="pestanaActiva === 'ofertas' && !mostrarSkills" style="cursor: pointer;">💼 Ofertas</a>
+    <a routerLink="/perfil" routerLinkActive="active">👤 Ir a Perfiles</a>
+  </nav>
+
+  <button class="logout">Cerrar Sesión</button>
+</aside>
+
 <div class="admin-container">
+
+  
   <h2>🛠️ Panel de Control Institucional ITBCONECTA</h2>
   <p class="subtitulo">Gestión de usuarios, empresas y moderación de la plataforma</p>
 
@@ -200,6 +216,18 @@
       }
     }
   </div>
+
+  <!-- BOTÓN TOGGLE Y COMPONENTE INDEPENDIENTE DE SKILLS -->
+  <div class="contenedor-toggle-skills" style="margin-top: 2rem;">
+    <button class="btn-toggle-skills" (click)="toggleSkills()">
+      {{ mostrarSkills ? '▲ Ocultar Gestión de Skills' : '▼ Ver / Administrar Skills' }}
+    </button>
+  </div>
+
+  <!-- COMPONENTE SKILLS CONDICIONAL AL FINAL -->
+  @if (mostrarSkills) {
+    <app-skills />
+  }
 </div>
 
 <!-- MODAL DINÁMICO DE DETALLE DE EMPRESA (FLOTANTE AL FINAL) -->

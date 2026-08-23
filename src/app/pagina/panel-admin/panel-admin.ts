@@ -1,5 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Skills} from './skills/skills';
 import { 
   AdminService, 
   EmpresaAdmin, 
@@ -8,24 +10,32 @@ import {
   MetricasAdmin, 
   RespuestaApi 
 } from '../../services/admin';
+   
 
-export type PestanaAdmin = 'empresas' | 'ofertas' | 'postulantes';
+export type PestanaAdmin = 'empresas' | 'ofertas' | 'postulantes'| 'skills';
 
 @Component({
   selector: 'app-panel-admin',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, Skills],
   templateUrl: './panel-admin.html',
   styleUrl: './panel-admin.scss'
 })
 export class PanelAdmin implements OnInit {
   private adminService = inject(AdminService);
 
+  // Control de Skills
+  mostrarSkills: boolean = false;
+
   // 1. Control de Pestaña Activa
   pestanaActiva: PestanaAdmin = 'empresas';
 
+  cargadoEmpresas: boolean = false;
+  cargadoOfertas: boolean = false;
+  cargadoPostulantes: boolean = false;
+
   // 2. Estado Global y Métricas
-  cargando: boolean = true;
+  cargando: boolean = false;
   metricas: MetricasAdmin = { 
     totalOfertas: 0, 
     totalEmpresas: 0,
@@ -48,12 +58,18 @@ export class PanelAdmin implements OnInit {
   ngOnInit(): void {
     this.cargarDatos();
   }
+  toggleSkills(): void {
+    this.mostrarSkills = !this.mostrarSkills;
+  }
 
   // Cambiar de pestaña y cargar datos si están vacíos
   cambiarPestana(nuevaPestana: PestanaAdmin): void {
+    this.mostrarSkills = false; // Cerramos skills si cambia de pestaña
     this.pestanaActiva = nuevaPestana;
     
-    if (nuevaPestana === 'ofertas' && this.ofertas.length === 0) {
+    if (nuevaPestana === 'empresas' && this.empresas.length === 0) {
+      this.cargarEmpresas();
+    } else if (nuevaPestana === 'ofertas' && this.ofertas.length === 0) {
       this.cargarOfertas();
     } else if (nuevaPestana === 'postulantes' && this.postulantes.length === 0) {
       this.cargarPostulantes();
@@ -61,9 +77,11 @@ export class PanelAdmin implements OnInit {
   }
 
   cargarDatos(): void {
-    this.cargando = true;
-
+    this.cargarMetricas();
+    this.cargarEmpresas();
+  }
     // Métricas Generales
+    cargarMetricas(): void{
     this.adminService.getMetricas().subscribe({
       next: (res: any) => {
         if (res && res.success && res.metricas) {
@@ -72,8 +90,10 @@ export class PanelAdmin implements OnInit {
       },
       error: (err) => console.error('Error al cargar métricas:', err)
     });
-
+  }
     // Lista de Empresas (Pestaña por defecto)
+  cargarEmpresas(): void {
+    this.cargando = true;
     this.adminService.getEmpresas().subscribe({
       next: (res: any) => {
         if (res && res.success && res.empresas) {
