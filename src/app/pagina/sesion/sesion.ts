@@ -1,14 +1,6 @@
 import { Component, inject } from '@angular/core';
-
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  ReactiveFormsModule
-} from '@angular/forms';
-
+import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
-
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -18,7 +10,6 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './sesion.html',
   styleUrl: './sesion.scss',
 })
-
 export class Sesion {
 
   // SERVICIOS
@@ -34,57 +25,51 @@ export class Sesion {
 
   // FORMULARIO
   loginForm = new FormGroup({
-
     email: new FormControl('', [
       Validators.required,
       Validators.email
     ]),
-
     password: new FormControl('', [
-
       Validators.required,
-
-      // MINIMO 8 CARACTERES
       Validators.minLength(8),
-
-      // 1 MAYUSCULA + 1 NUMERO
       Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)
-
     ])
-
   });
 
   // LOGIN
   ingresar() {
-
     if (this.loginForm.valid) {
-
       const credenciales = this.loginForm.value;
 
-      console.log(
-        'Enviando datos al servidor:',credenciales.email);
+      console.log('Enviando datos al servidor:', credenciales.email);
 
       this.authService.login(credenciales).subscribe({
+        next: (res: any) => {
+          console.log('¡Éxito! Respuesta completa del servidor:', res);
 
-        next: (res) => {
-          console.log('¡Éxito! Respuesta completa del servidor:',res);
+          if (res.success) {
+            // 1. GUARDAR EN LOCALSTORAGE
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('tipo', res.tipo);
+            localStorage.setItem('user', JSON.stringify(res.user));
 
-       // REDIRECCIÓN SEGÚN EL ROL DE USUARIO
-          if (res.tipo === 'admin') {
-            alert('¡Bienvenido/a Administrador/a!');
-            this.router.navigate(['/panel-admin']);
-          } 
-          else if (res.tipo === 'empresa') {
-            alert('¡Bienvenida Empresa!');
-            this.router.navigate(['/perfil/empresa']);
-          } 
-          else if (res.tipo === 'postulante') {
-            alert('¡Bienvenido/a Postulante!');
-            this.router.navigate(['/ofertas']);
-          } 
-          else {
-            alert('¡Bienvenido/a!');
-            this.router.navigate(['/']);
+            // 2. REDIRECCIÓN SEGÚN EL ROL DE USUARIO
+            if (res.tipo === 'admin') {
+              alert('¡Bienvenido/a Administrador/a!');
+              this.router.navigate(['/panel-admin']);
+            } 
+            else if (res.tipo === 'empresa') {
+              alert('¡Bienvenida Empresa!');
+              this.router.navigate(['/perfil/empresa']);
+            } 
+            else if (res.tipo === 'postulante') {
+              alert('¡Bienvenido/a Postulante!');
+              this.router.navigate(['/ofertas']);
+            } 
+            else {
+              alert('¡Bienvenido/a!');
+              this.router.navigate(['/']);
+            }
           }
         },
 

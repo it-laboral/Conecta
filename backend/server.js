@@ -5,24 +5,32 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path'); // 👈 1. Agregar importación de path
+const fs = require('fs');     // 👈 2. Agregar importación de fs
 require('dotenv').config();
 
 const db = require('./db');
 const { verificarToken } = require('./middlewares/auth.middleware');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// ====================================================================
+// CONFIGURACIÓN DE CARPETA DE ARCHIVOS (UPLOADS)
+// ====================================================================
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
+// ====================================================================
 
 app.use(cors());
 app.use(express.json());
 
-const adminRoutes = require('./routes/admin');
-app.use('/api/admin', adminRoutes);
-
+const PORT = process.env.PORT || 3000;
 const SALT_ROUNDS = 10; // Nivel de seguridad para bcrypt
 
 // ====================================================================
-// 2. RUTAS DE CONTROL Y PRUEBAS
+// 2. RUTAS DE CONTROL Y PRUEBAS (PÚBLICAS)
 // ====================================================================
 app.get('/', (req, res) => res.send('API de ITB Conecta funcionando correctamente.'));
 
@@ -37,16 +45,13 @@ app.get('/test-db', async (req, res) => {
 });
 
 // ====================================================================
-// 3. AUTENTICACIÓN (LOGIN CON BCRYPT + JWT)
+// 3. AUTENTICACIÓN Y REGISTROS (RUTAS PÚBLICAS - SIN TOKEN)
 // ====================================================================
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     const jwtSecret = process.env.JWT_SECRET;
     const jwtExpires = process.env.JWT_EXPIRES_IN;
-
-    //.log('=== INTENTO DE LOGIN ===');
-    //console.log('Email recibido:', `"${email}"`);
 
     try {
         // 1. Buscar en ADMINISTRADOR
@@ -100,7 +105,7 @@ app.post('/api/login', async (req, res) => {
                 token,
                 user: { 
                     id: postulante.id_postulante, 
-                    nombre: postulante.Nombres, 
+                    nombre: postulante.Nombres || postulante.nombres, 
                     email: postulante.email 
                 }
             });
@@ -128,13 +133,13 @@ app.post('/api/login', async (req, res) => {
                 token,
                 user: { 
                     id: empresa.id_empresa, 
-                    nombre: empresa.RazonSocial, 
+                    nombre: empresa.RazonSocial || empresa.razonSocial, 
                     email: empresa.email 
                 }
             });
         }
 
-        // Si llegó acá, recorrió las 3 tablas y no encontró el correo en ninguna
+        // Si llegó acá, no encontró el correo en ninguna tabla
         return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
 
     } catch (error) {
@@ -143,16 +148,12 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// ====================================================================
-// 4. REGISTROS (POSTULANTE Y EMPRESA CON HASH BCRYPT)
-// ====================================================================
 app.post('/api/registrar/postulante', async (req, res) => {
     const { nombres, apellidos, dni, legajo, carrera, email, password } = req.body;
     try {
         const [existe] = await db.query('SELECT id_postulante FROM postulante WHERE email = ?', [email]);
         if (existe.length > 0) return res.status(409).json({ success: false, message: 'El email ya está registrado.' });
 
-        // Encriptar contraseña antes de guardar
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
         await db.query(
@@ -172,7 +173,6 @@ app.post('/api/registrar/empresa', async (req, res) => {
         const [existe] = await db.query('SELECT id_empresa FROM empresa WHERE email = ?', [email]);
         if (existe.length > 0) return res.status(409).json({ success: false, message: 'El email ya está registrado.' });
 
-        // Encriptar contraseña antes de guardar
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
         const sqlInsert = `INSERT INTO empresa (razonSocial, fantasia, organizacion, cuit, sector, pais, provincia, ciudad, cp, calle, numero, piso, dpto, email, web, telefono, responsable, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -187,63 +187,47 @@ app.post('/api/registrar/empresa', async (req, res) => {
 });
 
 // ====================================================================
-// 5. PERFILES (PROTEGIDO CON VERIFICARTOKEN)
+// 4. RUTAS PROTEGIDAS (REQUIEREN VERIFICARTOKEN)
 // ====================================================================
-app.get('/api/perfiles', verificarToken, async (req, res) => {
-    try {
-        const [perfiles] = await db.query('SELECT * FROM perfiles');
-        res.json({ success: true, perfiles });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Error al obtener perfiles.' });
-    }
-});
-
-app.post('/api/perfiles', verificarToken, async (req, res) => {
-    const { usuario_id, nombre, apellido, foto, descripcion, habilidades, linkedin, github } = req.body;
-    try {
-        await db.query(
-            `INSERT INTO perfiles (usuario_id, nombre, apellido, foto, descripcion, habilidades, linkedin, github) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [usuario_id, nombre, apellido, foto || '', descripcion || '', habilidades || '', linkedin || '', github || '']
-        );
-        res.status(201).json({ success: true, message: 'Perfil creado con éxito.' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Error al crear perfil.' });
-    }
-});
-
-// ====================================================================
-// 6. REGISTRAR POSTULACION
-// ====================================================================
-
-app.post('/api/postular', (req, res) => {
-  const { postulante_id, oferta_id } = req.body;
-
-  if (!postulante_id || !oferta_id) {
-    return res.status(400).json({ OK: false, mensaje: 'Faltan datos obligatorios' });
-  }
-
-  const query = 'INSERT INTO postulacion (postulante_id, oferta_id) VALUES (?, ?)';
-  db.query(query, [postulante_id, oferta_id], (err, result) => {
-    if (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ OK: false, mensaje: 'Ya te has postulado a esta oferta anteriormente.' });
-      }
-      return res.status(500).json({ OK: false, error: err });
-    }
-    res.json({ OK: true, mensaje: 'Postulación registrada con éxito', id: result.insertId });
-  });
-});
-// ====================================================================
-// 7. ENLACE DE MÓDULOS EXTERNOS Y ARRANQUE
-// ====================================================================
+const adminRoutes = require('./routes/admin');
+const perfilEmpresaRoutes = require('./routes/perfilEmpresa.routes');
+const perfilPostulanteRoutes = require('./routes/perfilPostulante.routes');
 const ofertasRoutes = require('./routes/ofertas.routes');
+
+app.use('/api/admin', verificarToken, adminRoutes);
+
+// ✅ CAMBIO CLAVE: Se añade el prefijo /api/empresa para coincidir con Angular
+app.use('/api/empresa', verificarToken, perfilEmpresaRoutes);
+
+// ✅ CAMBIO CLAVE: Se añade el prefijo /api/postulante para mantener consistencia
+app.use('/api/postulante', verificarToken, perfilPostulanteRoutes);
+
 app.use('/api/ofertas', ofertasRoutes);
 
+app.post('/api/postular', verificarToken, async (req, res) => {
+    const { postulante_id, oferta_id } = req.body;
+
+    if (!postulante_id || !oferta_id) {
+        return res.status(400).json({ OK: false, mensaje: 'Faltan datos obligatorios' });
+    }
+
+    try {
+        const query = 'INSERT INTO postulacion (postulante_id, oferta_id) VALUES (?, ?)';
+        const [result] = await db.query(query, [postulante_id, oferta_id]);
+        res.json({ OK: true, mensaje: 'Postulación registrada con éxito', id: result.insertId });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ OK: false, mensaje: 'Ya te has postulado a esta oferta anteriormente.' });
+        }
+        res.status(500).json({ OK: false, error: err.message });
+    }
+});
+
+// ====================================================================
+// 5. ARRANQUE DEL SERVIDOR
+// ====================================================================
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
 module.exports = db;
-

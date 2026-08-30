@@ -1,76 +1,189 @@
 <div class="perfil-container">
 
-  <div class="perfil-card card-main">
-    <div class="foto-placeholder avatar-empresa">
-      <svg viewBox="0 0 24 24">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-      </svg>
+  @if (cargando) {
+    <div class="loading">⌛ Cargando datos...</div>
+  } @else {
+
+    <!-- HEADER DE ACCIONES GLOBAL -->
+    <div class="perfil-header">
+      <div class="header-info">
+        <h2>🏢 Perfil de la Empresa</h2>
+        <p class="subtitulo">Información pública para estudiantes y egresados de Sistemas e IA</p>
+      </div>
+
+      <div class="acciones-header">
+        @if (!modoEdicion) {
+          <button class="btn-primario" (click)="activarEdicion()">✏️ Editar Perfil</button>
+        } @else {
+          <button class="btn-secundario" (click)="cancelarEdicion()" [disabled]="guardando">✕ Cancelar</button>
+          <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando">
+            {{ guardando ? '⏳ Guardando...' : '💾 Guardar Perfil' }}
+          </button>
+        }
+      </div>
     </div>
-    <div class="user-info">
-      <h2>{{ perfil.nombreFantasia }}</h2>
+
+    <!-- ========================================== -->
+    <!-- 1. VISTA DE LECTURA (Header Hero + Cards) -->
+    <!-- ========================================== -->
+    @if (!modoEdicion) {
       
-      @if (perfil.razonSocial) {
-        <p style="color: gray; margin: -5px 0 10px 0;"><small>({{ perfil.razonSocial }})</small></p>
-      }
-      
-      <p class="ubicacion">
-        💼 {{ perfil.rubro || 'Rubro no especificado' }} 
-        <br>📍 {{ perfil.ciudad ? perfil.ciudad + ', ' + perfil.provincia : 'Ubicación no cargada' }}
-      </p>
-      
-      <button class="btn-editar" (click)="editarDatosPrincipales()">Editar Datos</button>
-    </div>
-  </div>
+      <!-- HERO BANNER SUPERIOR -->
+      <header class="card-hero">
+        <div class="hero-main">
+          <div class="logo-box">
+            @if (perfil.logo) {
+              <img [src]="perfil.logo" alt="Logo {{ perfil.fantasia || perfil.razonSocial }}">
+            } @else {
+              <div class="logo-placeholder">🏢</div>
+            }
+          </div>
+          
+          <div class="hero-info">
+            <h3>{{ perfil.fantasia || perfil.razonSocial }}</h3>
+            <span class="rubro-tag">{{ perfil.sector || 'Sector no especificado' }}</span>
 
-  <div class="perfil-card card-sobre-mi">
-    <div class="card-header-actions">
-      <h3>Sobre nosotros</h3>
-      <button class="btn-link-editar" (click)="editarSobreNosotros()">✏️</button>
-    </div>
-    <p>{{ perfil.sobreNosotros || 'Escriba aquí lo que quiere dar a conocer sobre la misión y cultura de la empresa...' }}</p>
-  </div>
+            <div class="pills-row">
+              <span class="pill modal-badge">💻 {{ perfil.modalidad || 'Híbrido' }}</span>
+              <span class="pill">📍 {{ perfil.zona_trabajo || 'Ubicación no especificada' }}</span>
+              @if (perfil.sitio_web) { <a [href]="perfil.sitio_web" target="_blank" class="pill">🌐 Web</a> }
+              @if (perfil.linkedin) { <a [href]="perfil.linkedin" target="_blank" class="pill">💼 LinkedIn</a> }
+              @if (perfil.telefono) { <span class="pill">📞 {{ perfil.telefono }}</span> }
+              <span class="pill">📧 {{ perfil.email }}</span>
+            </div>
+          </div>
+        </div>
+      </header>
 
-  <div class="perfil-card">
-    <div class="card-header-actions">
-      <h3>Modalidad de Trabajo</h3>
-    </div>
-    <p style="font-weight: 600; color: #0aa7b8; font-size: 1.1rem;">
-      💻 {{ perfil.modalidad || 'No especificada aún' }}
-    </p>
-  </div>
+      <!-- GRID DE CARDS INFERIOR -->
+      <div class="content-grid">
+        <section class="columna">
+          <article class="card">
+            <h4>📄 Descripción General</h4>
+            <p>{{ perfil.descripcion || 'Sin descripción cargada.' }}</p>
+          </article>
 
-  <div class="perfil-card card-skills">
-    <div class="card-header-actions">
-      <h3>Tecnologías que usamos</h3>
-      <button class="btn-link-editar" (click)="editarTechStack()">✏️</button>
-    </div>
-    
-    <div class="tags-container">
-      @for (tech of perfil.techStack; track tech) {
-        <span class="tag" style="background-color: #e0f7fa; color: #006064;">{{ tech }}</span>
-      } @empty {
-        <p style="color: gray; font-size: 0.9rem; font-style: italic;">Cargá el ecosistema tecnológico de la empresa.</p>
-      }
-    </div>
-  </div>
+          <article class="card">
+            <h4>💻 Stack Tecnológico y Herramientas</h4>
+            <p>{{ perfil.stack_tecnologico || 'Sin tecnologías especificadas.' }}</p>
+          </article>
+        </section>
 
-  <div class="perfil-card card-redes">
-    <div class="card-header-actions">
-      <h3>Enlaces Institucionales</h3>
-      <button class="btn-link-editar" (click)="editarEnlaces()">✏️</button>
-    </div>
-    
-    <div class="links-grid">
-      @if (perfil.sitioWeb) {
-        <a [href]="perfil.sitioWeb" target="_blank">🌐 Sitio Web Oficial</a>
-      }
-      @if (perfil.linkedin) {
-        <a [href]="perfil.linkedin" target="_blank">💼 LinkedIn Corporativo</a>
-      }
-      @if (!perfil.sitioWeb && !perfil.linkedin) {
-        <p style="color: gray; font-size: 0.9rem; font-style: italic;">No hay enlaces externos cargados.</p>
-      }
-    </div>
-  </div>
+        <section class="columna">
+          <article class="card">
+            <h4>🏆 Trayectoria y Proyectos Destacados</h4>
+            <p>{{ perfil.trayectoria || 'Sin información de trayectoria cargada.' }}</p>
+          </article>
 
+          <article class="card">
+            <h4>🎁 Beneficios para Estudiantes</h4>
+            <p>{{ perfil.beneficios || 'Sin detalles de beneficios.' }}</p>
+          </article>
+        </section>
+      </div>
+
+    }
+
+    <!-- ========================================== -->
+    <!-- 2. VISTA DE EDICIÓN COMPLETA               -->
+    <!-- ========================================== -->
+    @else {
+      <div class="tarjeta-perfil edicion">
+        <h3>✏️ Actualizar Perfil Institucional</h3>
+
+        <!-- Datos fijos del usuario -->
+        <div class="datos-fijos-banner">
+          <small>
+            ℹ️ <strong>Razón Social:</strong> {{ perfilEditado.razonSocial }} | 
+            <strong>Email:</strong> {{ perfilEditado.email }} | 
+            <strong>Ubicación Fiscal:</strong> {{ perfilEditado.ciudad_fiscal || 'N/A' }}{{ perfilEditado.provincia_fiscal ? ', ' + perfilEditado.provincia_fiscal : '' }}
+          </small>
+        </div>
+
+        <div class="form-grid-edicion">
+          
+          <!-- SECCIÓN 1: LOGO Y DATOS RÁPIDOS -->
+          <div class="card card-form">
+            <h4>🖼️ Logo e Identidad</h4>
+            
+            <div class="form-group">
+              <label>Logo de la Empresa</label>
+              <div class="upload-logo-container">
+                <div class="logo-preview">
+                  @if (logoPreview) {
+                    <img [src]="logoPreview" alt="Vista previa del logo">
+                  } @else {
+                    <span>Sin logo</span>
+                  }
+                </div>
+                <input type="file" accept="image/*" (change)="onLogoSelected($event)">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Modalidad de Trabajo</label>
+              <select [(ngModel)]="perfilEditado.modalidad">
+                <option value="Presencial">Presencial</option>
+                <option value="Híbrido">Híbrido</option>
+                <option value="Remoto">Remoto</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Zona de Trabajo / Lugar Laboral</label>
+              <input type="text" [(ngModel)]="perfilEditado.zona_trabajo" placeholder="Ej: Lanús / Presencial en Sede Central">
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: CONTACTO Y REDES -->
+          <div class="card card-form">
+            <h4>🌐 Contacto y Enlaces</h4>
+            
+            <div class="form-group">
+              <label>Sitio Web</label>
+              <input type="url" [(ngModel)]="perfilEditado.sitio_web" placeholder="https://empresa.com">
+            </div>
+
+            <div class="form-group">
+              <label>Perfil de LinkedIn</label>
+              <input type="url" [(ngModel)]="perfilEditado.linkedin" placeholder="https://linkedin.com/company/...">
+            </div>
+
+            <div class="form-group">
+              <label>Teléfono de Contacto</label>
+              <input type="text" [(ngModel)]="perfilEditado.telefono" placeholder="Ej: 11 1234-5678">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SECCIÓN 3: TEXTOS DETALLADOS -->
+        <div class="card card-form full-width" style="margin-top: 1.5rem;">
+          <h4>📄 Información Detallada</h4>
+
+          <div class="form-group">
+            <label>Descripción General</label>
+            <textarea rows="3" [(ngModel)]="perfilEditado.descripcion" placeholder="Cuenta brevemente a qué se dedica la empresa..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Stack Tecnológico / Herramientas</label>
+            <input type="text" [(ngModel)]="perfilEditado.stack_tecnologico" placeholder="Ej: Angular, Node.js, Python, PostgreSQL, PyTorch, Docker">
+          </div>
+
+          <div class="form-group">
+            <label>Trayectoria y Proyectos</label>
+            <textarea rows="3" [(ngModel)]="perfilEditado.trayectoria" placeholder="Años en el mercado, proyectos destacados..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Beneficios para Estudiantes / Pasantías</label>
+            <textarea rows="3" [(ngModel)]="perfilEditado.beneficios" placeholder="Días por examen, mentoreo técnico, flexibilidad horaria..."></textarea>
+          </div>
+        </div>
+
+      </div>
+    }
+
+  }
 </div>

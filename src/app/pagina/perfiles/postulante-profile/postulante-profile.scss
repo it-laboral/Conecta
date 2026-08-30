@@ -1,19 +1,31 @@
 @use '../../../../styles/variables';
 
 /* ==========================================================================
-   1. ESTILOS BASE (Computadora y Notebooks)
+   1. ESTILOS BASE (Estructura Principal: 2/3 Ancho + 1/3 Lateral)
    ========================================================================== */
 .perfil-container {
   max-width: 1180px;
   margin: 2rem auto;
   padding: 0 1rem;
   display: grid;
-  // Define 3 columnas simétricas en escritorio
   grid-template-columns: repeat(3, 1fr); 
   gap: 1.5rem;
 }
 
-// Estilo común para TODAS las tarjetas del perfil
+// Alerta global de éxito
+.alert-success-custom {
+  grid-column: span 3;
+  padding: 0.85rem 1.25rem;
+  background-color: #d1fae5;
+  border-left: 4px solid #10b981;
+  color: #065f46;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  animation: slideDown 0.3s ease-in-out;
+}
+
+// Estilo común para TODAS las tarjetas
 .perfil-card {
   background: variables.$surface-bg;
   border: 1px solid variables.$surface-border;
@@ -21,24 +33,21 @@
   padding: 1.5rem;
   box-shadow: 0 10px 25px rgba(103, 87, 176, 0.05);
 
-  // 🛠️ NUEVO CONTENEDOR: Maneja el título y el lápiz en la misma línea
   .card-header-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    border-bottom: 2px solid variables.$body-bg; // El borde ahora lo tiene la barra entera
+    border-bottom: 2px solid variables.$body-bg;
     padding-bottom: 0.5rem;
 
-    // Tu h3 ahora vive acá adentro
     h3 {
       color: variables.$color-text-dark-main;
-      font-size: 1.3rem;
-      margin: 0; // Limpiamos los márgenes para que quede perfectamente alineado con el emoji
+      font-size: 1.25rem;
+      margin: 0;
       text-align: left;
     }
 
-    // Estilo exclusivo para el botoncito del lápiz
     .btn-link-editar {
       background: none;
       border: none;
@@ -47,61 +56,287 @@
       transition: transform 0.2s;
       
       &:hover {
-        transform: scale(1.2); // Hace un pequeño efecto de lupa al pasar el mouse
+        transform: scale(1.2);
       }
     }
   }
 }
 
-// Modificadores específicos para ordenar la grilla
+.empty-text {
+  color: variables.$muted-text;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0.5rem 0;
+}
+
+/* ==========================================================================
+   ORGANIZACIÓN DE TARJETAS
+   ========================================================================== */
+
+// 1. CARD PRINCIPAL (Ocupa los 3 bloques completos de ancho)
 .card-main {
-  grid-column: span 3; // La tarjeta principal ocupa todo el ancho arriba
+  grid-column: span 3;
   display: flex;
   align-items: center;
   gap: 2rem;
 
-  .foto-placeholder {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  border: 3px solid variables.$surface-bg; // Hace un efecto de borde blanco flotante
-  flex-shrink: 0; // Evita que se deforme en pantallas chicas
+  .foto-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
 
-  // Versión Postulante: Degradado Violeta/Índigo (Fiel a sus variables)
-  &.avatar-postulante {
-    background: linear-gradient(135deg, #6757b0, #4a3b91);
-    color: white;
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    
-    svg {
-      width: 55px;
-      height: 55px;
-      fill: rgba(255, 255, 255, 0.9);
+    .avatar-wrapper {
+      position: relative;
+      width: 125px;
+      height: 125px;
+
+      .foto-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border: 3px solid variables.$surface-bg;
+      }
+
+      .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: variables.$body-bg;
+        border: 3px solid variables.$surface-bg;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .icon-user {
+          width: 65px;
+          height: 65px;
+          fill: variables.$color-text-dark-main;
+          opacity: 0.45;
+        }
+      }
+
+      .btn-foto-badge {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: variables.$body-bg;
+        border: 2px solid variables.$surface-bg;
+        color: variables.$color-text-dark-main;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: variables.$link-hover-bg;
+          color: variables.$link-color;
+          transform: scale(1.1);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
       }
     }
   }
-  .user-info h2 {
-    text-align: left;
-    margin: 0 0 0.5rem 0;
-  }
-  
-  .ubicacion {
-    margin: 0 0 1rem 0;
-    color: variables.$muted-text;
+
+  .user-info {
+    flex: 1;
+    min-width: 0;
+
+    h2 {
+      text-align: left;
+      margin: 0 0 0.25rem 0;
+      color: variables.$color-text-dark-main;
+      font-size: 1.6rem;
+    }
+
+    .email-text {
+      margin: 0 0 0.4rem 0;
+      color: variables.$muted-text;
+      font-size: 0.95rem;
+    }
+
+    .ubicacion {
+      margin: 0 0 1.25rem 0;
+      color: variables.$color-text-dark-main;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .acciones-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+
+      .btn-guardar-main {
+        background-color: #10b981;
+        color: #ffffff;
+        border: none;
+        padding: 0.6rem 1.3rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+
+        &:hover:not(:disabled) {
+          background-color: #059669;
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          background-color: #a7f3d0;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+      }
+    }
   }
 }
 
+// 2. COLUMNA IZQUIERDA (Principal - Ancho de 2/3)
 .card-sobre-mi {
-  grid-column: span 2; // Ocupa 2 columnas de espacio
+  grid-column: span 2;
+
+  .texto-descripcion {
+    color: variables.$color-text-dark-main;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .resumen-tecnico-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    background: variables.$body-bg;
+    padding: 0.85rem 1.2rem;
+    border-radius: 14px;
+    margin-top: 1rem;
+
+    .item-resumen {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      .label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: variables.$muted-text;
+        font-weight: 700;
+      }
+
+      .valor {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: variables.$color-text-dark-main;
+      }
+    }
+  }
 }
 
-// Estilos de los Tags de Habilidades
+.card-estudios {
+  grid-column: span 2;
+
+  .lista-estudios {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 0.6rem 0;
+      border-bottom: 1px dashed variables.$surface-border;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .estudio-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        color: variables.$color-text-dark-main;
+
+        .badge-estado {
+          background: variables.$body-bg;
+          color: variables.$muted-text;
+          padding: 0.2rem 0.6rem;
+          border-radius: 8px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// 3. COLUMNA DERECHA (Barra Lateral - Ancho de 1/3)
+.card-cv {
+  grid-column: span 1;
+
+  .cv-content {
+    margin-top: 0.5rem;
+
+    .cv-adjunto {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: variables.$body-bg;
+      padding: 0.8rem 1rem;
+      border-radius: 14px;
+
+      .icono-doc {
+        font-size: 1.8rem;
+      }
+
+      .cv-info {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 0.9rem;
+          color: variables.$color-text-dark-main;
+        }
+
+        .link-descarga {
+          color: variables.$link-color;
+          font-size: 0.85rem;
+          font-weight: 600;
+          text-decoration: underline;
+
+          &:hover {
+            color: color-mix(in srgb, variables.$link-color 80%, black);
+          }
+        }
+      }
+    }
+  }
+}
+
+.card-skills {
+  grid-column: span 1;
+}
+
+.card-redes {
+  grid-column: span 1;
+}
+
 .tags-container {
   display: flex;
   flex-wrap: wrap;
@@ -112,24 +347,8 @@
     color: variables.$link-color;
     padding: 0.4rem 0.8rem;
     border-radius: 12px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
-  }
-}
-
-// Botón de edición y links
-.btn-editar {
-  background-color: variables.$button-bg;
-  color: variables.$button-text;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-
-  &:hover {
-    background-color: color-mix(in srgb, variables.$button-bg 85%, black);
   }
 }
 
@@ -138,41 +357,237 @@
   flex-direction: column;
   gap: 0.75rem;
   
-  a {
+  .link-red {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     font-weight: 600;
+    color: variables.$link-color;
+    text-decoration: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 10px;
+    background-color: variables.$body-bg;
+    transition: background 0.2s;
+
+    &:hover {
+      background-color: variables.$link-hover-bg;
+    }
   }
 }
 
+// Botones Generales
+.btn-editar, .btn-primario {
+  background-color: variables.$button-bg;
+  color: variables.$button-text;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: color-mix(in srgb, variables.$button-bg 85%, black);
+  }
+}
+
+.btn-secundario {
+  background-color: variables.$body-bg;
+  color: variables.$color-text-dark-main;
+  border: 1px solid variables.$surface-border;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background-color: variables.$surface-border;
+  }
+}
 
 /* ==========================================================================
-   2. ADAPTACIONES RESPONSIVE (Abajo de todo, seguro para tu notebook)
+   2. ESTILOS DE MODALES
    ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
 
-// 📑 TABLETS Y NOTEBOOKS CHICAS
-@include variables.responder-a(tablet) {
-  .perfil-container {
-    grid-template-columns: repeat(2, 1fr); // Pasa a 2 columnas
+.modal-content {
+  background: variables.$surface-bg;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+
+  &.modal-lg {
+    max-width: 750px;
   }
-  
-  .card-sobre-mi {
-    grid-column: span 2; // Se reacomoda
+
+  .modal-header {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid variables.$surface-border;
+    padding: 1.25rem 1.5rem;
+
+    h4 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: variables.$color-text-dark-main;
+    }
+
+    .btn-cerrar {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: variables.$muted-text;
+    }
+  }
+
+  .modal-body-scroll, .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+
+    .form-group {
+      margin-bottom: 1rem;
+
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: variables.$color-text-dark-main;
+        margin-bottom: 0.4rem;
+      }
+    }
+
+    .input-busqueda, .input-custom, .textarea-custom {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid variables.$surface-border;
+      border-radius: 12px;
+      background: variables.$body-bg;
+      color: variables.$color-text-dark-main;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      box-sizing: border-box;
+
+      &:focus {
+        border-color: variables.$link-color;
+      }
+    }
+
+    .chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+
+      .chip-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: variables.$body-bg;
+        border: 1px solid variables.$surface-border;
+        border-radius: 20px;
+        padding: 0.4rem 0.9rem;
+        font-size: 0.85rem;
+        color: variables.$color-text-dark-main;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        .indicador {
+          font-weight: bold;
+        }
+
+        &.selected {
+          background: variables.$link-color;
+          color: white;
+          border-color: variables.$link-color;
+        }
+
+        &:hover {
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  .modal-actions {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid variables.$surface-border;
+    background: variables.$surface-bg;
   }
 }
 
-// 📱 CELULARES (Todo en una sola columna vertical limpia)
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   3. ADAPTACIONES RESPONSIVE (Móviles)
+   ========================================================================== */
 @include variables.responder-a(celular) {
   .perfil-container {
-    grid-template-columns: 1fr; // Una sola columna
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .card-main, .card-sobre-mi {
-    grid-column: span 1; // Todas ocupan el ancho total del celu
-    flex-direction: column; // La foto se pone arriba del nombre
+  .alert-success-custom,
+  .card-main, 
+  .card-sobre-mi, 
+  .card-cv, 
+  .card-estudios, 
+  .card-skills, 
+  .card-redes {
+    grid-column: span 1;
+  }
+
+  .card-main {
+    flex-direction: column;
     text-align: center;
     
-    .user-info h2 {
-      text-align: center;
+    .user-info {
+      h2 {
+        text-align: center;
+      }
+
+      .acciones-header {
+        justify-content: center;
+      }
     }
+  }
+
+  .modal-content {
+    padding: 1rem;
   }
 }

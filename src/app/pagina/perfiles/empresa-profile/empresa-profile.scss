@@ -4,130 +4,404 @@
   max-width: 1180px;
   margin: 2rem auto;
   padding: 0 1rem;
-  display: grid;
-  // Define 3 columnas simétricas en escritorio
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 1.5rem;
+
+  // Estado de Carga
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: variables.$color-text-dark-main;
+  }
 }
 
-.perfil-card {
+// 1. CABECERA Y ACCIONES SUPERIORES
+.perfil-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .header-info {
+    h2 {
+      color: variables.$color-text-dark-main;
+      margin: 0 0 0.25rem 0;
+      font-size: 1.8rem;
+    }
+
+    .subtitulo {
+      color: gray;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+  }
+
+  .acciones-header {
+    display: flex;
+    gap: 0.8rem;
+
+    button {
+      padding: 0.65rem 1.3rem;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      &.btn-primario {
+        background-color: variables.$link-color;
+        color: #ffffff;
+
+        &:hover {
+          background-color: color-mix(in srgb, variables.$link-color 85%, black);
+        }
+      }
+
+      &.btn-secundario {
+        background-color: transparent;
+        border: 1px solid variables.$surface-border;
+        color: variables.$color-text-dark-main;
+
+        &:hover {
+          background-color: variables.$body-bg;
+        }
+      }
+
+      &.btn-guardar {
+        background-color: #2e7d32;
+        color: #ffffff;
+
+        &:hover {
+          background-color: #1b5e20;
+        }
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// 2. HERO BANNER SUPERIOR (MODO LECTURA)
+.card-hero {
   background: variables.$surface-bg;
   border: 1px solid variables.$surface-border;
   border-radius: 24px;
-  padding: 1.5rem;
+  padding: 1.8rem 2rem;
   box-shadow: 0 10px 25px rgba(103, 87, 176, 0.05);
+  margin-bottom: 1.5rem;
 
-  // 1. Cabeceras de tarjetas internas
-  .card-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid variables.$body-bg;
-    padding-bottom: 0.5rem;
-
-    h3 {
-      color: variables.$color-text-dark-main;
-      font-size: 1.3rem;
-      margin: 0;
-      text-align: left;
-    }
-
-    .btn-link-editar {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.1rem;
-      transition: transform 0.2s;
-      
-      &:hover {
-        transform: scale(1.2);
-      }
-    }
-  }
-
-  // 2. Contenedor de Habilidades (Tags)
-  .tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    margin-top: 0.5rem;
-
-    .tag {
-      background-color: variables.$link-hover-bg;
-      color: variables.$link-color;
-      padding: 0.5rem 1rem;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      display: inline-block;
-    }
-  }
-
-  // 3. Contenedor de Redes y Enlaces
-  .links-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 0.5rem;
-
-    a {
-      color: variables.$link-color;
-      text-decoration: none;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.3rem 0;
-      transition: color 0.2s;
-
-      &:hover {
-        color: color-mix(in srgb, variables.$link-color 80%, black);
-      }
-    }
-  }
-
-  // 🚨 CORRECCIÓN ACÁ: Usamos & para modificar la tarjeta principal
-  &.card-main {
-    grid-column: span 3; // ¡Ahora sí ocupa todo el ancho de la pantalla!
+  .hero-main {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.8rem;
 
-    .foto-placeholder {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
+    .logo-box {
+      width: 95px;
+      height: 95px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid variables.$surface-border;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      border: 3px solid variables.$surface-bg;
+      background: variables.$body-bg;
       flex-shrink: 0;
 
-      // 🚨 El avatar de la empresa va ACÁ ADENTRO para controlar el tamaño del logo
-      &.avatar-empresa {
-        background: linear-gradient(135deg, #0aa7b8, #007986);
-        
-        svg {
-          width: 55px;
-          height: 55px;
-          fill: rgba(255, 255, 255, 0.9);
-        }
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .logo-placeholder {
+        font-size: 2.8rem;
       }
     }
 
-    // Le damos una pintada rápida a los textos principales del perfil corporativo
-    .user-info {
-      h2 {
-        margin: 0 0 0.5rem 0;
+    .hero-info {
+      h3 {
+        margin: 0 0 0.3rem 0;
         color: variables.$color-text-dark-main;
+        font-size: 1.6rem;
       }
-      .ubicacion {
-        margin: 0 0 1rem 0;
+
+      .rubro-tag {
+        display: inline-block;
+        background-color: variables.$link-hover-bg;
+        color: variables.$link-color;
+        padding: 0.25rem 0.8rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+      }
+
+      .pills-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.4rem;
+
+        .pill {
+          background-color: variables.$body-bg;
+          border: 1px solid variables.$surface-border;
+          color: variables.$color-text-dark-main;
+          padding: 0.3rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+
+          &.modal-badge {
+            background-color: #dcfce7;
+            color: #15803d;
+            border-color: #bbf7d0;
+            font-weight: 600;
+          }
+        }
+
+        a.pill:hover {
+          background-color: variables.$link-hover-bg;
+          color: variables.$link-color;
+          border-color: variables.$link-color;
+        }
+      }
+    }
+  }
+}
+
+// 3. GRID INFERIOR DE CARDS (MODO LECTURA)
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  .columna {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: variables.$surface-bg;
+    border: 1px solid variables.$surface-border;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(103, 87, 176, 0.05);
+
+    h4 {
+      color: variables.$color-text-dark-main;
+      margin: 0 0 0.8rem 0;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    p {
+      color: variables.$color-text-dark-main;
+      line-height: 1.6;
+      margin: 0;
+      white-space: pre-line;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+// 4. MODO EDICIÓN COMPLETO
+.tarjeta-perfil.edicion {
+  background: variables.$surface-bg;
+  border: 1px solid variables.$surface-border;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(103, 87, 176, 0.05);
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1.2rem;
+    color: variables.$color-text-dark-main;
+    font-size: 1.4rem;
+  }
+
+  .datos-fijos-banner {
+    background-color: variables.$link-hover-bg;
+    border-left: 4px solid variables.$link-color;
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    color: variables.$color-text-dark-main;
+  }
+
+  .form-grid-edicion {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .card-form {
+    background: variables.$body-bg;
+    border: 1px solid variables.$surface-border;
+    border-radius: 16px;
+    padding: 1.25rem;
+
+    h4 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: variables.$color-text-dark-main;
+      font-size: 1.05rem;
+    }
+
+    &.full-width {
+      grid-column: span 2;
+    }
+  }
+
+  .upload-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+
+    .logo-preview {
+      width: 75px;
+      height: 75px;
+      border-radius: 14px;
+      border: 2px dashed variables.$surface-border;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: variables.$surface-bg;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      span {
+        font-size: 0.75rem;
         color: gray;
-        line-height: 1.4;
+        text-align: center;
       }
+    }
+
+    input[type="file"] {
+      font-size: 0.85rem;
+      color: variables.$color-text-dark-main;
+    }
+  }
+
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: variables.$color-text-dark-main;
+
+      code {
+        background-color: variables.$surface-bg;
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        color: variables.$link-color;
+      }
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 1px solid variables.$surface-border;
+      border-radius: 10px;
+      background-color: variables.$surface-bg;
+      color: variables.$color-text-dark-main;
+      font-family: inherit;
+      font-size: 0.92rem;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: variables.$link-color;
+        box-shadow: 0 0 0 3px variables.$link-hover-bg;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+    }
+  }
+}
+
+// 5. RESPONSIVE DESIGN (Móviles y Tablets)
+@media (max-width: 820px) {
+  .perfil-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .acciones-header {
+      width: 100%;
+
+      button {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  }
+
+  .card-hero {
+    .hero-main {
+      flex-direction: column;
+      text-align: center;
+
+      .pills-row {
+        justify-content: center;
+      }
+    }
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tarjeta-perfil.edicion {
+    padding: 1.25rem;
+
+    .form-grid-edicion {
+      grid-template-columns: 1fr;
+    }
+
+    .card-form.full-width {
+      grid-column: span 1;
+    }
+
+    .form-row-2 {
+      grid-template-columns: 1fr;
     }
   }
 }

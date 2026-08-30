@@ -1,81 +1,185 @@
 <div class="perfil-container">
 
+  <!-- 1. CARD PRINCIPAL (FOTO + DATOS DE LA CUENTA + UBICACIÓN + ACCIONES) -->
   <div class="perfil-card card-main">
-    <div class="foto-placeholder avatar-postulante">
-      <svg viewBox="0 0 24 24">
-      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-      </svg>
-    </div>
-    <div class="user-info">
-      <h2>{{ perfil.nombres }} {{ perfil.apellidos }}</h2>
-      
-      <p class="ubicacion">
-        📍 {{ perfil.ciudad ? perfil.ciudad + ', ' + perfil.pais : 'Ubicación no especificada' }}
-      </p>
-      
-      <button class="btn-editar" (click)="editarDatosPrincipales()">Editar Info</button>
-    </div>
-  </div>
+    
+    <!-- ZONA DE FOTO DE PERFIL CON CARGA DE ARCHIVO -->
+    <div class="foto-container">
+      <div class="avatar-wrapper">
+        <!-- 1. Si existe foto o previsualización, muestra la imagen -->
+        @if (perfil.foto || fotoPreview) {
+          <img 
+            [src]="getFotoUrl()" 
+            alt="Foto de Perfil" 
+            class="foto-avatar"
+            (error)="perfil.foto = ''"
+          >
+        } @else {
+          <!-- 2. Fallback: Avatar vectorial cuando no hay foto -->
+          <div class="avatar-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon-user">
+              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.6-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        }
 
+        <!-- Botón superpuesto tipo badge en el borde de la imagen -->
+        <button 
+          type="button" 
+          class="btn-foto-badge" 
+          (click)="fotoInput.click()" 
+          [disabled]="guardando"
+          title="Cambiar foto de perfil"
+        >
+          📷
+        </button>
+      </div>
+
+      <!-- Input HTML oculto -->
+      <input 
+        type="file" 
+        #fotoInput 
+        (change)="onFotoSeleccionada($event)" 
+        accept="image/png, image/jpeg, image/jpg" 
+        style="display: none;"
+      >
+    </div>
+
+    <!-- DATOS PERSONALES Y ACADÉMICOS DE LA CUENTA -->
+    <div class="user-info">
+      <h2>{{ perfil.nombres || 'Nombre' }} {{ perfil.apellidos || 'Apellido' }}</h2>
+      <p class="carrera-text">🎓 {{ perfil.carrera || 'Carrera no especificada' }}</p>
+      <p class="email-text">✉️ {{ perfil.email || 'correo@ejemplo.com' }}</p>
+
+      <p class="ubicacion">
+        📍 {{ perfil.ciudad ? perfil.ciudad + (perfil.pais ? ', ' + perfil.pais : '') : 'Ubicación no especificada' }}
+      </p>
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="acciones-header">
+        <button class="btn-editar" (click)="abrirModal('principales')">✏️ Editar Ubicación</button>
+
+        <button 
+          class="btn-guardar-main" 
+          [disabled]="guardando" 
+          (click)="guardarPerfilCompleto()">
+          @if (!guardando) {
+            <span>💾 Guardar Perfil Definitivo</span>
+          } @else {
+            <span>⏳ Guardando...</span>
+          }
+        </button>
+      </div>
+    </div>
+
+  </div> <!-- <--- AQUÍ FALTABA ESTE CIERRE DE DIV PARA CARD-MAIN -->
+
+  <!-- NOTIFICACIÓN DE GUARDADO -->
+  @if (mensajeEstado) {
+    <div class="alert-success-custom">
+      {{ mensajeEstado }}
+    </div>
+  }
+
+  <!-- 2. CARD PERFIL PROFESIONAL / SOBRE MÍ -->
   <div class="perfil-card card-sobre-mi">
     <div class="card-header-actions">
-      <h3>Sobre mí</h3>
-      <button class="btn-link-editar" (click)="editarSobreMi()">✏️</button>
+      <h3>💻 Perfil Profesional</h3>
+      <button class="btn-link-editar" (click)="abrirModal('sobreMi')" title="Editar descripción">✏️</button>
     </div>
-    <p>{{ perfil.sobreMi || 'Contale a las empresas un poco sobre vos y tus intereses...' }}</p>
+
+    @if (perfil.sobre_mi) {
+      <p class="texto-descripcion">{{ perfil.sobre_mi }}</p>
+    } @else {
+      <p class="empty-text">
+        Contale a las empresas tu enfoque técnico: tecnologías principales, orientación y motivación profesional.
+      </p>
+    }
+
+    <div class="resumen-tecnico-grid">
+      <div class="item-resumen">
+        <span class="label">Especialidad / Interés:</span>
+        <span class="valor">{{ perfil.especialidad || 'No definida' }}</span>
+      </div>
+      <div class="item-resumen">
+        <span class="label">Estado académico:</span>
+        <span class="valor">{{ perfil.estado_academico || 'Estudiante Avanzado' }}</span>
+      </div>
+    </div>
   </div>
 
-  <div class="perfil-card card-estudios">
+  <!-- 3. CARD CURRICULUM VITAE (PDF) -->
+  <div class="perfil-card card-cv">
     <div class="card-header-actions">
-      <h3>Estudios y Cursos</h3>
-      <button class="btn-link-editar" (click)="editarEstudios()">✏️</button>
+      <h3>📄 Curriculum Vitae</h3>
+      <button class="btn-editar" (click)="abrirModal('cv')">
+        {{ perfil.cv_url ? '✏️ Cambiar CV' : '➕ Adjuntar CV' }}
+      </button>
     </div>
-    
-    <ul class="lista-estudios" style="list-style: none; padding: 0;">
-      @for (estudio of perfil.estudios; track estudio.titulo) {
-        <li style="margin-bottom: 10px;">
-          <strong>{{ estudio.titulo }}</strong> - {{ estudio.institucion }} 
-          <br><small style="color: gray;">({{ estudio.estado }})</small>
-        </li>
-      } @empty {
-        <li style="color: gray; font-style: italic;">No tenés estudios registrados todavía.</li>
+
+    <div class="cv-content">
+      @if (perfil.cv_url) {
+        <div class="cv-adjunto">
+          <span class="icono-doc">📄</span>
+          <div class="cv-info">
+            <strong>{{ perfil.cv_nombre || 'Curriculum_Vitae.pdf' }}</strong>
+            <a [href]="perfil.cv_url" target="_blank" class="link-descarga">
+              Ver / Descargar archivo
+            </a>
+          </div>
+        </div>
+      } @else {
+        <p class="empty-text">
+          Aún no adjuntaste tu CV en formato PDF.
+        </p>
       }
-    </ul>
+    </div>
   </div>
 
+  <!-- 4. CARD STACK TÉCNICO Y SKILLS -->
   <div class="perfil-card card-skills">
     <div class="card-header-actions">
-      <h3>Habilidades</h3>
-      <button class="btn-link-editar" (click)="editarSkills()">✏️</button>
+      <h3>🛠️ Stack Técnico y Habilidades</h3>
+      <button class="btn-link-editar" (click)="abrirModal('skills')" title="Seleccionar habilidades">✏️</button>
     </div>
     
     <div class="tags-container">
-      @for (skill of perfil.skills; track skill) {
-        <span class="tag">{{ skill }}</span>
-      } @empty {
-        <p style="color: gray; font-size: 0.9rem; font-style: italic;">Hacé clic en el lápiz para elegir tus habilidades.</p>
+      @for (skill of perfil.skills; track skill.skill_id) {
+        <span class="tag">{{ skill.nombre }}</span>
       }
     </div>
+
+    @if (perfil.otras_habilidades) {
+      <div class="otras-habilidades-display">
+        <p class="subtitulo-habilidades">Otras herramientas y conocimientos:</p>
+        <p class="texto-adicional">{{ perfil.otras_habilidades }}</p>
+      </div>
+    }
+
+    @if (perfil.skills.length === 0 && !perfil.otras_habilidades) {
+      <p class="empty-text">Hacé clic en el lápiz para seleccionar tus habilidades del catálogo o agregar otras.</p>
+    }
   </div>
 
+  <!-- 5. CARD REDES Y PORTAFOLIO -->
   <div class="perfil-card card-redes">
     <div class="card-header-actions">
-      <h3>Contacto y Redes</h3>
-      <button class="btn-link-editar" (click)="editarRedes()">✏️</button>
+      <h3>🌐 Redes y Portafolio</h3>
+      <button class="btn-link-editar" (click)="abrirModal('redes')" title="Editar enlaces">✏️</button>
     </div>
     
     <div class="links-grid">
       @if (perfil.redes.github) {
-        <a [href]="perfil.redes.github" target="_blank">📁 GitHub</a>
+        <a [href]="perfil.redes.github" target="_blank" class="link-red github">📁 GitHub</a>
       }
       @if (perfil.redes.linkedin) {
-        <a [href]="perfil.redes.linkedin" target="_blank">💼 LinkedIn</a>
+        <a [href]="perfil.redes.linkedin" target="_blank" class="link-red linkedin">💼 LinkedIn</a>
       }
       @if (perfil.redes.portfolio) {
-        <a [href]="perfil.redes.portfolio" target="_blank">🌐 Web/Portfolio</a>
+        <a [href]="perfil.redes.portfolio" target="_blank" class="link-red portfolio">🌐 Web / Portafolio</a>
       }
       @if (!perfil.redes.github && !perfil.redes.linkedin && !perfil.redes.portfolio) {
-        <p style="color: gray; font-size: 0.9rem; font-style: italic;">No vinculaste ninguna red social aún.</p>
+        <p class="empty-text">No vinculaste ninguna red profesional aún.</p>
       }
     </div>
   </div>

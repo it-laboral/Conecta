@@ -16,19 +16,28 @@ export class AuthService {
   // Signals de estado inicializados de forma segura para SSR
   tipoUsuario = signal<string | null>(null);
   isLoggedIn = signal<boolean>(false);
+  usuarioActual = signal<any>(null);
 
   constructor() {
     // La lectura de localStorage SOLO ocurre una vez en el cliente (navegador)
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const tipo = localStorage.getItem('tipoUsuario');
-
+      const user = localStorage.getItem('usuario');
       if (token) {
         this.isLoggedIn.set(true);
         this.tipoUsuario.set(tipo);
+        if (user) {
+          try {
+            this.usuarioActual.set(JSON.parse(user));
+          } catch (e) {
+            console.error('Error al parsear usuario de localStorage', e);
+          }
+        }
       }
     }
   }
+      
 
   // ==========================================
   // LOGIN
@@ -43,9 +52,11 @@ export class AuthService {
             localStorage.setItem('usuario', JSON.stringify(respuesta.user));
           }
           this.tipoUsuario.set(respuesta.tipo);
+          this.usuarioActual.set(respuesta.user);
           this.isLoggedIn.set(true); // 👈 Actualiza la señal
         }
       })
+
     );
   }
 
@@ -75,11 +86,7 @@ export class AuthService {
   }
 
   getUsuarioActual(): any {
-    if (isPlatformBrowser(this.platformId)) {
-      const user = localStorage.getItem('usuario');
-      return user ? JSON.parse(user) : null;
-    }
-    return null;
+    return this.usuarioActual(); // 👈 Retorna directamente el valor de la Signal
   }
 
   logout(): void {
@@ -89,6 +96,7 @@ export class AuthService {
       localStorage.removeItem('usuario');
     }
     this.tipoUsuario.set(null);
+    this.usuarioActual.set(null);
     this.isLoggedIn.set(false); // 👈 Limpia la señal
   }
 }
