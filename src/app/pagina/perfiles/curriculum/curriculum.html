@@ -1,151 +1,241 @@
 <div class="cv-page">
 
-  <div class="cv-header">
-    <div>
-      <h1>Mi Curriculum Vitae</h1>
-      <p>Completá tu información profesional para crear tu CV.</p>
-    </div>
+  <!-- =========================================================
+       ENCABEZADO
+       ========================================================= -->
 
-   <button
+  <div class="cv-header">
+
+```
+<div>
+  <h1>Mi Curriculum Vitae</h1>
+
+  <p>
+    Completá tu información profesional para crear tu CV.
+  </p>
+</div>
+
+<button
   class="btn-primary"
   type="button"
   (click)="guardarCV()">
   💾 Guardar CV
 </button>
+```
+
   </div>
 
   <div class="cv-container">
 
-    <!-- DATOS PERSONALES -->
-    <section class="cv-section">
+```
+<!-- =========================================================
+     DATOS PERSONALES
+     ========================================================= -->
 
-      <div class="section-heading">
-        <div>
-          <h2>Datos personales</h2>
-          <p>Información básica que aparecerá en tu CV.</p>
-        </div>
+<section class="cv-section">
+
+  <div class="section-heading">
+
+    <div>
+      <h2>Datos personales</h2>
+
+      <p>
+        Información básica que aparecerá en tu CV.
+      </p>
+    </div>
+
+  </div>
+
+
+  <div class="personal-data">
+
+
+    <!-- FOTO -->
+
+    <div class="photo-box">
+
+      <div class="photo-placeholder">
+        <span>SM</span>
       </div>
 
-      <div class="personal-data">
+      <button
+        type="button"
+        class="btn-secondary">
 
-        <div class="photo-box">
-          <div class="photo-placeholder">
-            <span>SM</span>
-          </div>
+        Cambiar foto
 
-          <button type="button" class="btn-secondary">
-            Cambiar foto
-          </button>
-        </div>
+      </button>
 
-        <div class="form-grid">
+    </div>
 
-         <div class="form-group">
-  <label>Nombre</label>
-  <input
-    type="text"
-    [(ngModel)]="perfil.nombres"
-    name="nombre"
-    placeholder="Nombre">
-</div>
 
-          <div class="form-group">
-  <label>Apellido</label>
-  <input
-    type="text"
-    [(ngModel)]="perfil.apellidos"
-    name="apellido"
-    placeholder="Apellido">
-</div>
+    <!-- DATOS -->
 
-          <div class="form-group">
-  <label>Email</label>
+    <div class="form-grid">
 
-  <input
-    type="email"
-    [(ngModel)]="perfil.email"
-    name="email"
-    placeholder="sofia@email.com">
-</div>
 
-<div class="form-group">
-  <label>Teléfono</label>
+      <div class="form-group">
 
-  <input
-    type="text"
-    [(ngModel)]="perfil.telefono"
-    name="telefono"
-    placeholder="+54 11 1234-5678">
-</div>
-          <div class="form-group">
-  <label>Ciudad</label>
-  <input
-    type="text"
-    [(ngModel)]="perfil.ciudad"
-    name="ciudad"
-    placeholder="Ciudad">
-</div>
+        <label>Nombre</label>
 
-         <div class="form-group">
-  <label>LinkedIn</label>
-  <input
-    type="url"
-    [(ngModel)]="perfil.redes.linkedin"
-    name="linkedin"
-    placeholder="linkedin.com/in/usuario">
-</div>
-
-        <div class="form-group">
-  <label>GitHub</label>
-  <input
-    type="url"
-    [(ngModel)]="perfil.redes.github"
-    name="github"
-    placeholder="github.com/usuario">
-</div>
-
-        <div class="form-group">
-  <label>Portfolio</label>
-  <input
-    type="url"
-    [(ngModel)]="perfil.redes.portfolio"
-    name="portfolio"
-    placeholder="www.miportfolio.com">
-</div>
-
-        </div>
+        <input
+          type="text"
+          [(ngModel)]="perfil.nombres"
+          name="nombre"
+          placeholder="Nombre">
 
       </div>
 
-    </section>
 
-    <!-- PERFIL PROFESIONAL -->
-    <section class="cv-section">
+      <div class="form-group">
 
-      <div class="section-heading">
-        <div>
-          <h2>Perfil profesional</h2>
-          <p>Contanos brevemente quién sos y qué buscás profesionalmente.</p>
-        </div>
+        <label>Apellido</label>
+
+        <input
+          type="text"
+          [(ngModel)]="perfil.apellidos"
+          name="apellido"
+          placeholder="Apellido">
+
       </div>
 
-    <textarea
-  rows="6"
-  [(ngModel)]="perfil.sobreMi"
-  name="sobreMi"
-  placeholder="Contanos brevemente sobre vos..."></textarea>
 
-    </section>
+      <div class="form-group">
 
-    <!-- FORMACIÓN -->
+        <label>Email</label>
+
+        <input
+          type="email"
+          [(ngModel)]="perfil.email"
+          name="email"
+          placeholder="sofia@email.com">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Teléfono</label>
+
+        <input
+          type="text"
+          [(ngModel)]="perfil.telefono"
+          name="telefono"
+          placeholder="+54 11 1234-5678">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Ciudad</label>
+
+        <input
+          type="text"
+          [(ngModel)]="perfil.ciudad"
+          name="ciudad"
+          placeholder="Ciudad">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>LinkedIn</label>
+
+        <input
+          type="url"
+          [(ngModel)]="perfil.redes.linkedin"
+          name="linkedin"
+          placeholder="linkedin.com/in/usuario">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>GitHub</label>
+
+        <input
+          type="url"
+          [(ngModel)]="perfil.redes.github"
+          name="github"
+          placeholder="github.com/usuario">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Portfolio</label>
+
+        <input
+          type="url"
+          [(ngModel)]="perfil.redes.portfolio"
+          name="portfolio"
+          placeholder="www.miportfolio.com">
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     PERFIL PROFESIONAL
+     ========================================================= -->
+
+<section class="cv-section">
+
+  <div class="section-heading">
+
+    <div>
+
+      <h2>Perfil profesional</h2>
+
+      <p>
+        Contanos brevemente quién sos y qué buscás profesionalmente.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <textarea
+    rows="6"
+    [(ngModel)]="perfil.sobre_mi"
+    name="sobreMi"
+    placeholder="Contanos brevemente sobre vos...">
+  </textarea>
+
+</section>
+
+
+
+<!-- =========================================================
+     FORMACIÓN ACADÉMICA
+     ========================================================= -->
+
 <section class="cv-section">
 
   <div class="section-heading-row">
 
     <div>
+
       <h2>Formación académica</h2>
-      <p>Agregá tus estudios.</p>
+
+      <p>
+        Agregá tus estudios.
+      </p>
+
     </div>
+
 
     @if (!editandoFormacion) {
 
@@ -153,67 +243,90 @@
         type="button"
         class="btn-secondary"
         (click)="agregarFormacion()">
+
         + Agregar formación
+
       </button>
 
     }
 
   </div>
 
+
+
   @if (!editandoFormacion) {
 
+
     @for (estudio of perfil.estudios; track estudio.titulo) {
+
 
       <div class="item-card">
 
         <div class="form-grid">
 
+
           <div class="form-group">
+
             <label>Carrera / título</label>
 
             <input
               type="text"
               [value]="estudio.titulo"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Institución</label>
 
             <input
               type="text"
               [value]="estudio.institucion"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Estado</label>
 
             <input
               type="text"
               [value]="estudio.estado"
               readonly>
+
           </div>
+
 
         </div>
 
       </div>
 
+
     } @empty {
+
 
       <p class="mensaje-vacio">
         Todavía no agregaste estudios.
       </p>
 
+
     }
 
+
   } @else {
+
 
     <div class="item-card">
 
       <h3>Agregar formación</h3>
 
+
       <div class="form-grid">
+
 
         <div class="form-group">
 
@@ -227,6 +340,7 @@
 
         </div>
 
+
         <div class="form-group">
 
           <label>Institución</label>
@@ -238,6 +352,7 @@
             placeholder="Ej: Instituto Beltrán">
 
         </div>
+
 
         <div class="form-group">
 
@@ -251,6 +366,7 @@
 
         </div>
 
+
         <div class="form-group">
 
           <label>Fecha de finalización</label>
@@ -263,40 +379,63 @@
 
         </div>
 
+
       </div>
+
 
       <div class="acciones-edicion">
 
+
         <button
-  type="button"
-  class="btn-editar"
-  (click)="guardarFormacion()">
-  💾 Guardar formación
-</button>
+          type="button"
+          class="btn-editar"
+          (click)="guardarFormacion()">
+
+          💾 Guardar formación
+
+        </button>
+
 
         <button
           type="button"
           class="btn-cancelar"
           (click)="cancelarFormacion()">
+
           ❌ Cancelar
+
         </button>
+
 
       </div>
 
     </div>
 
+
   }
 
 </section>
-   <!-- EXPERIENCIA -->
+
+
+
+<!-- =========================================================
+     EXPERIENCIA LABORAL
+     ========================================================= -->
+
 <section class="cv-section">
+
 
   <div class="section-heading-row">
 
     <div>
+
       <h2>Experiencia laboral</h2>
-      <p>Agregá tus experiencias laborales.</p>
+
+      <p>
+        Agregá tus experiencias laborales.
+      </p>
+
     </div>
+
 
     @if (!editandoExperiencia) {
 
@@ -304,7 +443,9 @@
         type="button"
         class="btn-secondary"
         (click)="agregarExperiencia()">
+
         + Agregar experiencia
+
       </button>
 
     }
@@ -312,57 +453,75 @@
   </div>
 
 
+
   @if (!editandoExperiencia) {
 
-    @for (experiencia of perfil.experiencias; track experiencia.empresa + experiencia.puesto) {
+
+    @for (
+      experiencia of perfil.experiencias;
+      track experiencia.empresa + experiencia.puesto
+    ) {
+
 
       <div class="item-card">
 
+
         <div class="form-grid">
 
+
           <div class="form-group">
+
             <label>Empresa</label>
 
             <input
               type="text"
               [value]="experiencia.empresa"
               readonly>
+
           </div>
 
 
           <div class="form-group">
+
             <label>Puesto</label>
 
             <input
               type="text"
               [value]="experiencia.puesto"
               readonly>
+
           </div>
 
 
           <div class="form-group">
+
             <label>Desde</label>
 
             <input
               type="text"
               [value]="experiencia.desde"
               readonly>
+
           </div>
 
 
           <div class="form-group">
+
             <label>Hasta</label>
 
             <input
               type="text"
               [value]="experiencia.hasta"
               readonly>
+
           </div>
+
 
         </div>
 
 
         @if (experiencia.descripcion) {
+
 
           <div class="form-group">
 
@@ -376,26 +535,35 @@
 
           </div>
 
+
         }
+
 
       </div>
 
+
     } @empty {
+
 
       <p class="mensaje-vacio">
         Todavía no agregaste experiencias laborales.
       </p>
+
 
     }
 
 
   } @else {
 
+
     <div class="item-card">
+
 
       <h3>Agregar experiencia laboral</h3>
 
+
       <div class="form-grid">
+
 
         <div class="form-group">
 
@@ -448,6 +616,7 @@
 
         </div>
 
+
       </div>
 
 
@@ -467,11 +636,14 @@
 
       <div class="acciones-edicion">
 
+
         <button
           type="button"
           class="btn-editar"
           (click)="guardarExperiencia()">
+
           💾 Guardar experiencia
+
         </button>
 
 
@@ -479,26 +651,43 @@
           type="button"
           class="btn-cancelar"
           (click)="cancelarExperiencia()">
+
           ❌ Cancelar
+
         </button>
+
 
       </div>
 
+
     </div>
+
 
   }
 
 </section>
 
-   <!-- HABILIDADES -->
+
+
+<!-- =========================================================
+     HABILIDADES
+     ========================================================= -->
+
 <section class="cv-section">
+
 
   <div class="section-heading-row">
 
     <div>
+
       <h2>Habilidades</h2>
-      <p>Seleccioná las habilidades que querés destacar.</p>
+
+      <p>
+        Seleccioná las habilidades que querés destacar.
+      </p>
+
     </div>
+
 
     @if (!editandoSkill) {
 
@@ -506,38 +695,53 @@
         type="button"
         class="btn-secondary"
         (click)="agregarSkill()">
+
         + Agregar habilidad
+
       </button>
 
     }
 
   </div>
 
+
+
   @if (!editandoSkill) {
+
 
     <div class="skills-list">
 
-      @for (skill of perfil.skills; track skill) {
+
+      @for (skill of perfil.skills; track skill.skill_id) {
+
 
         <span class="skill">
-          {{ skill }}
+          {{ skill.nombre }}
         </span>
 
+
       } @empty {
+
 
         <p class="mensaje-vacio">
           Todavía no agregaste habilidades.
         </p>
 
+
       }
+
 
     </div>
 
+
   } @else {
+
 
     <div class="item-card">
 
+
       <h3>Agregar habilidad</h3>
+
 
       <div class="form-group">
 
@@ -551,39 +755,61 @@
 
       </div>
 
+
       <div class="acciones-edicion">
+
 
         <button
           type="button"
           class="btn-editar"
           (click)="guardarSkill()">
+
           💾 Guardar habilidad
+
         </button>
+
 
         <button
           type="button"
           class="btn-cancelar"
           (click)="cancelarSkill()">
+
           ❌ Cancelar
+
         </button>
+
 
       </div>
 
+
     </div>
+
 
   }
 
 </section>
 
-    <!-- IDIOMAS -->
+
+
+<!-- =========================================================
+     IDIOMAS
+     ========================================================= -->
+
 <section class="cv-section">
+
 
   <div class="section-heading-row">
 
     <div>
+
       <h2>Idiomas</h2>
-      <p>Indicá los idiomas y tu nivel.</p>
+
+      <p>
+        Indicá los idiomas y tu nivel.
+      </p>
+
     </div>
+
 
     @if (!editandoIdioma) {
 
@@ -591,58 +817,81 @@
         type="button"
         class="btn-secondary"
         (click)="agregarIdioma()">
+
         + Agregar idioma
+
       </button>
 
     }
 
   </div>
 
+
+
   @if (!editandoIdioma) {
+
 
     @for (idioma of perfil.idiomas; track idioma.idioma) {
 
+
       <div class="item-card">
+
 
         <div class="form-grid">
 
+
           <div class="form-group">
+
             <label>Idioma</label>
 
             <input
               type="text"
               [value]="idioma.idioma"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Nivel</label>
 
             <input
               type="text"
               [value]="idioma.nivel"
               readonly>
+
           </div>
+
 
         </div>
 
+
       </div>
 
+
     } @empty {
+
 
       <p class="mensaje-vacio">
         Todavía no agregaste idiomas.
       </p>
 
+
     }
+
 
   } @else {
 
+
     <div class="item-card">
+
 
       <h3>Agregar idioma</h3>
 
+
       <div class="form-grid">
+
 
         <div class="form-group">
 
@@ -656,6 +905,7 @@
 
         </div>
 
+
         <div class="form-group">
 
           <label>Nivel</label>
@@ -668,41 +918,64 @@
 
         </div>
 
+
       </div>
 
+
       <div class="acciones-edicion">
+
 
         <button
           type="button"
           class="btn-editar"
           (click)="guardarIdioma()">
+
           💾 Guardar idioma
+
         </button>
+
 
         <button
           type="button"
           class="btn-cancelar"
           (click)="cancelarIdioma()">
+
           ❌ Cancelar
+
         </button>
+
 
       </div>
 
+
     </div>
+
 
   }
 
 </section>
 
-   <!-- CURSOS Y CERTIFICACIONES -->
+
+
+<!-- =========================================================
+     CURSOS Y CERTIFICACIONES
+     ========================================================= -->
+
 <section class="cv-section">
+
 
   <div class="section-heading-row">
 
     <div>
+
       <h2>Cursos y certificaciones</h2>
-      <p>Mostrá tus cursos y certificaciones.</p>
+
+      <p>
+        Mostrá tus cursos y certificaciones.
+      </p>
+
     </div>
+
 
     @if (!editandoCurso) {
 
@@ -710,76 +983,105 @@
         type="button"
         class="btn-secondary"
         (click)="agregarCurso()">
+
         + Agregar curso
+
       </button>
 
     }
 
   </div>
 
+
+
   @if (!editandoCurso) {
+
 
     @for (curso of perfil.cursos; track curso.nombre) {
 
+
       <div class="item-card">
+
 
         <div class="form-grid">
 
+
           <div class="form-group">
+
             <label>Curso</label>
 
             <input
               type="text"
               [value]="curso.nombre"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Institución</label>
 
             <input
               type="text"
               [value]="curso.institucion"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Fecha</label>
 
             <input
               type="text"
               [value]="curso.fecha"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Descripción</label>
 
             <input
               type="text"
               [value]="curso.descripcion"
               readonly>
+
           </div>
+
 
         </div>
 
+
       </div>
 
+
     } @empty {
+
 
       <p class="mensaje-vacio">
         Todavía no agregaste cursos o certificaciones.
       </p>
 
+
     }
+
 
   } @else {
 
+
     <div class="item-card">
+
 
       <h3>Agregar curso o certificación</h3>
 
+
       <div class="form-grid">
+
 
         <div class="form-group">
 
@@ -793,6 +1095,7 @@
 
         </div>
 
+
         <div class="form-group">
 
           <label>Institución</label>
@@ -804,6 +1107,7 @@
             placeholder="Ej: Santander">
 
         </div>
+
 
         <div class="form-group">
 
@@ -817,6 +1121,7 @@
 
         </div>
 
+
         <div class="form-group">
 
           <label>Descripción</label>
@@ -829,41 +1134,64 @@
 
         </div>
 
+
       </div>
 
+
       <div class="acciones-edicion">
+
 
         <button
           type="button"
           class="btn-editar"
           (click)="guardarCurso()">
+
           💾 Guardar curso
+
         </button>
+
 
         <button
           type="button"
           class="btn-cancelar"
           (click)="cancelarCurso()">
+
           ❌ Cancelar
+
         </button>
+
 
       </div>
 
+
     </div>
+
 
   }
 
 </section>
 
-   <!-- PROYECTOS -->
+
+
+<!-- =========================================================
+     PROYECTOS
+     ========================================================= -->
+
 <section class="cv-section">
+
 
   <div class="section-heading-row">
 
     <div>
+
       <h2>Proyectos</h2>
-      <p>Mostrá proyectos personales o académicos.</p>
+
+      <p>
+        Mostrá proyectos personales o académicos.
+      </p>
+
     </div>
+
 
     @if (!editandoProyecto) {
 
@@ -871,49 +1199,67 @@
         type="button"
         class="btn-secondary"
         (click)="agregarProyecto()">
+
         + Agregar proyecto
+
       </button>
 
     }
 
   </div>
 
+
+
   @if (!editandoProyecto) {
+
 
     @for (proyecto of perfil.proyectos; track proyecto.nombre) {
 
+
       <div class="item-card">
+
 
         <div class="form-grid">
 
+
           <div class="form-group">
+
             <label>Nombre del proyecto</label>
 
             <input
               type="text"
               [value]="proyecto.nombre"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Tecnologías</label>
 
             <input
               type="text"
               [value]="proyecto.tecnologias"
               readonly>
+
           </div>
 
+
           <div class="form-group">
+
             <label>Enlace</label>
 
             <input
               type="text"
               [value]="proyecto.enlace"
               readonly>
+
           </div>
 
+
         </div>
+
 
         <div class="form-group">
 
@@ -925,23 +1271,32 @@
 
         </div>
 
+
       </div>
 
+
     } @empty {
+
 
       <p class="mensaje-vacio">
         Todavía no agregaste proyectos.
       </p>
 
+
     }
+
 
   } @else {
 
+
     <div class="item-card">
+
 
       <h3>Agregar proyecto</h3>
 
+
       <div class="form-grid">
+
 
         <div class="form-group">
 
@@ -955,6 +1310,7 @@
 
         </div>
 
+
         <div class="form-group">
 
           <label>Tecnologías</label>
@@ -966,6 +1322,7 @@
             placeholder="Ej: Angular, TypeScript, Node.js">
 
         </div>
+
 
         <div class="form-group">
 
@@ -979,7 +1336,9 @@
 
         </div>
 
+
       </div>
+
 
       <div class="form-group">
 
@@ -994,327 +1353,593 @@
 
       </div>
 
+
       <div class="acciones-edicion">
+
 
         <button
           type="button"
           class="btn-editar"
           (click)="guardarProyecto()">
+
           💾 Guardar proyecto
+
         </button>
+
 
         <button
           type="button"
           class="btn-cancelar"
           (click)="cancelarProyecto()">
+
           ❌ Cancelar
+
         </button>
+
 
       </div>
 
+
     </div>
+
 
   }
 
 </section>
-    <div class="cv-actions">
+
+
+
+<!-- =========================================================
+     ACCIONES DEL CV
+     ========================================================= -->
+
+<div class="cv-actions">
+
 
   <button
     type="button"
     class="btn-secondary"
     (click)="abrirVistaPrevia()">
+
     👁️ Vista previa
+
   </button>
 
+
   <button
-  type="button"
-  class="btn-primary"
-  (click)="descargarCV()">
-  📄 Descargar CV en PDF
-</button>
+    type="button"
+    class="btn-primary"
+    (click)="descargarCV()">
+
+    📄 Descargar CV en PDF
+
+  </button>
+
 
 </div>
+```
 
-<div
-  class="preview-overlay"
-  [class.preview-oculta]="!mostrandoVistaPrevia">
+  </div>
 
-    <div class="preview-modal">
+  <!-- =========================================================
+       VISTA PREVIA
+       ========================================================= -->
 
-      <div class="preview-header">
+  <div
+    class="preview-overlay"
+    [class.preview-oculta]="!mostrandoVistaPrevia">
 
-        <div>
-          <h2>Vista previa del CV</h2>
-          <p>Así se verá tu Curriculum Vitae.</p>
+```
+<div class="preview-modal">
+
+
+  <!-- HEADER DE VISTA PREVIA -->
+
+  <div class="preview-header">
+
+
+    <div>
+
+      <h2>Vista previa del CV</h2>
+
+      <p>
+        Así se verá tu Curriculum Vitae.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn-cancelar"
+      (click)="cerrarVistaPrevia()">
+
+      ✕ Cerrar
+
+    </button>
+
+
+  </div>
+
+
+
+  <!-- =====================================================
+       CV QUE SE EXPORTA
+       ===================================================== -->
+
+  <div class="cv-preview">
+
+
+    <!-- ENCABEZADO -->
+
+    <div class="preview-personal">
+
+
+      <div class="preview-datos-personales">
+
+
+        <h1>
+          {{ perfil.nombres }}
+          {{ perfil.apellidos }}
+        </h1>
+
+
+        <p>
+          {{ perfil.ciudad }}
+          @if (perfil.pais) {
+            , {{ perfil.pais }}
+          }
+        </p>
+
+
+        <div class="preview-contacto">
+
+
+          @if (perfil.email) {
+
+            <span>
+              ✉ {{ perfil.email }}
+            </span>
+
+          }
+
+
+          @if (perfil.telefono) {
+
+            <span>
+              ☎ {{ perfil.telefono }}
+            </span>
+
+          }
+
+
         </div>
 
-        <button
-          type="button"
-          class="btn-cancelar"
-          (click)="cerrarVistaPrevia()">
-          ✕ Cerrar
-        </button>
 
       </div>
 
-      <div class="cv-preview">
-
-        <!-- ENCABEZADO -->
-<div class="preview-personal">
-
-  <div class="preview-datos-personales">
-
-    <h1>
-      {{ perfil.nombres }} {{ perfil.apellidos }}
-    </h1>
-
-    <p>
-      {{ perfil.ciudad }}, {{ perfil.pais }}
-    </p>
-
-    <div class="preview-contacto">
-
-      <span>✉ {{ perfil.email }}</span>
-
-      <span>☎ {{ perfil.telefono }}</span>
 
     </div>
 
-  </div>
 
-</div>
-        <!-- SOBRE MÍ -->
 
-        @if (perfil.sobreMi) {
+    <!-- PERFIL PROFESIONAL -->
 
-          <section class="preview-section">
+    @if (perfil.sobre_mi) {
 
-            <h3>Perfil profesional</h3>
 
-            <p>
-              {{ perfil.sobreMi }}
-            </p>
+      <section class="preview-section">
 
-          </section>
 
-        }
+        <h3>
+          Perfil profesional
+        </h3>
 
-        <!-- FORMACIÓN -->
 
-        @if (perfil.estudios.length > 0) {
+        <p>
+          {{ perfil.sobre_mi }}
+        </p>
 
-          <section class="preview-section">
 
-            <h3>Formación académica</h3>
+      </section>
 
-            @for (estudio of perfil.estudios; track estudio.titulo) {
 
-              <div class="preview-item">
+    }
 
-                <strong>{{ estudio.titulo }}</strong>
 
-                <span>
-                  {{ estudio.institucion }} · {{ estudio.estado }}
-                </span>
 
-              </div>
+    <!-- FORMACIÓN -->
 
-            }
+    @if (perfil.estudios.length > 0) {
 
-          </section>
 
-        }
+      <section class="preview-section">
 
-        <!-- EXPERIENCIA -->
 
-        @if (perfil.experiencias.length > 0) {
+        <h3>
+          Formación académica
+        </h3>
 
-          <section class="preview-section">
 
-            <h3>Experiencia laboral</h3>
+        @for (
+          estudio of perfil.estudios;
+          track estudio.titulo
+        ) {
 
-            @for (experiencia of perfil.experiencias; track experiencia.empresa) {
 
-              <div class="preview-item">
+          <div class="preview-item">
 
-                <strong>
-                  {{ experiencia.puesto }}
-                </strong>
 
-                <span>
-                  {{ experiencia.empresa }}
-                  ·
-                  {{ experiencia.desde }} -
-                  {{ experiencia.hasta }}
-                </span>
+            <strong>
+              {{ estudio.titulo }}
+            </strong>
 
-                @if (experiencia.descripcion) {
 
-                  <p>
-                    {{ experiencia.descripcion }}
-                  </p>
+            <span>
 
-                }
+              {{ estudio.institucion }}
 
-              </div>
-
-            }
-
-          </section>
-
-        }
-
-        <!-- HABILIDADES -->
-
-        @if (perfil.skills.length > 0) {
-
-          <section class="preview-section">
-
-            <h3>Habilidades</h3>
-
-            <div class="preview-skills">
-
-              @for (skill of perfil.skills; track skill) {
-
-                <span>{{ skill }}</span>
-
+              @if (estudio.estado) {
+                · {{ estudio.estado }}
               }
 
-            </div>
+            </span>
 
-          </section>
+
+          </div>
+
 
         }
 
-        <!-- IDIOMAS -->
 
-        @if (perfil.idiomas.length > 0) {
+      </section>
 
-          <section class="preview-section">
 
-            <h3>Idiomas</h3>
+    }
 
-            @for (idioma of perfil.idiomas; track idioma.idioma) {
 
-              <div class="preview-item">
 
-                <strong>{{ idioma.idioma }}</strong>
+    <!-- EXPERIENCIA -->
 
-                <span>{{ idioma.nivel }}</span>
+    @if (perfil.experiencias.length > 0) {
 
-              </div>
+
+      <section class="preview-section">
+
+
+        <h3>
+          Experiencia laboral
+        </h3>
+
+
+        @for (
+          experiencia of perfil.experiencias;
+          track experiencia.empresa + experiencia.puesto
+        ) {
+
+
+          <div class="preview-item">
+
+
+            <strong>
+              {{ experiencia.puesto }}
+            </strong>
+
+
+            <span>
+
+              {{ experiencia.empresa }}
+
+              @if (experiencia.desde) {
+                · {{ experiencia.desde }}
+              }
+
+              @if (experiencia.hasta) {
+                - {{ experiencia.hasta }}
+              }
+
+            </span>
+
+
+            @if (experiencia.descripcion) {
+
+
+              <p>
+                {{ experiencia.descripcion }}
+              </p>
+
 
             }
 
-          </section>
+
+          </div>
+
 
         }
 
-        <!-- CURSOS -->
 
-        @if (perfil.cursos.length > 0) {
+      </section>
 
-          <section class="preview-section">
 
-            <h3>Cursos y certificaciones</h3>
+    }
 
-            @for (curso of perfil.cursos; track curso.nombre) {
 
-              <div class="preview-item">
 
-                <strong>{{ curso.nombre }}</strong>
+    <!-- HABILIDADES -->
 
-                <span>
-                  {{ curso.institucion }} · {{ curso.fecha }}
-                </span>
+    @if (perfil.skills.length > 0) {
 
-                @if (curso.descripcion) {
 
-                  <p>
-                    {{ curso.descripcion }}
-                  </p>
+      <section class="preview-section">
 
-                }
 
-              </div>
+        <h3>
+          Habilidades
+        </h3>
+
+
+        <div class="preview-skills">
+
+
+          @for (
+            skill of perfil.skills;
+            track skill.skill_id
+          ) {
+
+
+            <span>
+              {{ skill.nombre }}
+            </span>
+
+
+          }
+
+
+        </div>
+
+
+      </section>
+
+
+    }
+
+
+
+    <!-- IDIOMAS -->
+
+    @if (perfil.idiomas.length > 0) {
+
+
+      <section class="preview-section">
+
+
+        <h3>
+          Idiomas
+        </h3>
+
+
+        @for (
+          idioma of perfil.idiomas;
+          track idioma.idioma
+        ) {
+
+
+          <div class="preview-item">
+
+
+            <strong>
+              {{ idioma.idioma }}
+            </strong>
+
+
+            <span>
+              {{ idioma.nivel }}
+            </span>
+
+
+          </div>
+
+
+        }
+
+
+      </section>
+
+
+    }
+
+
+
+    <!-- CURSOS -->
+
+    @if (perfil.cursos.length > 0) {
+
+
+      <section class="preview-section">
+
+
+        <h3>
+          Cursos y certificaciones
+        </h3>
+
+
+        @for (
+          curso of perfil.cursos;
+          track curso.nombre
+        ) {
+
+
+          <div class="preview-item">
+
+
+            <strong>
+              {{ curso.nombre }}
+            </strong>
+
+
+            <span>
+
+              {{ curso.institucion }}
+
+              @if (curso.fecha) {
+                · {{ curso.fecha }}
+              }
+
+            </span>
+
+
+            @if (curso.descripcion) {
+
+
+              <p>
+                {{ curso.descripcion }}
+              </p>
+
 
             }
 
-          </section>
+
+          </div>
+
 
         }
 
-        <!-- PROYECTOS -->
 
-        @if (perfil.proyectos.length > 0) {
+      </section>
 
-          <section class="preview-section">
 
-            <h3>Proyectos</h3>
+    }
 
-            @for (proyecto of perfil.proyectos; track proyecto.nombre) {
 
-              <div class="preview-item">
 
-                <strong>{{ proyecto.nombre }}</strong>
+    <!-- PROYECTOS -->
 
-                @if (proyecto.tecnologias) {
+    @if (perfil.proyectos.length > 0) {
 
-                  <span>
-                    Tecnologías: {{ proyecto.tecnologias }}
-                  </span>
 
-                }
+      <section class="preview-section">
 
-                @if (proyecto.descripcion) {
 
-                  <p>
-                    {{ proyecto.descripcion }}
-                  </p>
+        <h3>
+          Proyectos
+        </h3>
 
-                }
 
-                @if (proyecto.enlace) {
+        @for (
+          proyecto of perfil.proyectos;
+          track proyecto.nombre
+        ) {
 
-                  <span>
-                    {{ proyecto.enlace }}
-                  </span>
 
-                }
+          <div class="preview-item">
 
-              </div>
+
+            <strong>
+              {{ proyecto.nombre }}
+            </strong>
+
+
+            @if (proyecto.tecnologias) {
+
+
+              <span>
+                Tecnologías: {{ proyecto.tecnologias }}
+              </span>
+
 
             }
 
-          </section>
+
+            @if (proyecto.descripcion) {
+
+
+              <p>
+                {{ proyecto.descripcion }}
+              </p>
+
+
+            }
+
+
+            @if (proyecto.enlace) {
+
+
+              <span>
+                {{ proyecto.enlace }}
+              </span>
+
+
+            }
+
+
+          </div>
+
 
         }
 
-        <!-- REDES -->
 
-        <section class="preview-section">
+      </section>
 
-          <h3>Contacto</h3>
 
-          @if (perfil.redes.linkedin) {
-            <p>LinkedIn: {{ perfil.redes.linkedin }}</p>
-          }
+    }
 
-          @if (perfil.redes.github) {
-            <p>GitHub: {{ perfil.redes.github }}</p>
-          }
 
-          @if (perfil.redes.portfolio) {
-            <p>Portfolio: {{ perfil.redes.portfolio }}</p>
-          }
 
-        </section>
+    <!-- REDES -->
 
-      </div>
+    @if (
+      perfil.redes.linkedin ||
+      perfil.redes.github ||
+      perfil.redes.portfolio
+    ) {
 
-    </div>
+
+      <section class="preview-section">
+
+
+        <h3>
+          Contacto
+        </h3>
+
+
+        @if (perfil.redes.linkedin) {
+
+          <p>
+            LinkedIn: {{ perfil.redes.linkedin }}
+          </p>
+
+        }
+
+
+        @if (perfil.redes.github) {
+
+          <p>
+            GitHub: {{ perfil.redes.github }}
+          </p>
+
+        }
+
+
+        @if (perfil.redes.portfolio) {
+
+          <p>
+            Portfolio: {{ perfil.redes.portfolio }}
+          </p>
+
+        }
+
+
+      </section>
+
+
+    }
+
 
   </div>
+
+
+</div>
+```
 
   </div>
 

@@ -2,8 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const db = require('../db');
 const multer = require('multer');
-const { uploadFotoPerfil } = require('../middlewares/upload.middleware');
-
+const { uploadFotoPerfil, uploadCV } = require('../middlewares/upload.middleware');
 // ====================================================================
 // 1. GET: OBTENER PERFIL COMPLETO DEL POSTULANTE
 // ====================================================================
@@ -147,45 +146,61 @@ router.put('/perfil/:id_postulante', async (req, res) => {
 });
 
 // ====================================================================
-// 4. POST: SUBIR Y GUARDAR FOTO DE PERFIL (CON CONTROL DE TAMAÑO)
-// ====================================================================
-// ====================================================================
 // 4. POST: SUBIR Y GUARDAR FOTO DE PERFIL
 // ====================================================================
+
 router.post('/perfil/:id_postulante/foto', (req, res) => {
+
   uploadFotoPerfil.single('foto')(req, res, async (err) => {
-    // 1. Manejo de errores de Multer
+
+    // Error de Multer
     if (err instanceof multer.MulterError) {
+
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
           success: false,
           message: 'La foto es demasiado grande (máximo 2MB).'
         });
       }
-      return res.status(400).json({ success: false, message: err.message });
-    } else if (err) {
-      return res.status(500).json({ success: false, message: 'Error al procesar la imagen.' });
+
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
     }
 
-    // 2. Validación de archivo presente
+    // Otros errores
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+
+    // Verificar archivo
     if (!req.file) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'No se subió ninguna imagen o el formato no es válido.' 
+      return res.status(400).json({
+        success: false,
+        message: 'No se subió ninguna imagen o el formato no es válido.'
       });
     }
 
     const { id_postulante } = req.params;
-    // 💡 Guardamos la ruta relativa
+
     const fotoUrl = `/uploads/fotoperf/${req.file.filename}`;
 
     try {
-      // 3. Insertar o actualizar en perfil_postulante
+
       await db.query(
-        `INSERT INTO perfil_postulante (id_postulante, foto)
+        `INSERT INTO perfil_postulante
+          (id_postulante, foto)
          VALUES (?, ?)
-         ON DUPLICATE KEY UPDATE foto = VALUES(foto)`,
-        [id_postulante, fotoUrl]
+         ON DUPLICATE KEY UPDATE
+          foto = VALUES(foto)`,
+        [
+          id_postulante,
+          fotoUrl
+        ]
       );
 
       return res.json({
@@ -193,10 +208,110 @@ router.post('/perfil/:id_postulante/foto', (req, res) => {
         message: 'Foto de perfil actualizada correctamente',
         fotoUrl: fotoUrl
       });
+
     } catch (error) {
+
       console.error('Error al guardar foto en la BD:', error);
-      return res.status(500).json({ success: false, message: 'Error interno al actualizar la base de datos.' });
+
+      return res.status(500).json({
+        success: false,
+        message: 'Error interno al actualizar la base de datos.'
+      });
     }
+
   });
+
 });
+
+
+// ====================================================================
+// 5. POST: SUBIR CV DEL POSTULANTE
+// ====================================================================
+
+router.post('/perfil/:id_postulante/cv', (req, res) => {
+
+  uploadCV.single('cv')(req, res, async (err) => {
+
+    // Error de Multer
+    if (err instanceof multer.MulterError) {
+
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          success: false,
+          message: 'El CV es demasiado grande. Máximo permitido: 5 MB.'
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+
+    // Otros errores
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+
+    // Verificar archivo
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se recibió ningún archivo PDF.'
+      });
+    }
+
+    const { id_postulante } = req.params;
+
+    // Ruta del archivo en el servidor
+    const cvUrl = `/uploads/cv/${req.file.filename}`;
+
+    // Nombre original del archivo
+    const cvNombre = req.file.originalname;
+
+    try {
+
+      await db.query(
+        `INSERT INTO perfil_postulante
+          (id_postulante, cv_url, cv_nombre)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+          cv_url = VALUES(cv_url),
+          cv_nombre = VALUES(cv_nombre)`,
+        [
+          id_postulante,
+          cvUrl,
+          cvNombre
+        ]
+      );
+
+      return res.json({
+        success: true,
+        message: 'CV subido correctamente.',
+        cv_url: cvUrl,
+        cv_nombre: cvNombre
+      });
+
+    } catch (error) {
+
+      console.error('Error al guardar CV en la BD:', error);
+
+      return res.status(500).json({
+        success: false,
+        message: 'El archivo se subió, pero no se pudo guardar la información en la base de datos.'
+      });
+    }
+
+  });
+
+});
+
+
+// ====================================================================
+// EXPORTAR ROUTER
+// ====================================================================
+
 module.exports = router;

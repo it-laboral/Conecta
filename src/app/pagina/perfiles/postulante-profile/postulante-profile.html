@@ -1,187 +1,1307 @@
 <div class="perfil-container">
 
-  <!-- 1. CARD PRINCIPAL (FOTO + DATOS DE LA CUENTA + UBICACIÓN + ACCIONES) -->
-  <div class="perfil-card card-main">
-    
-    <!-- ZONA DE FOTO DE PERFIL CON CARGA DE ARCHIVO -->
-    <div class="foto-container">
-      <div class="avatar-wrapper">
-        <!-- 1. Si existe foto o previsualización, muestra la imagen -->
-        @if (perfil.foto || fotoPreview) {
-          <img 
-            [src]="getFotoUrl()" 
-            alt="Foto de Perfil" 
-            class="foto-avatar"
-            (error)="perfil.foto = ''"
-          >
-        } @else {
-          <!-- 2. Fallback: Avatar vectorial cuando no hay foto -->
-          <div class="avatar-placeholder">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon-user">
-              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.6-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
-            </svg>
-          </div>
-        }
+  <!-- =====================================================
+       1. CARD PRINCIPAL
+       ===================================================== -->
 
-        <!-- Botón superpuesto tipo badge en el borde de la imagen -->
-        <button 
-          type="button" 
-          class="btn-foto-badge" 
-          (click)="fotoInput.click()" 
-          [disabled]="guardando"
-          title="Cambiar foto de perfil"
+  <div class="perfil-card card-main">
+
+
+<!-- FOTO DE PERFIL -->
+<div class="foto-container">
+
+  <div class="avatar-wrapper">
+
+    @if (perfil.foto || fotoPreview) {
+
+      <img
+        [src]="getFotoUrl()"
+        alt="Foto de Perfil"
+        class="foto-avatar"
+        (error)="perfil.foto = ''"
+      >
+
+    } @else {
+
+      <div class="avatar-placeholder">
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="icon-user"
         >
-          📷
-        </button>
+
+          <path
+            fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 1 1 9 0a4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.6-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+            clip-rule="evenodd"
+          />
+
+        </svg>
+
       </div>
 
-      <!-- Input HTML oculto -->
-      <input 
-        type="file" 
-        #fotoInput 
-        (change)="onFotoSeleccionada($event)" 
-        accept="image/png, image/jpeg, image/jpg" 
-        style="display: none;"
-      >
+    }
+
+    <button
+      type="button"
+      class="btn-foto-badge"
+      (click)="fotoInput.click()"
+      [disabled]="guardando"
+      title="Cambiar foto de perfil"
+    >
+      📷
+    </button>
+
+  </div>
+
+  <input
+    type="file"
+    #fotoInput
+    (change)="onFotoSeleccionada($event)"
+    accept="image/png, image/jpeg, image/jpg"
+    style="display: none;"
+  >
+
+</div>
+
+
+<!-- DATOS DEL USUARIO -->
+
+<div class="user-info">
+
+  <h2>
+    {{ perfil.nombres || 'Nombre' }}
+    {{ perfil.apellidos || 'Apellido' }}
+  </h2>
+
+  <p class="carrera-text">
+    🎓 {{ perfil.carrera || 'Carrera no especificada' }}
+  </p>
+
+  <p class="email-text">
+    ✉️ {{ perfil.email || 'correo@ejemplo.com' }}
+  </p>
+
+  <p class="ubicacion">
+
+    📍
+
+    {{
+      perfil.ciudad
+        ? perfil.ciudad + (perfil.pais ? ', ' + perfil.pais : '')
+        : 'Ubicación no especificada'
+    }}
+
+  </p>
+
+
+  <!-- BOTONES PRINCIPALES -->
+
+  <div class="acciones-header">
+
+    <button
+      type="button"
+      class="btn-editar"
+      (click)="abrirModal('principales')"
+    >
+      ✏️ Editar Ubicación
+    </button>
+
+
+    <button
+      type="button"
+      class="btn-guardar-main"
+      [disabled]="guardando"
+      (click)="guardarPerfilCompleto()"
+    >
+
+      @if (!guardando) {
+
+        <span>
+          💾 Guardar Perfil Definitivo
+        </span>
+
+      } @else {
+
+        <span>
+          ⏳ Guardando...
+        </span>
+
+      }
+
+    </button>
+
+  </div>
+
+</div>
+
+
+  </div>
+
+  <!-- =====================================================
+       MENSAJE DE GUARDADO
+       ===================================================== -->
+
+@if (mensajeEstado) {
+
+
+<div class="alert-success-custom">
+  {{ mensajeEstado }}
+</div>
+
+
+}
+
+  <!-- =====================================================
+       2. PERFIL PROFESIONAL
+       ===================================================== -->
+
+  <div class="perfil-card card-sobre-mi">
+
+
+<div class="card-header-actions">
+
+  <h3>
+    💻 Perfil Profesional
+  </h3>
+
+  <button
+    type="button"
+    class="btn-link-editar"
+    (click)="abrirModal('sobreMi')"
+    title="Editar descripción"
+  >
+    ✏️
+  </button>
+
+</div>
+
+
+@if (perfil.sobre_mi) {
+
+  <p class="texto-descripcion">
+    {{ perfil.sobre_mi }}
+  </p>
+
+} @else {
+
+  <p class="empty-text">
+    Contale a las empresas tu enfoque técnico:
+    tecnologías principales, orientación y motivación profesional.
+  </p>
+
+}
+
+
+<div class="resumen-tecnico-grid">
+
+  <div class="item-resumen">
+
+    <span class="label">
+      Especialidad / Interés:
+    </span>
+
+    <span class="valor">
+      {{ perfil.especialidad || 'No definida' }}
+    </span>
+
+  </div>
+
+
+  <div class="item-resumen">
+
+    <span class="label">
+      Estado académico:
+    </span>
+
+    <span class="valor">
+      {{ perfil.estado_academico || 'Estudiante Avanzado' }}
+    </span>
+
+  </div>
+
+</div>
+
+
+  </div>
+
+  <!-- =====================================================
+       3. CURRICULUM VITAE
+       ===================================================== -->
+
+  <div class="perfil-card card-cv">
+
+
+<div class="card-header-actions">
+
+  <h3>
+    📄 Curriculum Vitae
+  </h3>
+
+</div>
+
+
+<!-- =================================================
+     CV YA CARGADO
+     ================================================= -->
+
+@if (perfil.cv_url) {
+
+  <div class="cv-content">
+
+    <div class="cv-adjunto">
+
+      <span class="icono-doc">
+        📄
+      </span>
+
+
+      <div class="cv-info">
+
+        <strong>
+          {{ perfil.cv_nombre || 'Curriculum_Vitae.pdf' }}
+        </strong>
+
+        <span class="cv-estado">
+          ✓ CV cargado correctamente
+        </span>
+
+      </div>
+
     </div>
 
-    <!-- DATOS PERSONALES Y ACADÉMICOS DE LA CUENTA -->
-    <div class="user-info">
-      <h2>{{ perfil.nombres || 'Nombre' }} {{ perfil.apellidos || 'Apellido' }}</h2>
-      <p class="carrera-text">🎓 {{ perfil.carrera || 'Carrera no especificada' }}</p>
-      <p class="email-text">✉️ {{ perfil.email || 'correo@ejemplo.com' }}</p>
 
-      <p class="ubicacion">
-        📍 {{ perfil.ciudad ? perfil.ciudad + (perfil.pais ? ', ' + perfil.pais : '') : 'Ubicación no especificada' }}
+    <!-- ACCIONES DEL CV -->
+
+    <div class="cv-acciones">
+
+      <!-- VER CV GUARDADO -->
+      <button
+        type="button"
+        class="btn-cv btn-vista-previa"
+        (click)="verCV()"
+      >
+        👁️ Vista previa
+      </button>
+
+
+      <!-- GENERAR Y DESCARGAR CV -->
+      <button
+        type="button"
+        class="btn-cv btn-descargar"
+        (click)="generarYDescargarCV()"
+      >
+        ⬇️ Descargar PDF
+      </button>
+
+
+      <!-- CAMBIAR CV -->
+      <button
+        type="button"
+        class="btn-cv btn-cambiar"
+        (click)="cambiarCV()"
+      >
+        ✏️ Cambiar CV
+      </button>
+
+    </div>
+
+  </div>
+
+
+} @else {
+
+
+  <!-- =================================================
+       SIN CV CARGADO
+       ================================================= -->
+
+  <div class="cv-content cv-sin-adjuntar">
+
+    <div class="cv-upload-icon">
+      📄
+    </div>
+
+
+    <h4>
+      Todavía no tenés un CV cargado
+    </h4>
+
+
+    <p class="cv-descripcion">
+
+      Podés generar tu CV automáticamente con la
+      información de tu perfil o subir un CV que ya tengas.
+
+    </p>
+
+
+    <!-- =================================================
+         ACCIONES PARA GENERAR CV
+         ================================================= -->
+
+    <div class="cv-acciones">
+
+      <button
+        type="button"
+        class="btn-cv btn-vista-previa"
+        (click)="generarVistaPreviaCV()"
+      >
+        👁️ Vista previa del CV
+      </button>
+
+
+      <button
+        type="button"
+        class="btn-cv btn-descargar"
+        (click)="generarYDescargarCV()"
+      >
+        ⬇️ Descargar PDF
+      </button>
+
+    </div>
+
+
+    <!-- =================================================
+         SEPARADOR
+         ================================================= -->
+
+    <div class="cv-separador">
+
+      <span></span>
+
+      <p>
+        ¿Ya tenés un CV?
       </p>
 
-      <!-- BOTONES DE ACCIÓN -->
-      <div class="acciones-header">
-        <button class="btn-editar" (click)="abrirModal('principales')">✏️ Editar Ubicación</button>
+      <span></span>
 
-        <button 
-          class="btn-guardar-main" 
-          [disabled]="guardando" 
-          (click)="guardarPerfilCompleto()">
-          @if (!guardando) {
-            <span>💾 Guardar Perfil Definitivo</span>
-          } @else {
-            <span>⏳ Guardando...</span>
-          }
-        </button>
-      </div>
     </div>
 
-  </div> <!-- <--- AQUÍ FALTABA ESTE CIERRE DE DIV PARA CARD-MAIN -->
 
-  <!-- NOTIFICACIÓN DE GUARDADO -->
-  @if (mensajeEstado) {
-    <div class="alert-success-custom">
-      {{ mensajeEstado }}
+    <!-- =================================================
+         SUBIR CV EXISTENTE
+         ================================================= -->
+
+    <div class="cv-subir-container">
+
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="abrirModal('cv')"
+      >
+        📎 Subir CV
+      </button>
+
     </div>
+
+  </div>
+
+}
+
+
+  </div>
+
+  <!-- =====================================================
+       4. STACK TÉCNICO Y HABILIDADES
+       ===================================================== -->
+
+  <div class="perfil-card card-skills">
+
+
+<div class="card-header-actions">
+
+  <h3>
+    🛠️ Stack Técnico y Habilidades
+  </h3>
+
+  <button
+    type="button"
+    class="btn-link-editar"
+    (click)="abrirModal('skills')"
+    title="Seleccionar habilidades"
+  >
+    ✏️
+  </button>
+
+</div>
+
+
+<div class="tags-container">
+
+  @for (
+    skill of perfil.skills;
+    track skill.skill_id
+  ) {
+
+    <span class="tag">
+      {{ skill.nombre }}
+    </span>
+
   }
 
-  <!-- 2. CARD PERFIL PROFESIONAL / SOBRE MÍ -->
-  <div class="perfil-card card-sobre-mi">
-    <div class="card-header-actions">
-      <h3>💻 Perfil Profesional</h3>
-      <button class="btn-link-editar" (click)="abrirModal('sobreMi')" title="Editar descripción">✏️</button>
-    </div>
+</div>
 
-    @if (perfil.sobre_mi) {
-      <p class="texto-descripcion">{{ perfil.sobre_mi }}</p>
-    } @else {
-      <p class="empty-text">
-        Contale a las empresas tu enfoque técnico: tecnologías principales, orientación y motivación profesional.
-      </p>
-    }
 
-    <div class="resumen-tecnico-grid">
-      <div class="item-resumen">
-        <span class="label">Especialidad / Interés:</span>
-        <span class="valor">{{ perfil.especialidad || 'No definida' }}</span>
-      </div>
-      <div class="item-resumen">
-        <span class="label">Estado académico:</span>
-        <span class="valor">{{ perfil.estado_academico || 'Estudiante Avanzado' }}</span>
-      </div>
-    </div>
+@if (perfil.otras_habilidades) {
+
+  <div class="otras-habilidades-display">
+
+    <p class="subtitulo-habilidades">
+      Otras herramientas y conocimientos:
+    </p>
+
+    <p class="texto-adicional">
+      {{ perfil.otras_habilidades }}
+    </p>
+
   </div>
 
-  <!-- 3. CARD CURRICULUM VITAE (PDF) -->
-  <div class="perfil-card card-cv">
-    <div class="card-header-actions">
-      <h3>📄 Curriculum Vitae</h3>
-      <button class="btn-editar" (click)="abrirModal('cv')">
-        {{ perfil.cv_url ? '✏️ Cambiar CV' : '➕ Adjuntar CV' }}
-      </button>
-    </div>
+}
 
-    <div class="cv-content">
-      @if (perfil.cv_url) {
-        <div class="cv-adjunto">
-          <span class="icono-doc">📄</span>
-          <div class="cv-info">
-            <strong>{{ perfil.cv_nombre || 'Curriculum_Vitae.pdf' }}</strong>
-            <a [href]="perfil.cv_url" target="_blank" class="link-descarga">
-              Ver / Descargar archivo
-            </a>
-          </div>
-        </div>
-      } @else {
-        <p class="empty-text">
-          Aún no adjuntaste tu CV en formato PDF.
-        </p>
-      }
-    </div>
+
+@if (
+  perfil.skills.length === 0 &&
+  !perfil.otras_habilidades
+) {
+
+  <p class="empty-text">
+
+    Hacé clic en el lápiz para seleccionar
+    tus habilidades del catálogo o agregar otras.
+
+  </p>
+
+}
+
+
   </div>
 
-  <!-- 4. CARD STACK TÉCNICO Y SKILLS -->
-  <div class="perfil-card card-skills">
-    <div class="card-header-actions">
-      <h3>🛠️ Stack Técnico y Habilidades</h3>
-      <button class="btn-link-editar" (click)="abrirModal('skills')" title="Seleccionar habilidades">✏️</button>
-    </div>
-    
-    <div class="tags-container">
-      @for (skill of perfil.skills; track skill.skill_id) {
-        <span class="tag">{{ skill.nombre }}</span>
-      }
-    </div>
+  <!-- =====================================================
+       5. REDES Y PORTAFOLIO
+       ===================================================== -->
 
-    @if (perfil.otras_habilidades) {
-      <div class="otras-habilidades-display">
-        <p class="subtitulo-habilidades">Otras herramientas y conocimientos:</p>
-        <p class="texto-adicional">{{ perfil.otras_habilidades }}</p>
-      </div>
-    }
-
-    @if (perfil.skills.length === 0 && !perfil.otras_habilidades) {
-      <p class="empty-text">Hacé clic en el lápiz para seleccionar tus habilidades del catálogo o agregar otras.</p>
-    }
-  </div>
-
-  <!-- 5. CARD REDES Y PORTAFOLIO -->
   <div class="perfil-card card-redes">
-    <div class="card-header-actions">
-      <h3>🌐 Redes y Portafolio</h3>
-      <button class="btn-link-editar" (click)="abrirModal('redes')" title="Editar enlaces">✏️</button>
-    </div>
-    
-    <div class="links-grid">
-      @if (perfil.redes.github) {
-        <a [href]="perfil.redes.github" target="_blank" class="link-red github">📁 GitHub</a>
-      }
-      @if (perfil.redes.linkedin) {
-        <a [href]="perfil.redes.linkedin" target="_blank" class="link-red linkedin">💼 LinkedIn</a>
-      }
-      @if (perfil.redes.portfolio) {
-        <a [href]="perfil.redes.portfolio" target="_blank" class="link-red portfolio">🌐 Web / Portafolio</a>
-      }
-      @if (!perfil.redes.github && !perfil.redes.linkedin && !perfil.redes.portfolio) {
-        <p class="empty-text">No vinculaste ninguna red profesional aún.</p>
-      }
-    </div>
+
+
+<div class="card-header-actions">
+
+  <h3>
+    🌐 Redes y Portafolio
+  </h3>
+
+  <button
+    type="button"
+    class="btn-link-editar"
+    (click)="abrirModal('redes')"
+    title="Editar enlaces"
+  >
+    ✏️
+  </button>
+
+</div>
+
+
+<div class="links-grid">
+
+  @if (perfil.redes.github) {
+
+    <a
+      [href]="perfil.redes.github"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="link-red github"
+    >
+      📁 GitHub
+    </a>
+
+  }
+
+
+  @if (perfil.redes.linkedin) {
+
+    <a
+      [href]="perfil.redes.linkedin"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="link-red linkedin"
+    >
+      💼 LinkedIn
+    </a>
+
+  }
+
+
+  @if (perfil.redes.portfolio) {
+
+    <a
+      [href]="perfil.redes.portfolio"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="link-red portfolio"
+    >
+      🌐 Web / Portafolio
+    </a>
+
+  }
+
+
+  @if (
+    !perfil.redes.github &&
+    !perfil.redes.linkedin &&
+    !perfil.redes.portfolio
+  ) {
+
+    <p class="empty-text">
+      No vinculaste ninguna red profesional aún.
+    </p>
+
+  }
+
+</div>
+
+
   </div>
+ <!-- =====================================================
+     MODAL: EDITAR UBICACIÓN
+     ===================================================== -->
+
+@if (modalActivo === 'principales') {
+
+  <div
+    class="modal-overlay"
+    (click)="cerrarModal()"
+  >
+
+    <div
+      class="modal-container"
+      (click)="$event.stopPropagation()"
+    >
+
+      <div class="modal-header">
+
+        <div>
+          <h2>📍 Editar Ubicación</h2>
+
+          <p>
+            Actualizá la ubicación que verán las empresas.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-cerrar-modal"
+          (click)="cerrarModal()"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="form-group">
+
+          <label for="ciudad">
+            Ciudad
+          </label>
+
+          <input
+            id="ciudad"
+            type="text"
+            [(ngModel)]="tempUbicacion.ciudad"
+            placeholder="Ej. Lanús"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="pais">
+            País
+          </label>
+
+          <input
+            id="pais"
+            type="text"
+            [(ngModel)]="tempUbicacion.pais"
+            placeholder="Ej. Argentina"
+          >
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="cerrarModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="guardarUbicacion()"
+        >
+          💾 Guardar ubicación
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}
+
+
+<!-- =====================================================
+     MODAL: EDITAR PERFIL PROFESIONAL
+     ===================================================== -->
+
+@if (modalActivo === 'sobreMi') {
+
+  <div
+    class="modal-overlay"
+    (click)="cerrarModal()"
+  >
+
+    <div
+      class="modal-container"
+      (click)="$event.stopPropagation()"
+    >
+
+      <div class="modal-header">
+
+        <div>
+          <h2>💻 Perfil Profesional</h2>
+
+          <p>
+            Contale a las empresas sobre tu perfil y orientación profesional.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-cerrar-modal"
+          (click)="cerrarModal()"
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <div class="modal-body">
+
+        <div class="form-group">
+
+          <label for="sobreMi">
+            Sobre mí
+          </label>
+
+          <textarea
+            id="sobreMi"
+            rows="5"
+            [(ngModel)]="tempSobreMi.sobre_mi"
+            placeholder="Contá brevemente tu perfil, intereses y objetivos profesionales..."
+          ></textarea>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="especialidad">
+            Especialidad / Interés
+          </label>
+
+          <input
+            id="especialidad"
+            type="text"
+            [(ngModel)]="tempSobreMi.especialidad"
+            placeholder="Ej. Desarrollo Frontend, Análisis de Datos..."
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="estadoAcademico">
+            Estado académico
+          </label>
+
+          <select
+            id="estadoAcademico"
+            [(ngModel)]="tempSobreMi.estado_academico"
+          >
+
+            <option value="Estudiante Inicial">
+              Estudiante Inicial
+            </option>
+
+            <option value="Estudiante Avanzado">
+              Estudiante Avanzado
+            </option>
+
+            <option value="Graduado">
+              Graduado
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="cerrarModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="guardarSobreMi()"
+        >
+          💾 Guardar perfil
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}
+
+
+<!-- =====================================================
+     MODAL: EDITAR SKILLS
+     ===================================================== -->
+
+@if (modalActivo === 'skills') {
+
+  <div
+    class="modal-overlay"
+    (click)="cerrarModal()"
+  >
+
+    <div
+      class="modal-container"
+      (click)="$event.stopPropagation()"
+    >
+
+      <div class="modal-header">
+
+        <div>
+          <h2>🛠️ Stack Técnico y Habilidades</h2>
+
+          <p>
+            Seleccioná las tecnologías y conocimientos que forman parte de tu perfil.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-cerrar-modal"
+          (click)="cerrarModal()"
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <div class="modal-body">
+
+        <div class="form-group">
+
+          <label for="busquedaSkill">
+            Buscar habilidad
+          </label>
+
+          <input
+            id="busquedaSkill"
+            type="text"
+            [(ngModel)]="busquedaSkill"
+            placeholder="Ej. Angular, Excel, Python..."
+          >
+
+        </div>
+
+
+        <div class="skills-modal-list">
+
+          @for (
+            categoria of categoriasFiltradas;
+            track categoria.categoria_id
+          ) {
+
+            <div class="skill-categoria">
+
+              <h4>
+                {{ categoria.nombre_categoria }}
+              </h4>
+
+
+              <div class="skills-checkbox-grid">
+
+                @for (
+                  skill of categoria.skills;
+                  track skill.skill_id
+                ) {
+
+                  <label class="skill-checkbox">
+
+                    <input
+                      type="checkbox"
+                      [checked]="esSkillSeleccionada(skill.skill_id)"
+                      (change)="toggleSkill(skill.skill_id)"
+                    >
+
+                    <span>
+                      {{ skill.nombre }}
+                    </span>
+
+                  </label>
+
+                }
+
+              </div>
+
+            </div>
+
+          }
+
+          @if (categoriasFiltradas.length === 0) {
+
+            <p class="empty-text">
+              No se encontraron habilidades con esa búsqueda.
+            </p>
+
+          }
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="otrasHabilidades">
+            Otras herramientas y conocimientos
+          </label>
+
+          <textarea
+            id="otrasHabilidades"
+            rows="4"
+            [(ngModel)]="tempOtrasHabilidades"
+            placeholder="Podés agregar otras herramientas, conocimientos o tecnologías..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="cerrarModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="guardarSkills()"
+        >
+          💾 Guardar habilidades
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}
+
+
+<!-- =====================================================
+     MODAL: EDITAR REDES Y PORTAFOLIO
+     ===================================================== -->
+
+@if (modalActivo === 'redes') {
+
+  <div
+    class="modal-overlay"
+    (click)="cerrarModal()"
+  >
+
+    <div
+      class="modal-container"
+      (click)="$event.stopPropagation()"
+    >
+
+      <div class="modal-header">
+
+        <div>
+          <h2>🌐 Redes y Portafolio</h2>
+
+          <p>
+            Agregá los enlaces donde las empresas puedan conocer tu trabajo.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-cerrar-modal"
+          (click)="cerrarModal()"
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <div class="modal-body">
+
+        <div class="form-group">
+
+          <label for="github">
+            📁 GitHub
+          </label>
+
+          <input
+            id="github"
+            type="url"
+            [(ngModel)]="tempRedes.github"
+            placeholder="https://github.com/tuusuario"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="linkedin">
+            💼 LinkedIn
+          </label>
+
+          <input
+            id="linkedin"
+            type="url"
+            [(ngModel)]="tempRedes.linkedin"
+            placeholder="https://www.linkedin.com/in/tuusuario"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="portfolio">
+            🌐 Web / Portafolio
+          </label>
+
+          <input
+            id="portfolio"
+            type="url"
+            [(ngModel)]="tempRedes.portfolio"
+            placeholder="https://tuportfolio.com"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="cerrarModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="guardarRedes()"
+        >
+          💾 Guardar enlaces
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}
+  <!-- =====================================================
+       MODAL: SUBIR / CAMBIAR CV
+       ===================================================== -->
+
+@if (modalActivo === 'cv') {
+
+
+<div
+  class="modal-overlay"
+  (click)="cerrarModal()"
+>
+
+  <div
+    class="modal-container"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- HEADER -->
+
+    <div class="modal-header">
+
+      <div>
+
+        <h2>
+          📄 Curriculum Vitae
+        </h2>
+
+        <p>
+
+          {{
+            perfil.cv_url
+              ? 'Seleccioná un nuevo CV en formato PDF.'
+              : 'Subí tu CV en formato PDF.'
+          }}
+
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn-cerrar-modal"
+        (click)="cerrarModal()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <!-- BODY -->
+
+    <div class="modal-body">
+
+      <div class="cv-upload-box">
+
+        <div class="cv-upload-icon">
+          📄
+        </div>
+
+
+        <h3>
+
+          {{
+            archivoCVSeleccionado
+              ? archivoCVSeleccionado.name
+              : 'Seleccionar Curriculum Vitae'
+          }}
+
+        </h3>
+
+
+        <p>
+          Formato permitido: PDF · Máximo 5 MB
+        </p>
+
+
+        <input
+          type="file"
+          #cvInput
+          accept="application/pdf"
+          (change)="onArchivoCVSeleccionado($event)"
+          hidden
+        >
+
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cvInput.click()"
+        >
+          📎 Seleccionar archivo
+        </button>
+
+
+        @if (archivoCVSeleccionado) {
+
+          <div class="cv-seleccionado">
+
+            ✓ Archivo seleccionado
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="btn-cancelar"
+        (click)="cerrarModal()"
+      >
+        Cancelar
+      </button>
+
+
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="!archivoCVSeleccionado || subiendoCV"
+        (click)="guardarCV()"
+      >
+
+        @if (!subiendoCV) {
+
+          <span>
+            💾 Guardar CV
+          </span>
+
+        } @else {
+
+          <span>
+            ⏳ Subiendo...
+          </span>
+
+        }
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+}
+
+  <!-- =====================================================
+       MODAL: VISTA PREVIA DEL CV GENERADO O CARGADO
+       ===================================================== -->
+
+@if (
+mostrarVistaPreviaCV &&
+cvPreviewUrl
+) {
+
+
+<div
+  class="modal-overlay cv-preview-overlay"
+  (click)="cerrarVistaPreviaCV()"
+>
+
+  <div
+    class="modal-container cv-preview-modal"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- HEADER -->
+
+    <div class="modal-header">
+
+      <div>
+
+        <h2>
+          👁️ Vista previa del CV
+        </h2>
+
+        <p>
+          {{ perfil.cv_nombre || 'Curriculum Vitae' }}
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn-cerrar-modal"
+        (click)="cerrarVistaPreviaCV()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <!-- PDF -->
+
+    <div class="cv-preview-container">
+
+      <iframe
+        [src]="cvPreviewUrl"
+        class="cv-preview-frame"
+        title="Vista previa del Curriculum Vitae"
+      ></iframe>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="btn-cancelar"
+        (click)="cerrarVistaPreviaCV()"
+      >
+        Cerrar
+      </button>
+
+
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="generarYDescargarCV()"
+      >
+        ⬇️ Descargar PDF
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+}
 
 </div>
