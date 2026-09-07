@@ -186,7 +186,6 @@ router.post('/perfil/:id_postulante/foto', (req, res) => {
     }
 
     const { id_postulante } = req.params;
-
     const fotoUrl = `/uploads/fotoperf/${req.file.filename}`;
 
     try {
@@ -210,19 +209,14 @@ router.post('/perfil/:id_postulante/foto', (req, res) => {
       });
 
     } catch (error) {
-
       console.error('Error al guardar foto en la BD:', error);
-
       return res.status(500).json({
         success: false,
         message: 'Error interno al actualizar la base de datos.'
       });
     }
-
   });
-
 });
-
 
 // ====================================================================
 // 5. POST: SUBIR CV DEL POSTULANTE
@@ -273,42 +267,40 @@ router.post('/perfil/:id_postulante/cv', (req, res) => {
     const cvNombre = req.file.originalname;
 
     try {
+  // Se asume que el perfil ya existe para ese id_postulante
+  const [resultado] = await db.query(
+    `UPDATE perfil_postulante 
+     SET cv_url = ?, cv_nombre = ? 
+     WHERE id_postulante = ?`,
+    [cvUrl, cvNombre, id_postulante]
+  );
 
-      await db.query(
-        `INSERT INTO perfil_postulante
-          (id_postulante, cv_url, cv_nombre)
-         VALUES (?, ?, ?)
-         ON DUPLICATE KEY UPDATE
-          cv_url = VALUES(cv_url),
-          cv_nombre = VALUES(cv_nombre)`,
-        [
-          id_postulante,
-          cvUrl,
-          cvNombre
-        ]
-      );
+  // Si no afectó ninguna fila, es porque no existía la fila previa
+  if (resultado.affectedRows === 0) {
+    return res.status(404).json({
+      success: false,
+      message: 'No se encontró el perfil del postulante para asociar el CV.'
+    });
+  }
 
-      return res.json({
-        success: true,
-        message: 'CV subido correctamente.',
-        cv_url: cvUrl,
-        cv_nombre: cvNombre
-      });
-
-    } catch (error) {
-
-      console.error('Error al guardar CV en la BD:', error);
-
-      return res.status(500).json({
-        success: false,
-        message: 'El archivo se subió, pero no se pudo guardar la información en la base de datos.'
-      });
-    }
-
+  return res.json({
+    success: true,
+    message: 'CV subido correctamente.',
+    cv_url: cvUrl,
+    cv_nombre: cvNombre
   });
+
+} catch (error) {
+  console.error('Error al guardar CV en la BD:', error);
+  return res.status(500).json({
+    success: false,
+    message: 'El archivo se subió, pero no se pudo guardar la información en la base de datos.'
+  });
+}
 
 });
 
+});
 
 // ====================================================================
 // EXPORTAR ROUTER

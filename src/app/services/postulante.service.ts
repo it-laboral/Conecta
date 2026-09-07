@@ -2,6 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface RespuestaCV {
+  success: boolean;
+  message: string;
+  cv_url?: string;
+  cv_nombre?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,16 +55,11 @@ export class PostulanteService {
     );
   }
 
-  subirCV(
-    idPostulante: number,
-    archivo: File
-  ): Observable<any> {
-
+  subirCV(idPostulante: number, archivo: File): Observable<RespuestaCV> {
     const formData = new FormData();
-
     formData.append('cv', archivo);
 
-    return this.http.post(
+    return this.http.post<RespuestaCV>(
       `${this.apiUrl}/perfil/${idPostulante}/cv`,
       formData
     );

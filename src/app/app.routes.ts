@@ -57,49 +57,37 @@ export const routes: Routes = [
 
   {
     path: 'perfil',
-
     loadComponent: () =>
-      import('./pagina/perfiles/sidebar/sidebar')
-        .then(m => m.Sidebar),
-
+      import('./pagina/perfiles/sidebar/sidebar').then(m => m.Sidebar),
     children: [
-
       {
         path: 'postulante',
-
         loadComponent: () =>
           import('./pagina/perfiles/postulante-profile/postulante-profile')
             .then(m => m.PostulanteProfile)
       },
-
       {
-        path: 'postulante/curriculum',
-
+        path: 'curriculum',
         loadComponent: () =>
           import('./pagina/perfiles/curriculum/curriculum')
             .then(m => m.Curriculum)
       },
-
       {
         path: 'empresa',
-
         loadComponent: () =>
           import('./pagina/perfiles/empresa-profile/empresa-profile')
             .then(m => m.EmpresaProfile)
       },
-
-      { 
-        path: '', 
-        redirectTo: 'postulante', 
-        pathMatch: 'full' 
+      {
+        path: '',
+        redirectTo: 'postulante',
+        pathMatch: 'full'
       }
-
     ]
   },
 
-  { 
-    path: '**', 
-    redirectTo: '' 
+  {
+    path: '**',
+    redirectTo: ''
   }
-
 ];

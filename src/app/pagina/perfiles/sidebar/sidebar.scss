@@ -1,104 +1,124 @@
+@use '../../../../styles/variables';
+
+$azul-web: #0d4f8b;
+$azul-electrico: #084297;
+$verde-agua: #10b981;
+$blanco: #ffffff;
+$texto-oscuro: #0f172a;
+
 .dashboard-layout {
   display: flex;
-  height: 100vh;
-  width: 100vw;
-}
-
-.sidebar {
-  width: 250px;
-  background-color: #f8f9fa; // O el color de ITB Conecta
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-  border-right: 1px solid #e0e0e0;
-}
-
-.sidebar {
-  width: 240px;
   min-height: 100vh;
-  background: white;
-  border-right: 1px solid #e5e5e5;
-  padding: 25px;
+  width: 100%;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  .sidebar {
+    width: 240px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background: linear-gradient(180deg, $verde-agua 0%, $azul-web 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+
+    // Header del logo 100% transparente
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0 1rem 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      margin-bottom: 1.25rem;
+
+      img {
+        width: 110px;
+        height: auto;
+        max-height: 110px;
+        object-fit: contain;
+        // La sombra suave ayuda a descolgar la imagen del fondo degradado
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+      }
+
+      h2 {
+        color: $azul-electrico;
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-align: center;
+        // Text shadow ligero para asegurar lectura sobre el verde
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: $texto-oscuro;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 0.65rem 0.9rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(4px);
+        transition: all 0.2s ease;
+
+        &:hover,
+        &.active {
+          background: $blanco;
+          color: $azul-web;
+          font-weight: 700;
+          transform: translateX(3px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+      }
+    }
+
+    .logout {
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: $blanco;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: auto;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #dc2626;
+        color: $blanco;
+      }
+    }
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    min-width: 0;
+  }
 }
-
-
-.sidebar-top{  //aca centre Menu
-
-    background:#0d3b66;
-    padding:10px;
-    border-radius:10px;
-    margin-bottom:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  
-}
-
-.sidebar-top h2{
-    color:white;
-    margin:0;
-    font-size:22px;
-    text-align: center;
-    
-}
-
-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-nav a {
-  display: block;
-  text-decoration: none;
-  color: #333;
-  font-weight: 300;
-  padding: 30px;
-  border-radius: 8px;
-  transition: 0.3s;
-}
-
-nav a:hover{
-  background:#f2f4f7;
-}
-
-.logout {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 15px;
-
-  padding-top: 20px;
-  margin-top: 20px;
-
-  border-top: 1px solid #dcdcdc;
-}
-
-.sidebar-top{
-    background:#0d3b66;
-    padding:10px;
-    border-radius:100px;
-    margin-bottom:10px;
-    
-
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.sidebar-top img{
-    width: 80px;;
-    height: 80px;;
-    object-fit:contain;
-}
-.main-content {
-  flex: 1; // Ocupa todo el resto de la pantalla
-  padding: 30px;
-  overflow-y: auto; // Por si el formulario de perfil es largo
-}
-

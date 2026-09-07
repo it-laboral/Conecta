@@ -15,9 +15,9 @@
         @if (!modoEdicion) {
           <button class="btn-primario" (click)="activarEdicion()">✏️ Editar Perfil</button>
         } @else {
-          <button class="btn-secundario" (click)="cancelarEdicion()" [disabled]="guardando">✕ Cancelar</button>
-          <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando">
-            {{ guardando ? '⏳ Guardando...' : '💾 Guardar Perfil' }}
+          <button class="btn-secundario" (click)="cancelarEdicion()" [disabled]="guardando || subiendoLogo">✕ Cancelar</button>
+          <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando || subiendoLogo">
+            {{ guardando ? '⏳ Guardando...' : (subiendoLogo ? '📤 Subiendo logo...' : '💾 Guardar Perfil') }}
           </button>
         }
       </div>
@@ -116,9 +116,14 @@
                     <span>Sin logo</span>
                   }
                 </div>
-                <input type="file" accept="image/*" (change)="onLogoSelected($event)">
+                <div class="upload-controls">
+                  <input type="file" accept="image/png, image/jpeg, image/jpg" (change)="onLogoSelected($event)" [disabled]="subiendoLogo">
+                  @if (subiendoLogo) {
+                    <small class="upload-status">⏳ Subiendo imagen...</small>
+                  }
+                </div>
               </div>
-            </div>
+            </div> <!-- Div de form-group cerrado correctamente -->
 
             <div class="form-group">
               <label>Modalidad de Trabajo</label>

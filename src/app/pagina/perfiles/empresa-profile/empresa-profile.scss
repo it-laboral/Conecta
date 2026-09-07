@@ -66,7 +66,7 @@
         border: 1px solid variables.$surface-border;
         color: variables.$color-text-dark-main;
 
-        &:hover {
+        &:hover:not(:disabled) {
           background-color: variables.$body-bg;
         }
       }
@@ -75,13 +75,19 @@
         background-color: #2e7d32;
         color: #ffffff;
 
-        &:hover {
+        &:hover:not(:disabled) {
           background-color: #1b5e20;
+        }
+
+        &:disabled {
+          background-color: #4caf50;
+          opacity: 0.85;
+          cursor: wait;
         }
       }
 
       &:disabled {
-        opacity: 0.6;
+        opacity: 0.65;
         cursor: not-allowed;
       }
     }
@@ -111,13 +117,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: variables.$body-bg;
+      background: #ffffff; // Fondo blanco para transparencia de logos
       flex-shrink: 0;
 
       img {
         width: 100%;
         height: 100%;
         object-fit: contain;
+        display: block;
       }
 
       .logo-placeholder {
@@ -271,21 +278,22 @@
     gap: 1.2rem;
 
     .logo-preview {
-      width: 75px;
-      height: 75px;
+      width: 85px;
+      height: 85px;
       border-radius: 14px;
       border: 2px dashed variables.$surface-border;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      background: variables.$surface-bg;
+      background: #ffffff; // Fondo blanco para previsualizar logos transparentes
       flex-shrink: 0;
 
       img {
         width: 100%;
         height: 100%;
         object-fit: contain;
+        display: block;
       }
 
       span {
@@ -295,9 +303,27 @@
       }
     }
 
-    input[type="file"] {
-      font-size: 0.85rem;
-      color: variables.$color-text-dark-main;
+    .upload-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      input[type="file"] {
+        font-size: 0.85rem;
+        color: variables.$color-text-dark-main;
+
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+      }
+
+      .upload-status {
+        color: variables.$link-color;
+        font-weight: 600;
+        font-size: 0.82rem;
+        animation: pulseStatus 1.5s infinite;
+      }
     }
   }
 
@@ -356,6 +382,13 @@
       resize: vertical;
     }
   }
+}
+
+// Animación de pulso para el estado de carga del archivo
+@keyframes pulseStatus {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
 }
 
 // 5. RESPONSIVE DESIGN (Móviles y Tablets)

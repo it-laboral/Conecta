@@ -50,16 +50,16 @@ export class EmpresaProfile implements OnInit {
   modoEdicion: boolean = false;
   cargando: boolean = true;
   guardando: boolean = false;
+  subiendoLogo: boolean = false;
   logoPreview: string | null = null;
   archivoLogoSeleccionado: File | null = null;
-  
+
   ngOnInit(): void {
     this.obtenerDatosEmpresa();
   }
 
   inicializarPerfil(): PerfilEmpresaDTO {
     return {
-      // Datos fijos de empresa
       id_empresa: 0,
       razonSocial: '',
       fantasia: '',
@@ -68,8 +68,6 @@ export class EmpresaProfile implements OnInit {
       sector: '',
       ciudad_fiscal: '',
       provincia_fiscal: '',
-
-      // Campos editables de perfil
       id_perfil: undefined,
       logo: '',
       descripcion: '',
@@ -90,10 +88,8 @@ export class EmpresaProfile implements OnInit {
     const user = this.authService.getUsuarioActual();
     if (!user || !user.id) {
       console.error('No se encontró información de usuario en sesión');
-      queueMicrotask(() => {
-        this.cargando = false;
-        this.router.navigate(['/login']);
-      });
+      this.cargando = false;
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -101,23 +97,17 @@ export class EmpresaProfile implements OnInit {
 
     this.http.get<any>(`${this.apiUrl}/empresa/perfil/${idEmpresa}`).subscribe({
       next: (res) => {
-        queueMicrotask(() => {
-          if (res.success && res.perfil) {
-            this.perfil = { ...this.inicializarPerfil(), ...res.perfil };
-            this.perfilEditado = structuredClone(this.perfil);
-
-            // Si es el primer ingreso (sin perfil creado), entra directo en edición
-            this.modoEdicion = !this.perfil.id_perfil;
-          }
-          this.cargando = false;
-        });
+        if (res.success && res.perfil) {
+          this.perfil = { ...this.inicializarPerfil(), ...res.perfil };
+          this.perfilEditado = structuredClone(this.perfil);
+          this.modoEdicion = !this.perfil.id_perfil;
+        }
+        this.cargando = false;
       },
       error: (err) => {
-        queueMicrotask(() => {
-          console.error('Error al obtener perfil:', err);
-          this.modoEdicion = true;
-          this.cargando = false;
-        });
+        console.error('Error al obtener perfil:', err);
+        this.modoEdicion = true;
+        this.cargando = false;
       }
     });
   }
@@ -134,21 +124,28 @@ export class EmpresaProfile implements OnInit {
       return;
     }
     this.modoEdicion = false;
-    this.logoPreview = null;
+    this.logoPreview = this.perfil.logo || null; // Restaura la imagen anterior
+    this.archivoLogoSeleccionado = null;
+    this.subiendoLogo = false;
   }
 
   guardarCambios(): void {
+    if (this.subiendoLogo) {
+      alert('Por favor aguarda a que finalice la carga de la imagen del logo.');
+      return;
+    }
     this.guardando = true;
 
     const user = this.authService.getUsuarioActual();
-    if (!user || !user.id) {
+    const idEmpresa = user?.id || user?.id_empresa;
+
+    if (!idEmpresa) {
       this.guardando = false;
       return;
     }
 
-    // Payload que envía únicamente lo relativo a perfil_empresa
     const payload = {
-      id_empresa: user.id,
+      id_empresa: idEmpresa,
       logo: this.perfilEditado.logo,
       descripcion: this.perfilEditado.descripcion,
       trayectoria: this.perfilEditado.trayectoria,
@@ -181,14 +178,13 @@ export class EmpresaProfile implements OnInit {
     });
   }
 
-  // 2. MÉTODOS DEL LOGO (Al final de la clase)
+  // MÉTODOS DE MANEJO DE LOGO
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
 
     if (input.files && input.files[0]) {
       const file = input.files[0];
 
-      // Validar que sea JPG o PNG
       if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
         alert('Solo se admiten imágenes en formato JPG o PNG.');
         input.value = '';
@@ -204,25 +200,28 @@ export class EmpresaProfile implements OnInit {
       };
       reader.readAsDataURL(file);
 
-      // Enviar el archivo inmediatamente al endpoint multipart/form-data
+      // Enviar el archivo inmediatamente al servidor
       this.subirLogoServidor(file);
     }
   }
 
   subirLogoServidor(file: File): void {
+    this.subiendoLogo = true; // 👈 Activa el flag antes del HTTP request
+
     const formData = new FormData();
     formData.append('logo', file);
 
     this.http.post<any>(`${this.apiUrl}/empresa/perfil/logo`, formData).subscribe({
       next: (res) => {
         if (res.success && res.logoUrl) {
-          // Asigna la URL del servidor al objeto que enviará el PUT
           this.perfilEditado.logo = res.logoUrl;
         }
+        this.subiendoLogo = false;
       },
       error: (err) => {
         console.error('Error al subir logo:', err);
         alert('No se pudo subir la imagen del logo al servidor.');
+        this.subiendoLogo = false; // 👈 Libera la bandera si falla la petición
       }
     });
   }
