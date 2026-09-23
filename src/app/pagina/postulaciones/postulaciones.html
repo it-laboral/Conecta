@@ -1,0 +1,161 @@
+<div class="postulaciones-container">
+  <header class="header">
+    <div class="header-info">
+      <h2>
+        @if (rolUsuario === 'postulante') { Mis Postulaciones }
+        @else if (rolUsuario === 'empresa') { Postulaciones Recibidas }
+        @else { Gestión General de Postulaciones }
+      </h2>
+      <p class="subtitle">
+        @if (rolUsuario === 'postulante') { Seguimiento en tiempo real de tus postulaciones laborales. }
+        @else if (rolUsuario === 'empresa') { Revisa y gestiona los candidatos postulados a tus ofertas. }
+        @else { Listado general y control de postulaciones registradas en ITB Conecta. }
+      </p>
+    </div>
+
+    @if (idOfertaFiltro) {
+      <div class="filtro-activo-badge">
+        📌 Filtrado por Oferta #{{ idOfertaFiltro }}
+      </div>
+    }
+  </header>
+
+  <!-- Estado de Carga -->
+  @if (cargando) {
+    <div class="state-box loading">
+      <div class="spinner"></div>
+      <p>Cargando postulaciones...</p>
+    </div>
+  } 
+
+  <!-- Estado Vacío -->
+  @else if (postulaciones.length === 0) {
+    <div class="state-box empty">
+      <p>No se encontraron postulaciones registradas.</p>
+    </div>
+  } 
+
+  <!-- Listado Tabular de Postulaciones -->
+  @else {
+    <div class="table-responsive">
+      <table class="tabla-postulaciones">
+        <thead>
+          <tr>
+            <th>Oferta</th>
+
+            @if (rolUsuario !== 'empresa') {
+              <th>Empresa</th>
+            }
+
+            @if (rolUsuario !== 'postulante') {
+              <th>Candidato</th>
+              <th>Contacto</th>
+            }
+
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of postulaciones; track obtenerId(item)) {
+            <tr>
+              <!-- Oferta -->
+              <td class="col-oferta">
+                <span class="titulo-oferta">{{ item.titulo_oferta }}</span>
+              </td>
+
+              <!-- Empresa (visible para postulante y admin) -->
+              @if (rolUsuario !== 'empresa') {
+                <td class="col-empresa">
+                  {{ item.razon_social || 'N/A' }}
+                </td>
+              }
+
+              <!-- Candidato y Contacto (visible para empresa y admin) -->
+              @if (rolUsuario !== 'postulante') {
+                <td class="col-candidato">
+                  {{ item.nombre_postulante }} {{ item.apellido_postulante }}
+                </td>
+                <td class="col-contacto">
+                  <a [href]="'mailto:' + item.email_postulante" class="link-email">
+                    {{ item.email_postulante }}
+                  </a>
+                </td>
+              }
+
+              <!-- Fecha -->
+              <td class="col-fecha">
+                {{ item.fecha_postulacion | date:'dd/MM/yyyy' }}
+              </td>
+
+              <!-- Estado -->
+              <td class="col-estado">
+                <span class="badge" [ngClass]="(item.estado || 'pendiente').toLowerCase().replaceAll(' ', '-')">
+                  {{ item.estado }}
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td class="col-acciones">
+                <div class="actions-wrapper">
+                  
+                  <!-- Ver perfil y Cambiar Estado (Empresa / Admin) -->
+                  @if (rolUsuario === 'empresa' || rolUsuario === 'admin') {
+                    <button 
+                      type="button" 
+                      class="btn-ver-perfil" 
+                      (click)="verPerfilPostulante(item.id_postulante)"
+                      title="Ver Perfil del Candidato">
+                      👤 Perfil
+                    </button>
+
+                    <div class="select-estado-wrapper">
+                      <select 
+                        [id]="'estado-' + obtenerId(item)"
+                        [value]="item?.estado || 'Pendiente'"
+                        (change)="actualizarEstado(obtenerId(item), $event)"
+                        class="select-estado">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Revision">En Revisión</option>
+                        <option value="Aceptado">Aceptado</option>
+                        <option value="Rechazado">Rechazado</option>
+                      </select>
+                    </div>
+                  }
+
+                  <!-- Moderación (Admin) -->
+                  @if (rolUsuario === 'admin') {
+                    <button 
+                      type="button" 
+                      class="btn-eliminar-admin" 
+                      (click)="eliminarPorModeracion(obtenerId(item))"
+                      title="Eliminar Postulación">
+                      🗑️
+                    </button>
+                  }
+
+                  <!-- Acciones para el Postulante (Anular postulación) -->
+                  @if (rolUsuario === 'postulante') {
+                    @if ((item.estado || '').toLowerCase() === 'pendiente' || (item.estado || '').toLowerCase() === 'en revision') {
+                      <button 
+                        type="button" 
+                        class="btn-cancelar" 
+                        (click)="cancelarPostulacion(obtenerId(item))"
+                        title="Anular postulación">
+                        🚫 Anular
+                      </button>
+                    } @else {
+                      <span class="sin-acciones" title="Postulación en estado finalizado">—</span>
+                    }
+                  }
+
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, PLATFORM_ID, Input } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, OnChanges, SimpleChanges, inject, PLATFORM_ID, Input, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PostulanteService } from '../../../services/postulante.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
@@ -84,19 +84,26 @@ export function inicializarPerfilPostulante(): PostulantePerfilDTO {
   templateUrl: './postulante-profile.html',
   styleUrl: './postulante-profile.scss'
 })
-export class PostulanteProfile implements OnInit {
+export class PostulanteProfile implements OnInit, OnChanges {
 
   // SERVICIOS
   private postulanteService = inject(PostulanteService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private location = inject(Location);
   private sanitizer = inject(DomSanitizer);
-  
-  // MODO RECLUTADOR (Si viene desde vista de empresas/reclutador)
-  @Input() esVistaReclutador: boolean = false;
+  private cdr = inject(ChangeDetectorRef);
+
+  // 1. RECEPTOR DE ID DESDE PANEL-ADMIN O PADRE
+  @Input() idPostulanteInput?: number;
+  @Input() esModoAdmin: boolean = false;
+
+  // BANDERAS DE NAVEGACIÓN Y PERMISOS
+  esVisitante: boolean = false;
+  idPostulanteAObtener: number = 0;
 
   // DATOS DEL USUARIO
-  idPostulanteLogueado: number = 0;
   perfil: PostulantePerfilDTO = inicializarPerfilPostulante();
 
   // ESTADOS
@@ -137,65 +144,98 @@ export class PostulanteProfile implements OnInit {
   };
 
   ngOnInit(): void {
+    this.evaluarYcargarDatos();
+  }
+
+  // Detecta cambios si el admin selecciona a otro postulante de la lista
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['idPostulanteInput'] && !changes['idPostulanteInput'].firstChange) {
+      const nuevoId = changes['idPostulanteInput'].currentValue;
+      if (nuevoId) {
+        this.esVisitante = true;
+        this.idPostulanteAObtener = Number(nuevoId);
+        this.obtenerDatosDelPostulante();
+        this.cargarCatalogoSkills();
+      }
+    }
+  }
+
+  private evaluarYcargarDatos(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+
+    if (this.idPostulanteInput) {
+      // Viene como componente hijo en Panel Admin o Modal
+      this.esVisitante = true;
+      this.idPostulanteAObtener = Number(this.idPostulanteInput);
+    } else if (idParam) {
+      // Viene por URL directa (/postulante/:id)
+      this.esVisitante = true;
+      this.idPostulanteAObtener = Number(idParam);
+    } else {
+      // El propio alumno ingresando a su perfil (/perfil/postulante)
+      this.esVisitante = false;
+      this.idPostulanteAObtener = this.obtenerIdDeSesion();
+    }
+
+    if (this.idPostulanteAObtener) {
+      this.obtenerDatosDelPostulante();
+      this.cargarCatalogoSkills();
+    }
+  }
+
+  private obtenerIdDeSesion(): number {
     if (isPlatformBrowser(this.platformId)) {
       const usuarioSesion = localStorage.getItem('usuario');
       if (usuarioSesion) {
         try {
           const userObj = JSON.parse(usuarioSesion);
-          this.idPostulanteLogueado = userObj.id_postulante || userObj.id || 1;
+          return userObj.id_postulante || userObj.id || 1;
         } catch (error) {
           console.error('Error al leer usuario de localStorage:', error);
-          this.idPostulanteLogueado = 1;
         }
-      } else {
-        this.idPostulanteLogueado = 1;
       }
-    } else {
-      this.idPostulanteLogueado = 1;
     }
-
-    this.obtenerDatosDelPostulante();
-    this.cargarCatalogoSkills();
+    return 1;
   }
 
-  /// ==========================================
+  volver(): void {
+    this.location.back();
+  }
+
+  // ==========================================
   // GESTIÓN DE CURRICULUM VITAE
   // ==========================================
 
-  // Construye la ruta absoluta conectando con el backend
   private obtenerUrlCV(): string | null {
     if (!this.perfil?.cv_url) return null;
-    const backendUrl = 'http://localhost:3000'; // Puerto del backend Node.js
+    const backendUrl = 'http://localhost:3000';
     return this.perfil.cv_url.startsWith('http')
       ? this.perfil.cv_url
       : `${backendUrl}${this.perfil.cv_url}`;
   }
 
-  // Botón "📝 Ir a Curriculum" / "✏️"
   irACurriculum(): void {
+    if (this.esVisitante) return;
     this.router.navigate(['/perfil/curriculum']);
   }
 
-  // Botón "👁️ Ver / Previsualizar"
-  // 1. ABRIR EL MODAL Y SANITIZAR LA URL
   verCV(): void {
     const rawUrl = this.obtenerUrlCV();
 
     if (rawUrl) {
-      // bypassSecurityTrustResourceUrl permite que el <iframe> cargue el PDF sin errores de Angular
       this.cvPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl);
       this.mostrarVistaPreviaCV = true;
+      this.cdr.detectChanges();
     } else {
       this.irACurriculum();
     }
   }
 
-  // 2. CERRAR EL MODAL
   cerrarVistaPreviaCV(): void {
     this.mostrarVistaPreviaCV = false;
-    this.cvPreviewUrl = null; // Limpia la URL para liberar memoria
+    this.cvPreviewUrl = null;
   }
-  // 3 Botón "⬇️ Descargar"
+
   async descargarCV(): Promise<void> {
     const url = this.obtenerUrlCV();
 
@@ -205,7 +245,6 @@ export class PostulanteProfile implements OnInit {
     }
 
     try {
-      // Descarga el PDF como Blob para saltarse el bloqueo CORS del navegador
       const respuesta = await fetch(url);
       const blob = await respuesta.blob();
 
@@ -221,46 +260,42 @@ export class PostulanteProfile implements OnInit {
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error('Error al descargar el PDF:', error);
-      window.open(url, '_blank'); // Fallback si falla el fetch
+      window.open(url, '_blank');
     }
   }
+
   // ==========================================
   // FOTO DE PERFIL
   // ==========================================
 
   getFotoUrl(): string {
-    // 1. Si hay una previsualización local recién seleccionada
     if (this.fotoPreview) {
       return this.fotoPreview;
     }
 
-    // 2. Si hay foto guardada en la base de datos
     if (this.perfil?.foto) {
       const foto = this.perfil.foto;
 
-      // Si es una URL completa de internet o una cadena en Base64
       if (foto.startsWith('http') || foto.startsWith('data:')) {
         return foto;
       }
 
-      // Aseguramos que la ruta tenga la barra '/' inicial para no formar 'http://localhost:3000uploads...'
       const rutaLimpia = foto.startsWith('/') ? foto : `/${foto}`;
       return `http://localhost:3000${rutaLimpia}`;
     }
 
-    // 3. Imagen por defecto si no tiene foto cargada
     return 'assets/img/default-avatar.png';
   }
 
-  // Manejador por si la imagen falla al cargar (404 o error de red)
   onFotoError(event: Event): void {
     const imgElement = event.target as HTMLImageElement;
     imgElement.src = 'assets/img/default-avatar.png';
   }
 
   onFotoSeleccionada(event: Event): void {
-    const input = event.target as HTMLInputElement;
+    if (this.esVisitante) return;
 
+    const input = event.target as HTMLInputElement;
     if (!input.files || !input.files[0]) return;
 
     const file = input.files[0];
@@ -279,20 +314,19 @@ export class PostulanteProfile implements OnInit {
 
     this.archivoFotoSeleccionado = file;
 
-    // Generamos la vista previa y SUBIMOS recién cuando termina de leer el archivo
     const reader = new FileReader();
     reader.onload = () => {
       this.fotoPreview = reader.result as string;
-      this.subirFotoPerfil(); // <-- Se ejecuta cuando la lectura finalizó
+      this.subirFotoPerfil();
     };
     reader.readAsDataURL(file);
   }
 
   subirFotoPerfil(): void {
-    if (!this.archivoFotoSeleccionado || !this.idPostulanteLogueado) return;
+    if (!this.archivoFotoSeleccionado || !this.idPostulanteAObtener) return;
 
     this.postulanteService
-      .subirFotoPerfil(this.idPostulanteLogueado, this.archivoFotoSeleccionado)
+      .subirFotoPerfil(this.idPostulanteAObtener, this.archivoFotoSeleccionado)
       .subscribe({
         next: (res: any) => {
           if (res.success) {
@@ -300,6 +334,7 @@ export class PostulanteProfile implements OnInit {
             this.archivoFotoSeleccionado = null;
             this.fotoPreview = null;
             alert('¡Foto de perfil actualizada!');
+            this.cdr.detectChanges();
           } else {
             alert(res.message || 'No se pudo subir la foto.');
             this.fotoPreview = null;
@@ -318,9 +353,9 @@ export class PostulanteProfile implements OnInit {
   // ==========================================
 
   obtenerDatosDelPostulante(): void {
-    if (!this.idPostulanteLogueado) return;
+    if (!this.idPostulanteAObtener) return;
 
-    this.postulanteService.getPerfil(this.idPostulanteLogueado).subscribe({
+    this.postulanteService.getPerfil(this.idPostulanteAObtener).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.perfil = {
@@ -330,15 +365,17 @@ export class PostulanteProfile implements OnInit {
             redes: res.data.redes || { github: '', linkedin: '', portfolio: '' }
           };
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al obtener perfil:', err);
+        this.cdr.detectChanges();
       }
     });
   }
 
   guardarPerfilCompleto(): void {
-    if (!this.idPostulanteLogueado) {
+    if (!this.idPostulanteAObtener) {
       alert('No se identificó la sesión del usuario.');
       return;
     }
@@ -347,7 +384,7 @@ export class PostulanteProfile implements OnInit {
     this.mensajeEstado = null;
 
     this.postulanteService
-      .actualizarPerfil(this.idPostulanteLogueado, this.perfil)
+      .actualizarPerfil(this.idPostulanteAObtener, this.perfil)
       .subscribe({
         next: (res) => {
           this.guardando = false;
@@ -355,16 +392,19 @@ export class PostulanteProfile implements OnInit {
             this.mensajeEstado = '¡Perfil guardado con éxito!';
             setTimeout(() => {
               this.mensajeEstado = null;
+              this.cdr.detectChanges();
             }, 4000);
             this.obtenerDatosDelPostulante();
           } else {
             alert(res.message || 'No se pudieron guardar los cambios.');
           }
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.guardando = false;
           console.error('Error al guardar perfil:', err);
           alert(err?.error?.message || 'Ocurrió un error al guardar los datos.');
+          this.cdr.detectChanges();
         }
       });
   }
@@ -393,6 +433,7 @@ export class PostulanteProfile implements OnInit {
       next: (res) => {
         if (res.success) {
           this.categoriasSkills = res.data;
+          this.cdr.detectChanges();
         }
       },
       error: (err) => console.error('Error al cargar skills:', err)
@@ -417,6 +458,8 @@ export class PostulanteProfile implements OnInit {
   // ==========================================
 
   abrirModal(tipo: 'principales' | 'sobreMi' | 'skills' | 'redes'): void {
+    if (this.esVisitante) return;
+
     this.modalActivo = tipo;
 
     switch (tipo) {
@@ -470,7 +513,6 @@ export class PostulanteProfile implements OnInit {
     this.cerrarModal();
   }
 
-  // Renombrado a guardarSkills() para que coincida exactamente con el HTML
   guardarSkills(): void {
     const todasLasSkills: SkillDTO[] = [];
     this.categoriasSkills.forEach(cat => todasLasSkills.push(...cat.skills));
@@ -481,7 +523,6 @@ export class PostulanteProfile implements OnInit {
     this.cerrarModal();
   }
 
-  // Alias por si en algún lugar del HTML quedó escrito guardarSkillsModal()
   guardarSkillsModal(): void {
     this.guardarSkills();
   }

@@ -1,9 +1,19 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { 
+  Component, 
+  OnInit, 
+  OnChanges, 
+  SimpleChanges, 
+  Input, 
+  Output, 
+  EventEmitter, 
+  inject, 
+  ChangeDetectorRef 
+} from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 export interface PerfilEmpresaDTO {
   // Datos fijos / fiscales (Tabla 'empresa')
@@ -38,15 +48,25 @@ export interface PerfilEmpresaDTO {
   templateUrl: './empresa-profile.html',
   styleUrl: './empresa-profile.scss',
 })
-export class EmpresaProfile implements OnInit {
+export class EmpresaProfile implements OnInit, OnChanges {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private location = inject(Location);
+  private cdr = inject(ChangeDetectorRef);
+
   private apiUrl = 'http://localhost:3000/api';
+  readonly serverUrl = 'http://localhost:3000'; // 👈 Base para resolver rutas relativas de logos
+
+  @Input() idEmpresaInput?: number | null = null;
+  @Input() esModoAdmin: boolean = false;
+  @Output() cerrarModal = new EventEmitter<void>();
 
   perfil: PerfilEmpresaDTO = this.inicializarPerfil();
   perfilEditado: PerfilEmpresaDTO = this.inicializarPerfil();
 
+  esVisitante: boolean = false; // Indica si quien mira es Postulante/Admin
   modoEdicion: boolean = false;
   cargando: boolean = true;
   guardando: boolean = false;
@@ -56,6 +76,13 @@ export class EmpresaProfile implements OnInit {
 
   ngOnInit(): void {
     this.obtenerDatosEmpresa();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['idEmpresaInput'] && !changes['idEmpresaInput'].isFirstChange()) {
+      this.modoEdicion = false;
+      this.obtenerDatosEmpresa();
+    }
   }
 
   inicializarPerfil(): PerfilEmpresaDTO {
@@ -85,34 +112,69 @@ export class EmpresaProfile implements OnInit {
   obtenerDatosEmpresa(): void {
     this.cargando = true;
 
-    const user = this.authService.getUsuarioActual();
-    if (!user || !user.id) {
-      console.error('No se encontró información de usuario en sesión');
-      this.cargando = false;
-      this.router.navigate(['/login']);
-      return;
-    }
+    const idParam = this.route.snapshot.paramMap.get('id');
+    let idEmpresa: number;
 
-    const idEmpresa = user.id;
+    // Prioridad 1: Recibido por @Input() desde modal Admin/Postulante
+    if (this.idEmpresaInput) {
+      this.esVisitante = true;
+      idEmpresa = Number(this.idEmpresaInput);
+    } 
+    // Prioridad 2: Recibido por parámetro de URL (/empresa/5)
+    else if (idParam) {
+      this.esVisitante = true;
+      idEmpresa = Number(idParam);
+    } 
+    // Prioridad 3: Sesión activa de la propia empresa (/mi-perfil-empresa)
+    else {
+      this.esVisitante = false;
+      const user = this.authService.getUsuarioActual();
+
+      if (!user || (!user.id && !user.id_empresa)) {
+        console.error('No se encontró información de usuario en sesión');
+        this.cargando = false;
+        this.router.navigate(['/sesion']);
+        return;
+      }
+
+      idEmpresa = user.id || user.id_empresa;
+    }
 
     this.http.get<any>(`${this.apiUrl}/empresa/perfil/${idEmpresa}`).subscribe({
       next: (res) => {
         if (res.success && res.perfil) {
           this.perfil = { ...this.inicializarPerfil(), ...res.perfil };
+          
+          // Formatear logo si el backend devuelve una ruta relativa (/uploads/...)
+          if (this.perfil.logo && !this.perfil.logo.startsWith('http')) {
+            this.perfil.logo = `${this.serverUrl}${this.perfil.logo.startsWith('/') ? '' : '/'}${this.perfil.logo}`;
+          }
+
           this.perfilEditado = structuredClone(this.perfil);
-          this.modoEdicion = !this.perfil.id_perfil;
+          this.modoEdicion = this.esVisitante ? false : !this.perfil.id_perfil;
         }
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al obtener perfil:', err);
-        this.modoEdicion = true;
+        this.modoEdicion = !this.esVisitante;
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
+  volver(): void {
+    if (this.idEmpresaInput) {
+      this.cerrarModal.emit();
+    } else {
+      this.location.back();
+    }
+  }
+
   activarEdicion(): void {
+    if (this.esVisitante) return;
     this.perfilEditado = structuredClone(this.perfil);
     this.logoPreview = this.perfil.logo || null;
     this.modoEdicion = true;
@@ -124,12 +186,14 @@ export class EmpresaProfile implements OnInit {
       return;
     }
     this.modoEdicion = false;
-    this.logoPreview = this.perfil.logo || null; // Restaura la imagen anterior
+    this.logoPreview = this.perfil.logo || null;
     this.archivoLogoSeleccionado = null;
     this.subiendoLogo = false;
   }
 
   guardarCambios(): void {
+    if (this.esVisitante) return; // Guard de seguridad
+
     if (this.subiendoLogo) {
       alert('Por favor aguarda a que finalice la carga de la imagen del logo.');
       return;
@@ -169,17 +233,20 @@ export class EmpresaProfile implements OnInit {
           alert('Perfil guardado con éxito.');
         }
         this.guardando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al guardar perfil:', err);
         alert('Ocurrió un error al intentar guardar los cambios.');
         this.guardando = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // MÉTODOS DE MANEJO DE LOGO
   onLogoSelected(event: Event): void {
+    if (this.esVisitante) return;
+
     const input = event.target as HTMLInputElement;
 
     if (input.files && input.files[0]) {
@@ -193,20 +260,20 @@ export class EmpresaProfile implements OnInit {
 
       this.archivoLogoSeleccionado = file;
 
-      // Generar vista previa inmediata en el cliente
       const reader = new FileReader();
       reader.onload = () => {
         this.logoPreview = reader.result as string;
+        this.cdr.detectChanges();
       };
       reader.readAsDataURL(file);
 
-      // Enviar el archivo inmediatamente al servidor
       this.subirLogoServidor(file);
     }
   }
 
   subirLogoServidor(file: File): void {
-    this.subiendoLogo = true; // 👈 Activa el flag antes del HTTP request
+    if (this.esVisitante) return;
+    this.subiendoLogo = true;
 
     const formData = new FormData();
     formData.append('logo', file);
@@ -214,15 +281,47 @@ export class EmpresaProfile implements OnInit {
     this.http.post<any>(`${this.apiUrl}/empresa/perfil/logo`, formData).subscribe({
       next: (res) => {
         if (res.success && res.logoUrl) {
-          this.perfilEditado.logo = res.logoUrl;
+          let url = res.logoUrl;
+          if (!url.startsWith('http')) {
+            url = `${this.serverUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+          }
+          this.perfilEditado.logo = url;
         }
         this.subiendoLogo = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al subir logo:', err);
         alert('No se pudo subir la imagen del logo al servidor.');
-        this.subiendoLogo = false; // 👈 Libera la bandera si falla la petición
+        this.subiendoLogo = false;
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  // 🛠️ Helpers útiles para usar en la plantilla HTML:
+
+  /**
+   * Convierte "Angular, Node.js, TypeScript" en un arreglo ["Angular", "Node.js", "TypeScript"]
+   * Útil para renderizar badges en el HTML mediante *ngFor
+   */
+  get stackList(): string[] {
+    if (!this.perfil.stack_tecnologico) return [];
+    return this.perfil.stack_tecnologico
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+  }
+
+  /**
+   * Garantiza que los enlaces externos (web, linkedin) tengan el protocolo https://
+   * evita que el navegador intente abrir la URL como una ruta interna de Angular.
+   */
+  obtenerUrlValida(url?: string): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
   }
 }

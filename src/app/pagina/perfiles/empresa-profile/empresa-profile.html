@@ -8,20 +8,26 @@
     <div class="perfil-header">
       <div class="header-info">
         <h2>🏢 Perfil de la Empresa</h2>
-        <p class="subtitulo">Información pública para estudiantes y egresados de Sistemas e IA</p>
+        <p class="subtitulo">Información pública para postulantes de Sistemas e IA</p>
       </div>
 
       <div class="acciones-header">
-        @if (!modoEdicion) {
-          <button class="btn-primario" (click)="activarEdicion()">✏️ Editar Perfil</button>
-        } @else {
-          <button class="btn-secundario" (click)="cancelarEdicion()" [disabled]="guardando || subiendoLogo">✕ Cancelar</button>
-          <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando || subiendoLogo">
-            {{ guardando ? '⏳ Guardando...' : (subiendoLogo ? '📤 Subiendo logo...' : '💾 Guardar Perfil') }}
-          </button>
-        }
-      </div>
+      @if (esVisitante) {
+      <!-- 👁️ Si es visitante (Postulante o Admin), solo ve la opción de regresar -->
+        <button class="btn-secundario" (click)="volver()">← Volver</button>
+      } @else {
+    <!-- ✏️ Si es la propia empresa, mantiene sus botones normales -->
+      @if (!modoEdicion) {
+      <button class="btn-primario" (click)="activarEdicion()">✏️ Editar Perfil</button>
+      } @else {
+        <button class="btn-secundario" (click)="cancelarEdicion()" [disabled]="guardando || subiendoLogo">✕ Cancelar</button>
+        <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando || subiendoLogo">
+        {{ guardando ? '⏳ Guardando...' : (subiendoLogo ? '📤 Subiendo logo...' : '💾 Guardar Perfil') }}
+      </button>
+      }
+    }
     </div>
+  </div>
 
     <!-- ========================================== -->
     <!-- 1. VISTA DE LECTURA (Header Hero + Cards) -->

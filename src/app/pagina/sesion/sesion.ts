@@ -60,7 +60,7 @@ export class Sesion {
             } 
             else if (res.tipo === 'empresa') {
               alert('¡Bienvenida Empresa!');
-              this.router.navigate(['/perfil/empresa']);
+              this.router.navigate(['/perfiles/empresa-profile']);
             } 
             else if (res.tipo === 'postulante') {
               alert('¡Bienvenido/a Postulante!');

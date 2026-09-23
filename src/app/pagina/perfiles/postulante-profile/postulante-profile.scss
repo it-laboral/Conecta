@@ -1,7 +1,9 @@
 @use 'sass:color';
 @use '../../../../styles/variables';
 
+// =========================================================
 // PALETA Y VARIABLES LOCALES
+// =========================================================
 $azul-web: #0d4f8b;
 $azul-medio: #1976a8;
 $azul-claro: #e7f2fa;
@@ -17,7 +19,9 @@ $gris-fondo: #f8fafc;
 $gris-texto: #607080;
 $gris-borde: #dbe5ec;
 
-// CONTENEDOR PRINCIPAL
+// =========================================================
+// CONTENEDOR PRINCIPAL Y GRID
+// =========================================================
 .perfil-container {
   width: 100%;
   max-width: 1180px;
@@ -27,11 +31,26 @@ $gris-borde: #dbe5ec;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
   box-sizing: border-box;
+
+  // Responsive para Tablets (2 columnas)
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  // Responsive para Celulares (1 columna)
+  @media (max-width: 650px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1rem auto;
+    padding: 0 0.75rem;
+  }
 }
 
-// ALERTAS Y MENSAJES
+// =========================================================
+// ALERTAS Y TEXTOS
+// =========================================================
 .alert-success-custom {
-  grid-column: span 3;
+  grid-column: 1 / -1;
   width: 100%;
   padding: 0.85rem 1.25rem;
   background-color: $verde-claro;
@@ -52,7 +71,9 @@ $gris-borde: #dbe5ec;
   line-height: 1.5;
 }
 
+// =========================================================
 // TARJETAS GENERALES
+// =========================================================
 .perfil-card {
   background: $blanco;
   border: 1px solid $azul-borde;
@@ -78,7 +99,6 @@ $gris-borde: #dbe5ec;
       font-size: 1.2rem;
       font-weight: 700;
       margin: 0;
-      text-align: left;
     }
 
     .btn-link-editar {
@@ -98,13 +118,20 @@ $gris-borde: #dbe5ec;
   }
 }
 
-// CARD PRINCIPAL (HEADER PERFIL)
+// =========================================================
+// 1. CARD PRINCIPAL (HEADER PERFIL)
+// =========================================================
 .card-main {
-  grid-column: span 3;
+  grid-column: 1 / -1; // Ocupa todo el ancho superior
   display: flex;
   align-items: center;
   gap: 2rem;
-  box-sizing: border-box;
+
+  @media (max-width: 650px) {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.25rem;
+  }
 
   .foto-container {
     display: flex;
@@ -181,7 +208,6 @@ $gris-borde: #dbe5ec;
     min-width: 0;
 
     h2 {
-      text-align: left;
       margin: 0 0 0.25rem;
       color: $azul-web;
       font-size: 1.6rem;
@@ -214,36 +240,22 @@ $gris-borde: #dbe5ec;
       gap: 0.75rem;
       align-items: center;
 
-      .btn-guardar-main {
-        background-color: $verde-web;
-        color: $blanco;
-        border: none;
-        padding: 0.6rem 1.3rem;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.18);
-
-        &:hover:not(:disabled) {
-          background-color: $verde-hover;
-          transform: translateY(-1px);
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          box-shadow: none;
-        }
+      @media (max-width: 650px) {
+        justify-content: center;
       }
     }
   }
 }
 
-// PERFIL PROFESIONAL
+// =========================================================
+// 2. PERFIL PROFESIONAL
+// =========================================================
 .card-sobre-mi {
   grid-column: span 2;
+
+  @media (max-width: 1024px) {
+    grid-column: 1 / -1;
+  }
 
   .texto-descripcion {
     color: $gris-texto;
@@ -258,14 +270,19 @@ $gris-borde: #dbe5ec;
     gap: 1rem;
     margin-top: 1rem;
 
+    @media (max-width: 500px) {
+      grid-template-columns: 1fr;
+    }
+
     .item-resumen {
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
       background: $gris-fondo;
       border: 1px solid $azul-borde;
+      border-left: 4px solid $azul-web;
       padding: 0.85rem 1rem;
-      border-radius: 14px;
+      border-radius: 12px;
 
       .label {
         font-size: 0.75rem;
@@ -279,57 +296,52 @@ $gris-borde: #dbe5ec;
         font-size: 0.95rem;
         font-weight: 600;
         color: $azul-web;
-
-        &.badge-estado {
-          display: inline-block;
-          align-self: flex-start;
-          background-color: $verde-claro;
-          color: $verde-texto;
-          padding: 0.2rem 0.6rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          font-weight: 700;
-        }
       }
     }
   }
 }
 
-// SECCIÓN CV
+// =========================================================
+// 3. CURRICULUM VITAE
+// =========================================================
 .card-cv {
   grid-column: span 1;
+
+  @media (max-width: 1024px) {
+    grid-column: 1 / -1;
+  }
 
   .cv-content {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 
-    .cv-info-box {
+    .cv-adjunto {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
       background-color: $azul-claro;
       padding: 0.85rem 1rem;
       border-radius: 12px;
       border: 1px solid $azul-borde;
 
-      .cv-icon { font-size: 1.5rem; color: $azul-web; }
+      .icono-doc { font-size: 1.6rem; color: $azul-web; }
 
-      .cv-detalles {
+      .cv-info {
         display: flex;
         flex-direction: column;
 
-        .nombre-archivo { font-weight: 700; color: $azul-web; font-size: 0.88rem; word-break: break-all; }
-        .fecha-actualizacion { font-size: 0.75rem; color: $gris-texto; }
+        strong { font-size: 0.9rem; color: $azul-web; word-break: break-all; }
+        .cv-estado { font-size: 0.8rem; color: $verde-web; font-weight: 600; }
       }
     }
 
-    .cv-acciones-group {
+    .cv-acciones {
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
 
-      .btn-cv-accion {
+      .btn-cv {
         width: 100%;
         display: inline-flex;
         align-items: center;
@@ -341,72 +353,68 @@ $gris-borde: #dbe5ec;
         font-size: 0.88rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        box-sizing: border-box;
+        border: none;
 
-        &.btn-ver {
+        &.btn-vista-previa {
           background-color: $azul-web;
           color: $blanco;
-          border: none;
           &:hover { background-color: $azul-medio; }
         }
 
-        &.btn-subir {
+        &.btn-descargar {
           background-color: $azul-claro;
           color: $azul-web;
-          border: 1px dashed $azul-medio;
+          border: 1px solid $azul-borde;
           &:hover { background-color: #d9ebf7; }
         }
 
-        &.btn-eliminar {
+        &.btn-cambiar {
           background-color: transparent;
-          color: #dc2626;
-          border: 1px solid #fca5a5;
-          &:hover { background-color: #fef2f2; }
+          color: $gris-texto;
+          border: 1px dashed $gris-borde;
+          &:hover { background-color: $gris-fondo; color: $azul-web; }
         }
       }
+    }
+
+    &.cv-sin-adjuntar {
+      text-align: center;
+      padding: 1rem 0;
+
+      .cv-upload-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+      h4 { margin: 0 0 0.25rem 0; color: $azul-web; }
+      .cv-descripcion { color: $gris-texto; font-size: 0.85rem; margin-bottom: 1rem; }
     }
   }
 }
 
-// ESTUDIOS
-.card-estudios {
-  grid-column: span 2;
+// =========================================================
+// 4. STACK TÉCNICO Y HABILIDADES
+// =========================================================
+.card-skills {
+  grid-column: span 1;
 
-  .lista-estudios {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .otras-habilidades-display {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed $azul-borde;
 
-    li {
-      padding: 0.75rem 0;
-      border-bottom: 1px dashed $gris-borde;
-      &:last-child { border-bottom: none; }
+    .subtitulo-habilidades {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: $azul-web;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem 0;
+    }
 
-      .estudio-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        color: $azul-web;
-
-        .institucion { font-weight: 700; }
-
-        .badge-estado {
-          background: $azul-claro;
-          color: $azul-web;
-          padding: 0.25rem 0.65rem;
-          border-radius: 8px;
-          font-size: 0.78rem;
-          font-weight: 600;
-        }
-      }
+    .texto-adicional {
+      font-size: 0.88rem;
+      color: $gris-texto;
+      margin: 0;
+      line-height: 1.4;
     }
   }
 }
-
-// SKILLS, REDES Y BOTONES
-.card-skills { grid-column: span 1; }
 
 .tags-container {
   display: flex;
@@ -424,36 +432,44 @@ $gris-borde: #dbe5ec;
   }
 }
 
-.card-redes { grid-column: span 1; }
+// =========================================================
+// 5. REDES Y PORTAFOLIO
+// =========================================================
+.card-redes {
+  grid-column: span 1;
 
-.links-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  .links-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 
-  .link-red {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
-    color: $azul-web;
-    text-decoration: none;
-    padding: 0.55rem 0.85rem;
-    border-radius: 10px;
-    background-color: $azul-claro;
-    border: 1px solid $azul-borde;
-    transition: all 0.2s ease;
+    .link-red {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: $azul-web;
+      text-decoration: none;
+      padding: 0.55rem 0.85rem;
+      border-radius: 10px;
+      background-color: $azul-claro;
+      border: 1px solid $azul-borde;
+      transition: all 0.2s ease;
 
-    &:hover {
-      background-color: #d9ebf7;
-      color: $azul-medio;
-      transform: translateX(3px);
+      &:hover {
+        background-color: #d9ebf7;
+        color: $azul-medio;
+        transform: translateX(3px);
+      }
     }
   }
 }
 
-.btn-editar, .btn-primario {
-  background-color: $azul-web;
+// =========================================================
+// BOTONES GLOBALES
+// =========================================================
+.btn-editar, .btn-primary, .btn-guardar-main {
+  background-color: $verde-web;
   color: $blanco;
   border: none;
   padding: 0.65rem 1.25rem;
@@ -462,13 +478,23 @@ $gris-borde: #dbe5ec;
   font-weight: 700;
   transition: all 0.2s ease;
 
-  &:hover {
-    background-color: $azul-medio;
+  &:hover:not(:disabled) {
+    background-color: $verde-hover;
     transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
-.btn-secundario {
+.btn-editar {
+  background-color: $azul-web;
+  &:hover:not(:disabled) { background-color: $azul-medio; }
+}
+
+.btn-secundario, .btn-cancelar {
   background-color: $azul-claro;
   color: $azul-web;
   border: 1px solid $azul-borde;
@@ -484,13 +510,15 @@ $gris-borde: #dbe5ec;
   }
 }
 
+// =========================================================
 // MODALES Y FORMULARIOS
+// =========================================================
 .modal-overlay {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(5, 30, 55, 0.55);
+  background: rgba(5, 30, 55, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -498,157 +526,180 @@ $gris-borde: #dbe5ec;
   z-index: 1000;
   padding: 1rem;
   box-sizing: border-box;
-}
 
-.modal-container {
-  background: $blanco;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 580px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
-
-.modal-header {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  border-bottom: 1px solid $azul-borde;
-  padding: 1.25rem 1.5rem;
-
-  h2 { margin: 0; font-size: 1.25rem; color: $azul-web; font-weight: 700; }
-  p { margin: 0.3rem 0 0; color: $gris-texto; font-size: 0.85rem; }
-}
-
-.btn-cerrar-modal {
-  background: transparent;
-  border: none;
-  font-size: 1.4rem;
-  cursor: pointer;
-  color: $gris-texto;
-  transition: color 0.2s ease;
-
-  &:hover { color: $azul-web; }
-}
-
-.modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem;
-  box-sizing: border-box;
-
-  .form-grid, .form-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-
-    @media (max-width: 600px) { grid-template-columns: 1fr; }
-  }
-
-  .form-group {
+  .modal-container {
+    background: $blanco;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 1.25rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 
-    &.full-width { grid-column: 1 / -1; }
+    .modal-header {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid $azul-borde;
+      padding: 1.25rem 1.5rem;
 
-    label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: $azul-web;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
+      h2 { margin: 0; font-size: 1.25rem; color: $azul-web; font-weight: 700; }
+      p { margin: 0.3rem 0 0; color: $gris-texto; font-size: 0.85rem; }
+
+      .btn-cerrar-modal {
+        background: transparent;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: $gris-texto;
+        transition: color 0.2s ease;
+        &:hover { color: $azul-web; }
+      }
     }
 
-    input[type="text"], input[type="email"], input[type="tel"],
-    input[type="url"], input[type="date"], select, textarea {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 1.5px solid $azul-borde;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      color: #1e293b;
-      background-color: $gris-fondo;
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
       box-sizing: border-box;
-      transition: all 0.2s ease;
 
-      &:focus {
-        outline: none;
-        border-color: $azul-medio;
-        background-color: $blanco;
-        box-shadow: 0 0 0 3.5px rgba(25, 118, 168, 0.15);
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin-bottom: 1.25rem;
+
+        label {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: $azul-web;
+          text-transform: uppercase;
+          letter-spacing: 0.4px;
+        }
+
+        input[type="text"], input[type="url"], select, textarea {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 1.5px solid $azul-borde;
+          border-radius: 12px;
+          font-size: 0.95rem;
+          font-family: inherit;
+          color: #1e293b;
+          background-color: $gris-fondo;
+          box-sizing: border-box;
+          transition: all 0.2s ease;
+
+          &:focus {
+            outline: none;
+            border-color: $azul-medio;
+            background-color: $blanco;
+            box-shadow: 0 0 0 3.5px rgba(25, 118, 168, 0.15);
+          }
+        }
+
+        textarea { min-height: 100px; resize: vertical; }
+
+        select {
+          cursor: pointer;
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%0d4f8b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 1rem center;
+          background-size: 1rem;
+          padding-right: 2.5rem;
+        }
       }
 
-      &::placeholder {
-        color: color.adjust($gris-texto, $lightness: 20%);
+      // Estilos para la lista de Skills en el Modal
+      .skills-modal-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        margin-bottom: 1.25rem;
+
+        .skill-categoria {
+          h4 {
+            font-size: 0.9rem;
+            color: $azul-web;
+            margin: 0 0 0.5rem 0;
+            border-bottom: 1px solid $azul-claro;
+            padding-bottom: 0.25rem;
+          }
+
+          .skills-checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.5rem;
+
+            .skill-checkbox {
+              display: flex;
+              align-items: center;
+              gap: 0.4rem;
+              font-size: 0.85rem;
+              color: #334155;
+              cursor: pointer;
+
+              input[type="checkbox"] {
+                accent-color: $azul-web;
+                width: 16px;
+                height: 16px;
+              }
+            }
+          }
+        }
       }
     }
 
-    textarea { min-height: 110px; resize: vertical; line-height: 1.5; }
+    .modal-footer {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid $azul-borde;
+      background: $blanco;
+    }
+  }
 
-    select {
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%0d4f8b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-      background-size: 1rem;
-      padding-right: 2.5rem;
+  // =========================================================
+  // 👁️ VISOR DE CV EXPANDIDO (PDF FULL SCREEN)
+  // =========================================================
+  &.cv-preview-overlay {
+    .cv-preview-modal {
+      max-width: 90vw;
+      width: 90vw;
+      height: 88vh;
+      max-height: 88vh;
+
+      @media (max-width: 650px) {
+        max-width: 96vw;
+        width: 96vw;
+        height: 92vh;
+      }
+
+      .cv-preview-container {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        background-color: #525659;
+
+        .cv-preview-frame {
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
+      }
     }
   }
 }
 
-.modal-footer {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid $azul-borde;
-  background: $blanco;
-}
-
-// ANIMACIONES Y RESPONSIVE
+// ANIMACIONES
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-@include variables.responder-a(celular) {
-  .perfil-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 0 0.75rem;
-  }
-
-  .alert-success-custom, .card-main, .card-sobre-mi,
-  .card-estudios, .card-skills, .card-redes, .card-cv {
-    grid-column: span 1 !important;
-  }
-
-  .card-sobre-mi .resumen-tecnico-grid { grid-template-columns: 1fr; }
-
-  .card-main {
-    flex-direction: column;
-    text-align: center;
-    gap: 1.25rem;
-
-    .user-info {
-      width: 100%;
-      h2 { text-align: center; }
-      .acciones-header { justify-content: center; }
-    }
-  }
-
-  .modal-container { max-height: 92vh; border-radius: 16px; }
-  .modal-header, .modal-body { padding: 1rem; }
-  .modal-footer { padding: 0.8rem 1rem; flex-wrap: wrap; }
 }

@@ -1,19 +1,41 @@
 <div class="dashboard-layout">
   <div class="sidebar">
     <div class="sidebar-top">
-      <img src="img/plataforma.png" alt="logo de itb conecta"/>
+      <img src="img/plataforma.png" alt="logo de ITB Conecta"/>
       <h2>ITB Conecta</h2>
     </div>
-     
+
     <nav>
+      <!-- Inicio común para todos -->
       <a routerLink="/principal" routerLinkActive="active">🏠 Inicio</a>
-      <a routerLink="/perfil/postulante" routerLinkActive="active">📄 Perfil Postulante</a>
-      <a routerLink="/perfil/empresa" routerLinkActive="active">🏢 Perfil Empresa</a>
-      <a routerLink="/ofertas" routerLinkActive="active">💼 Oportunidades</a>
-      <a routerLink="/favoritos" routerLinkActive="active">❤️ Favoritos</a>
+
+      <!-- ==================== OPCIONES PARA POSTULANTE ==================== -->
+      @if (esPostulante) {
+        <a routerLink="/perfil/postulante" routerLinkActive="active">📄 Mi Perfil</a>
+        <a routerLink="/ofertas" routerLinkActive="active">💼 Oportunidades</a>
+        <a routerLink="/postulaciones" routerLinkActive="active">📋 Mis Postulaciones</a>
+        <a routerLink="/perfil/empresas" routerLinkActive="active">🏢 Buscar Empresas</a>
+        <a routerLink="/favoritos" routerLinkActive="active">❤️ Favoritos</a>
+      }
+
+      <!-- ==================== OPCIONES PARA EMPRESA ==================== -->
+      @if (esEmpresa) {
+        <a routerLink="/perfil/empresa" routerLinkActive="active">🏢 Perfil Empresa</a>
+        <a routerLink="/perfil/postulantes" routerLinkActive="active">👥 Buscar Candidatos</a>
+        <a routerLink="/postulaciones" routerLinkActive="active">📢 Mis Publicaciones / Candidatos</a>
+        <a routerLink="/crear-oferta" routerLinkActive="active">➕ Publicar Oferta</a>
+      }
+
+      <!-- ==================== OPCIONES PARA ADMIN ==================== -->
+      @if (esAdmin) {
+        <a routerLink="/admin/panel" routerLinkActive="active">🛡️ Panel Admin</a>
+        <a routerLink="/admin/empresas" routerLinkActive="active">🏢 Gestionar Empresas</a>
+        <a routerLink="/admin/postulantes" routerLinkActive="active">👥 Gestionar Postulantes</a>
+      }
     </nav>
 
-    <button class="logout">
+    <!-- Evento de cierre de sesión conectado a la función en TypeScript -->
+    <button class="logout" (click)="cerrarSesion()">
       Cerrar sesión
     </button>
   </div>

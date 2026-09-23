@@ -193,7 +193,8 @@ const adminRoutes = require('./routes/admin');
 const perfilEmpresaRoutes = require('./routes/perfilEmpresa.routes');
 const perfilPostulanteRoutes = require('./routes/perfilPostulante.routes');
 const ofertasRoutes = require('./routes/ofertas.routes');
-
+// Importas el router que corregimos recién (suponiendo que está en /routes/postulaciones.js)
+const postulacionesRoutes = require('./routes/postulaciones.routes');
 app.use('/api/admin', verificarToken, adminRoutes);
 
 // ✅ CAMBIO CLAVE: Se añade el prefijo /api/empresa para coincidir con Angular
@@ -204,24 +205,8 @@ app.use('/api/postulante', verificarToken, perfilPostulanteRoutes);
 
 app.use('/api/ofertas', ofertasRoutes);
 
-app.post('/api/postular', verificarToken, async (req, res) => {
-    const { postulante_id, oferta_id } = req.body;
-
-    if (!postulante_id || !oferta_id) {
-        return res.status(400).json({ OK: false, mensaje: 'Faltan datos obligatorios' });
-    }
-
-    try {
-        const query = 'INSERT INTO postulacion (postulante_id, oferta_id) VALUES (?, ?)';
-        const [result] = await db.query(query, [postulante_id, oferta_id]);
-        res.json({ OK: true, mensaje: 'Postulación registrada con éxito', id: result.insertId });
-    } catch (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ OK: false, mensaje: 'Ya te has postulado a esta oferta anteriormente.' });
-        }
-        res.status(500).json({ OK: false, error: err.message });
-    }
-});
+// Montas el router
+app.use('/api/postulaciones', postulacionesRoutes);
 
 // ====================================================================
 // 5. ARRANQUE DEL SERVIDOR

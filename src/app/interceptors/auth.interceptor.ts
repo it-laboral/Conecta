@@ -10,49 +10,56 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   let token: string | null = null;
 
-if (isPlatformBrowser(platformId)) {
-    token = localStorage.getItem('token');
+  if (isPlatformBrowser(platformId)) {
+    const rawToken = localStorage.getItem('token');
 
-    if (!token) {
+    if (rawToken) {
+      token = rawToken;
+    } else {
       const usuarioSesion = localStorage.getItem('usuario');
       if (usuarioSesion) {
         try {
           const userObj = JSON.parse(usuarioSesion);
-          token = userObj.token || null;
+          token = userObj.token || userObj.jwt || null;
         } catch (e) {
-          console.error('Error parseando usuario en el interceptor', e);
+          console.error('Error parseando usuario en el interceptor:', e);
         }
       }
     }
+
+    // 🧹 Limpieza defensiva: Elimina comillas extra si el token se guardó con JSON.stringify
+    if (token) {
+      token = token.replace(/^"|"$/g, '').trim();
+    }
   }
 
-  // Clona la petición agregando el Header si existe un token
-  let authReq = req;
-  if (token) {
-    authReq = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-  }
+  // Clona la petición inyectando el header Authorization si existe token
+  const authReq = token
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    : req;
 
-  // Intercepta la respuesta del backend
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // 401 = No autorizado (Token vencido o inválido)
-      // 403 = Prohibido (Sin permisos suficientes)
-      if (error.status === 401 || error.status === 403) {
-        if (isPlatformBrowser(platformId)) {
-          // Limpiamos los datos de sesión caducados
+      if (isPlatformBrowser(platformId)) {
+        // 🚨 401: Sesión expirada o token no válido
+        if (error.status === 401) {
           localStorage.removeItem('token');
           localStorage.removeItem('usuario');
+
+          if (router.url !== '/sesion') {
+            router.navigate(['/sesion']);
+          }
+        } 
+        // 🔒 403: Autenticado pero sin los permisos suficientes
+        else if (error.status === 403) {
+          console.warn('Acceso denegado (403): No cuentas con el rol necesario para esta acción.');
         }
-        
-        // Redirigimos de inmediato a la pantalla de login
-        router.navigate(['/login']);
       }
 
-      // Propaga el error para que los servicios/componentes puedan reaccionar si lo necesitan
       return throwError(() => error);
     })
   );

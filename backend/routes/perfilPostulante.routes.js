@@ -3,10 +3,52 @@ const router = Router();
 const db = require('../db');
 const multer = require('multer');
 const { uploadFotoPerfil, uploadCV } = require('../middlewares/upload.middleware');
+
+// 🔒 Middlewares de seguridad
+const { verificarToken, esDuenioDelPerfil } = require('../middlewares/auth.middleware');
+
+// ====================================================================
+// 0. GET: OBTENER TODOS LOS POSTULANTES (PARA EL BUSCADOR DE EMPRESAS)
+// (Acceso: Usuarios autenticados)
+// ====================================================================
+router.get('/', verificarToken, async (req, res) => {
+  try {
+    const [postulantes] = await db.query(
+      `SELECT 
+         p.id_postulante, 
+         p.nombres, 
+         p.apellidos, 
+         p.email, 
+         p.carrera,
+         pf.foto, 
+         pf.ciudad, 
+         pf.pais, 
+         pf.descripcion, 
+         pf.especialidad, 
+         pf.estado_academico,
+         pf.otras_habilidades
+       FROM postulante p
+       LEFT JOIN perfil_postulante pf ON p.id_postulante = pf.id_postulante
+       ORDER BY p.apellidos, p.nombres ASC`
+    );
+
+    res.json({ 
+      success: true, 
+      postulantes: postulantes 
+    });
+  } catch (error) {
+    console.error('Error al obtener la lista de postulantes:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error interno del servidor al obtener la lista de postulantes' 
+    });
+  }
+});
 // ====================================================================
 // 1. GET: OBTENER PERFIL COMPLETO DEL POSTULANTE
+// (Acceso: Usuarios autenticados -> Alumnos, Empresas, Admins)
 // ====================================================================
-router.get('/perfil/:id_postulante', async (req, res) => {
+router.get('/perfil/:id_postulante', verificarToken, async (req, res) => {
   const { id_postulante } = req.params;
 
   try {
@@ -66,8 +108,9 @@ router.get('/perfil/:id_postulante', async (req, res) => {
 
 // ====================================================================
 // 2. GET: CATÁLOGO DE SKILLS
+// (Acceso: Usuarios autenticados)
 // ====================================================================
-router.get('/skills/catalogo', async (req, res) => {
+router.get('/skills/catalogo', verificarToken, async (req, res) => {
   try {
     const [categorias] = await db.query(
       `SELECT categoria_id, Nombre AS nombre_categoria FROM categoria_skill ORDER BY categoria_id ASC`
@@ -92,8 +135,9 @@ router.get('/skills/catalogo', async (req, res) => {
 
 // ====================================================================
 // 3. PUT: ACTUALIZAR DATOS DEL PERFIL
+// (Acceso: Solo el dueño del perfil o Admin)
 // ====================================================================
-router.put('/perfil/:id_postulante', async (req, res) => {
+router.put('/perfil/:id_postulante', verificarToken, esDuenioDelPerfil, async (req, res) => {
   const { id_postulante } = req.params;
   const {
     ciudad, pais, sobre_mi, especialidad, estado_academico,
@@ -147,37 +191,24 @@ router.put('/perfil/:id_postulante', async (req, res) => {
 
 // ====================================================================
 // 4. POST: SUBIR Y GUARDAR FOTO DE PERFIL
+// (Acceso: Solo el dueño del perfil o Admin)
 // ====================================================================
-
-router.post('/perfil/:id_postulante/foto', (req, res) => {
-
+router.post('/perfil/:id_postulante/foto', verificarToken, esDuenioDelPerfil, (req, res) => {
   uploadFotoPerfil.single('foto')(req, res, async (err) => {
-
-    // Error de Multer
     if (err instanceof multer.MulterError) {
-
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
           success: false,
           message: 'La foto es demasiado grande (máximo 2MB).'
         });
       }
-
-      return res.status(400).json({
-        success: false,
-        message: err.message
-      });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
-    // Otros errores
     if (err) {
-      return res.status(400).json({
-        success: false,
-        message: err.message
-      });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
-    // Verificar archivo
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -189,17 +220,11 @@ router.post('/perfil/:id_postulante/foto', (req, res) => {
     const fotoUrl = `/uploads/fotoperf/${req.file.filename}`;
 
     try {
-
       await db.query(
-        `INSERT INTO perfil_postulante
-          (id_postulante, foto)
+        `INSERT INTO perfil_postulante (id_postulante, foto)
          VALUES (?, ?)
-         ON DUPLICATE KEY UPDATE
-          foto = VALUES(foto)`,
-        [
-          id_postulante,
-          fotoUrl
-        ]
+         ON DUPLICATE KEY UPDATE foto = VALUES(foto)`,
+        [id_postulante, fotoUrl]
       );
 
       return res.json({
@@ -207,7 +232,6 @@ router.post('/perfil/:id_postulante/foto', (req, res) => {
         message: 'Foto de perfil actualizada correctamente',
         fotoUrl: fotoUrl
       });
-
     } catch (error) {
       console.error('Error al guardar foto en la BD:', error);
       return res.status(500).json({
@@ -220,37 +244,24 @@ router.post('/perfil/:id_postulante/foto', (req, res) => {
 
 // ====================================================================
 // 5. POST: SUBIR CV DEL POSTULANTE
+// (Acceso: Solo el dueño del perfil o Admin)
 // ====================================================================
-
-router.post('/perfil/:id_postulante/cv', (req, res) => {
-
+router.post('/perfil/:id_postulante/cv', verificarToken, esDuenioDelPerfil, (req, res) => {
   uploadCV.single('cv')(req, res, async (err) => {
-
-    // Error de Multer
     if (err instanceof multer.MulterError) {
-
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
           success: false,
           message: 'El CV es demasiado grande. Máximo permitido: 5 MB.'
         });
       }
-
-      return res.status(400).json({
-        success: false,
-        message: err.message
-      });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
-    // Otros errores
     if (err) {
-      return res.status(400).json({
-        success: false,
-        message: err.message
-      });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
-    // Verificar archivo
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -259,51 +270,33 @@ router.post('/perfil/:id_postulante/cv', (req, res) => {
     }
 
     const { id_postulante } = req.params;
-
-    // Ruta del archivo en el servidor
     const cvUrl = `/uploads/cv/${req.file.filename}`;
-
-    // Nombre original del archivo
     const cvNombre = req.file.originalname;
 
     try {
-  // Se asume que el perfil ya existe para ese id_postulante
-  const [resultado] = await db.query(
-    `UPDATE perfil_postulante 
-     SET cv_url = ?, cv_nombre = ? 
-     WHERE id_postulante = ?`,
-    [cvUrl, cvNombre, id_postulante]
-  );
+      await db.query(
+        `INSERT INTO perfil_postulante (id_postulante, cv_url, cv_nombre)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE 
+          cv_url = VALUES(cv_url),
+          cv_nombre = VALUES(cv_nombre)`,
+        [id_postulante, cvUrl, cvNombre]
+      );
 
-  // Si no afectó ninguna fila, es porque no existía la fila previa
-  if (resultado.affectedRows === 0) {
-    return res.status(404).json({
-      success: false,
-      message: 'No se encontró el perfil del postulante para asociar el CV.'
-    });
-  }
-
-  return res.json({
-    success: true,
-    message: 'CV subido correctamente.',
-    cv_url: cvUrl,
-    cv_nombre: cvNombre
+      return res.json({
+        success: true,
+        message: 'CV subido correctamente.',
+        cv_url: cvUrl,
+        cv_nombre: cvNombre
+      });
+    } catch (error) {
+      console.error('Error al guardar CV en la BD:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'El archivo se subió, pero no se pudo guardar la información en la base de datos.'
+      });
+    }
   });
-
-} catch (error) {
-  console.error('Error al guardar CV en la BD:', error);
-  return res.status(500).json({
-    success: false,
-    message: 'El archivo se subió, pero no se pudo guardar la información en la base de datos.'
-  });
-}
-
 });
-
-});
-
-// ====================================================================
-// EXPORTAR ROUTER
-// ====================================================================
 
 module.exports = router;

@@ -1,340 +1,68 @@
-
-$bg-gradient-start: #2d4c7e;  // Azul oscuro de base
+/// --- Variables de Color e Identidad ---
+$bg-gradient-start: #2d4c7e;  // Azul oscuro base
 $bg-gradient-end: #38bdf8;    // Azul celeste luminoso
-$form-light-bg: #e2edf0;     // Fondo del formulario completamente BLANCO
-$text-dark-main: #0f172a;    // Texto principal del formulario
-$text-dark-muted: #475569;   // Texto secundario del formulario
-$border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
+$form-light-bg: #e2edf0;     // Fondo claro de acento
+$text-dark-main: #0f172a;    // Texto principal
+$text-dark-muted: #475569;   // Texto secundario
+$border-light-form: #cbd5e1; // Bordes suaves
+$accent-mint: #92e4cb;       // Verde menta institucional
+$danger-color: #ef4444;      // Color de error / eliminación
 
 :host {
   display: block;
-  font-family: 'lucida grande', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: $text-dark-main; 
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: $text-dark-main;
 }
 
-// --- Contenedores Principales ---
-.vista-principal {
+// Contenedor principal
+.ofertas-container {
   padding: 20px;
-  
-}
-
-.ofertas-header-seccion {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #92e4cb;
-  padding-bottom: 25px;
-
-  h2 {
-    margin: 0;
-    color: $bg-gradient-start; // 🔑 Usamos tu azul institucional para el título principal
-    font-size: 1.5rem;
-  }
-}
-.buscador-container {
-  margin: 1.5rem 0; 
-  display: flex;
-  width: 100%;
-
-  .buscador-wrapper {
-    position: relative; 
-    width: 100%;
-    max-width: 550px; 
-    display: flex;
-    align-items: center;
-  }
-
-  .buscador-icono {
-    position: absolute;
-    left: 16px; 
-    color: #3a5a96; 
-    font-size: 1.1rem;
-    pointer-events: none; 
-    transition: color 0.3s ease;
-  }
-
-  .buscador-input {
-    width: 100%;
-    padding: 12px 16px 12px 45px; 
-    font-size: 0.95rem;
-    color: #2d3748;
-    background-color: #ffffff;
-    border: 2px solid #e2e8f0; 
-    border-radius: 10px; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); 
-    transition: all 0.3s ease;
-
-    &::placeholder {
-      color: #062146; 
-    }
-
-    &:focus {
-      outline: none;
-      border-color: #3182ce; 
-      box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.15); 
-      background-color: #fff;
-
-      ~ .buscador-icono {
-        color: #3182ce;
-      }
-    }
-  }
-}
-
-// --- Pantalla Dividida (Split-Screen) ---
-.split-screen-container {
-  display: flex;
-  gap: 20px;
-  height: calc(100vh - 120px);
-}
-
-// --- Columna Izquierda: Listado de Tarjetas ---
-.panel-lista-ofertas {
-  flex: 0 0 350px;
-  overflow-y: auto;
-  padding-right: 20px;
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: $border-light-form;
-    border-radius: 3px;
-  }
-}
-
-// Estilo de la Tarjeta (Card)
-
-.oferta-card {
-  // 1. EL DEGRADADO: Mezclamos tu azul oscuro de base con tu celeste luminoso
-  background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 50%, $bg-gradient-end 100%);
-  
-  border: 1px solid rgba(255, 255, 255, 0.15); // Borde sutil y traslúcido para que no sature
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 15px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-
-  // 2. TEXTOS INTERNOS CUANDO LA TARJETA NO ESTÁ SELECCIONADA (Fondo Oscuro -> Letras Claras)
-  h3 {
-    margin: 0 0 8px 0;
-    font-size: 1.1rem;
-    color: #ffffff; // Blanco puro para que resalte el título de la vacante
-  }
-
-  .empresa-nombre {
-    margin: 0 0 12px 0;
-    color: #e2edf0; // Usamos tu tono claro ($form-light-bg) para la empresa
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-
-  .card-meta {
-    display: flex;
-    gap: 15px;
-    font-size: 0.8rem;
-    color: #f1f5f9; // Gris bien claro para los textos técnicos
-
-    span {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-
-      i {
-        color: #92e4cb; // Combinamos con el verde menta de tu cabecera para los íconos
-      }
-    }
-  }
-
-  // 3. EFECTO AL PASAR EL MOUSE
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(56, 189, 248, 0.2); // Brillo sutil con tu celeste
-    border-color: $bg-gradient-end; 
-  }
-
-  // 4. ESTADO ACTIVO (Cuando hacés clic y se muestra a la derecha)
-  &.active {
-    background: #ffffff; // Cambia a fondo blanco impecable para romper el patrón
-    border-color: $bg-gradient-start; // Borde marcado con tu azul oscuro institucional
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
-    transform: translateX(4px); // Se desplaza un toque hacia el panel de detalle
-
-    // Invertimos los colores internos para que se lean sobre fondo blanco:
-    h3 {
-      color: $text-dark-main; // Tu azul/negro oscuro principal
-    }
-
-    .empresa-nombre {
-      color: $text-dark-muted; // Tu gris oscuro secundario
-    }
-
-    .card-meta {
-      color: $text-dark-muted;
-
-      span i {
-        color: $bg-gradient-start; // Los íconos pasan a tu azul de base
-      }
-    }
-  }
-}
-
-// --- Columna Derecha: Panel de Detalle ---
-// ==========================================
-// PANEL DE DETALLE DE LA OFERTA (DERECHA)
-// ==========================================
-
-.panel-detalle-oferta {
-  flex: 1;
-  background-color: #ffffff; // 💡 Blanco real: Máxima claridad para textos largos
-  border: 1px solid $border-light-form;
-  border-radius: 12px;
-  padding: 35px; // Un toque más de aire para que se vea premium
-  overflow-y: auto;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04); // Sombra muy suave y moderna
-}
-
-.detalle-header {
-  margin-bottom: 25px;
-  border-bottom: 2px solid #f1f5f9; // Línea divisoria más sutil y limpia
-  padding-bottom: 20px;
-
-  h1 {
-    margin: 0 0 10px 0;
-    font-size: 1.8rem;
-    color: $bg-gradient-start; // 🔑 Tu azul de marca para destacar el nombre del puesto
-    font-weight: 700;
-  }
-
-  .empresa-detalle {
-    margin: 0 0 15px 0;
-    color: $text-dark-muted;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    i {
-      color: $bg-gradient-end; // El ícono de la empresa en tu celeste luminoso
-    }
-  }
-}
-
-.meta-badges {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-
-  .badge-info {
-    background-color: #f8fafc; // Gris/azul tiza muy suave
-    color: $text-dark-muted;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid #e2e8f0;
-
-    i {
-      color: $bg-gradient-start; // Íconos internos en azul base
-    }
-  }
-}
-
-.detalle-body {
-  h4 {
-    margin: 30px 0 15px 0;
-    color: $text-dark-main;
-    font-size: 1.1rem;
-    font-weight: 700;
-    border-left: 4px solid #92e4cb; // 🔑 ¡Acá brilla tu verde menta institucional! Un acento hermoso
-    padding-left: 12px;
-  }
-
-  p {
-    line-height: 1.7; // Más interlineado para que leer la descripción sea un placer
-    color: $text-dark-muted; // El gris oscuro cansa menos el ojo en textos largos que el negro puro
-    margin-bottom: 20px;
-    font-size: 0.98rem;
-  }
-}
-
-.skills-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-
-  .tag {
-    background-color: #f0fdfa; // Fondo menta ultra suave, a tono con el resumen del formulario
-    border: 1px solid #92e4cb; // Borde menta
-    color: $bg-gradient-start; // Texto en tu azul de base para que se lea perfecto
-    font-weight: 600; 
-    font-size: 0.85rem; 
-    padding: 6px 14px; 
-    border-radius: 6px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  }
-}
-
-.detalle-footer {
-  margin-top: 40px;
-  border-top: 2px solid #f1f5f9;
-  padding-top: 25px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.sin-seleccion-msg {
-  color: #94a3b8;
-  font-style: italic;
-  text-align: center;
-  margin-top: 120px;
-  font-size: 1.05rem;
-}
-
-// ====================================================================
-// DISAÑO DEL FORMULARIO DE ALTA (Usando tus variables estrictas)
-// ====================================================================
-// ==========================================
-// FORMULARIO DE PUBLICACIÓN PROFESIONAL
-// ==========================================
-
-.vista-formulario {
-  padding: 35px;
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
-  background-color: #ffffff; // Blanco real impecable para máxima pulcritud
-  border-radius: 16px; // Bordes un toque más modernos y curvos
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06); // Sombra premium difuminada
+}
+
+// ==========================================
+// VISTA 1: FORMULARIO CREAR / EDITAR
+// ==========================================
+.formulario-card {
+  padding: 35px;
+  max-width: 850px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   border: 1px solid $border-light-form;
 
-  h2 {
-    color: $bg-gradient-start; // Tu azul oscuro institucional
-    margin-top: 0;
-    font-weight: 700;
-    font-size: 1.6rem;
+  @media (max-width: 640px) {
+    padding: 20px;
   }
-  
-  .subtitulo-form {
-    color: $text-dark-muted;
-    font-size: 0.95rem;
+
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 25px;
+    border-bottom: 2px solid $accent-mint;
+    padding-bottom: 15px;
+
+    h2 {
+      margin: 0;
+      color: $bg-gradient-start;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
   }
 }
 
 .form-group {
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 
   label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
     font-size: 0.9rem;
-    color: $text-dark-main; 
+    color: $text-dark-main;
   }
 
   input[type="text"],
@@ -342,23 +70,31 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   select,
   textarea {
     width: 100%;
-    padding: 12px 14px; // Más aire interno para que respire el texto
-    border: 1px solid $border-light-form; 
-    border-radius: 8px; // Consistente con el resto del diseño
+    padding: 12px 14px;
+    border: 1px solid $border-light-form;
+    border-radius: 8px;
     font-size: 0.95rem;
     color: $text-dark-main;
-    background-color: #ffffff; // 💡 CAMBIO CLAVE: Blanco limpio en vez de azul opaco
+    background-color: #ffffff;
+    box-sizing: border-box;
     transition: all 0.2s ease-in-out;
 
     &:focus {
       outline: none;
-      border-color: $bg-gradient-start; 
-      box-shadow: 0 0 0 4px rgba(45, 76, 126, 0.12); // Aura azul traslúcida elegante
+      border-color: $bg-gradient-start;
+      box-shadow: 0 0 0 4px rgba(45, 76, 126, 0.12);
     }
-    
+
     &::placeholder {
-      color: #94a3b8; // Un gris claro limpio para las sugerencias
+      color: #94a3b8;
     }
+  }
+
+  .error-text {
+    color: $danger-color;
+    font-size: 0.8rem;
+    margin-top: 6px;
+    display: block;
   }
 }
 
@@ -369,228 +105,585 @@ $border-light-form: #cbd5e1; // Bordes sutiles para los inputs claros
   .form-group {
     flex: 1;
   }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
-// --- Selector de Habilidades (Chips) ---
-.selector-habilidades-wrapper {
-  background-color: #f8fafc; // 💡 ADIÓS CHILLÓN: Un gris/azul pizarra sutilísimo y corporativo
+// Selector de Habilidades en Formulario
+.categorias-container {
+  background-color: #f8fafc;
   border: 1px solid $border-light-form;
   border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 25px;
+  padding: 20px;
+
+  .categoria-group {
+    margin-bottom: 18px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h4 {
+      margin: 0 0 10px 0;
+      color: $bg-gradient-start;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+  }
 }
 
-.grupo-categoria {
-  margin-bottom: 22px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  h4 {
-    margin: 0 0 12px 0;
-    color: $bg-gradient-start; // Identificadores en tu azul corporativo
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 700;
-  }
-}
-
-.skills-chips-grid {
+.chips-container {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-// Botón de habilidad (Desconectado del enredo anterior)
-.chip-button {
-  background-color: #ffffff; 
+.chip-skill {
+  background-color: #ffffff;
   border: 1px solid $border-light-form;
   color: $text-dark-muted;
   padding: 8px 16px;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
 
   &:hover {
     border-color: $bg-gradient-end;
-    background-color: #f0f9ff; // Sutil iluminación celeste al pasar el mouse
+    background-color: #f0f9ff;
     color: $bg-gradient-start;
   }
 
-  &.selected {
-    // Reutilizamos tu degradado insignia para destacar lo seleccionado
-    background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%); 
+  &.seleccionada {
+    background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%);
     border-color: $bg-gradient-start;
-    color: #ffffff; // Blanco puro para legibilidad
+    color: #ffffff;
     box-shadow: 0 4px 8px rgba(45, 76, 126, 0.15);
   }
 }
 
-// --- Caja de Resumen de Chips Seleccionados (Estructura arreglada fuera del botón) ---
-.resumen-seleccionados-box {
-  margin-top: 20px;
-  padding: 18px;
-  background-color: #f0fdfa; // Fondo menta pastel ultra suave
-  border: 1px dashed #92e4cb; // 🔑 Usamos el verde menta de tu cabecera para el borde punteado
-  border-radius: 10px;
-
-  .titulo-resumen {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: $text-dark-muted;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-}
-
-.tags-resumen-flex {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tag-seleccionado {
-  background-color: $bg-gradient-start; 
-  color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.2s ease-in-out;
-
-  .btn-quitar-tag {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    padding: 0;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    transition: color 0.2s;
-
-    &:hover {
-      color: #fca5a5; // Rojo pastel refinado al querer borrar
-    }
-  }
-}
-
-.form-buttons {
+.form-actions {
   margin-top: 30px;
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-}
 
-// --- Animación global ---
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-// ====================================================================
-// BOTONES GENERALES
-// ====================================================================
+  @media (max-width: 480px) {
+    flex-direction: column-reverse;
 
-.btn-crear-oferta {
-  background-color: $bg-gradient-start;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #1e3a63;
+    button {
+      width: 100%;
+      justify-content: center;
+    }
   }
 }
 
-.btn-postularse {
-  background-color: $bg-gradient-start;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
+// ==========================================
+// VISTA 2: LISTADO Y DETALLE PRINCIPAL
+// ==========================================
+.header-ofertas {
+  margin-bottom: 25px;
+  border-bottom: 2px solid $accent-mint;
+  padding-bottom: 20px;
 
-  &:hover {
-    background-color: #1e3a63;
-    transform: translateY(-1px);
+  .titulo-seccion {
+    margin-bottom: 15px;
+
+    h2 {
+      margin: 0;
+      color: $bg-gradient-start;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .subtitulo {
+      margin: 5px 0 0 0;
+      color: $text-dark-muted;
+      font-size: 0.95rem;
+    }
+  }
+
+  .bar-acciones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+
+    .input-busqueda {
+      flex: 1;
+      min-width: 260px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      border: 2px solid $border-light-form;
+      border-radius: 10px;
+
+      &:focus {
+        outline: none;
+        border-color: $bg-gradient-end;
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+      }
+    }
+
+    .select-filtro {
+      padding: 10px 14px;
+      border: 1px solid $border-light-form;
+      border-radius: 10px;
+      background-color: #ffffff;
+      font-size: 0.9rem;
+      color: $text-dark-main;
+
+      &:focus {
+        outline: none;
+        border-color: $bg-gradient-start;
+      }
+    }
+
+    .btn-group-estados {
+      display: inline-flex;
+      background-color: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid $border-light-form;
+      gap: 4px;
+
+      button {
+        background: transparent;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $text-dark-muted;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: $text-dark-main;
+        }
+
+        &.activo {
+          background-color: #ffffff;
+          color: $bg-gradient-start;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+        }
+      }
+    }
+
+    // Botón destacado: Nueva Oferta
+    .btn-nueva-oferta,
+    .btn-crear-oferta,
+    .btn-crear {
+      background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%);
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(45, 76, 126, 0.25);
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        background: linear-gradient(135deg, #1e3a63 0%, $bg-gradient-start 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(45, 76, 126, 0.35);
+      }
+    }
   }
 }
 
-// Agrupamos ambos nombres para que use el que tengas en el HTML sin romper nada
-.btn-cancelar, .btn-limpiar {
-  background-color: #f1f5f9; // Gris claro corporativo muy limpio
-  color: $text-dark-muted;
+// Layout Dividido
+.layout-ofertas {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 240px);
+  min-height: 520px;
+
+  @media (max-width: 868px) {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+// Columna Izquierda: Lista
+.columna-lista {
+  flex: 0 0 380px;
+  overflow-y: auto;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $border-light-form;
+    border-radius: 3px;
+  }
+
+  .sin-resultados {
+    color: $text-dark-muted;
+    font-style: italic;
+    text-align: center;
+    padding: 30px 10px;
+  }
+
+  @media (max-width: 868px) {
+    flex: 1 1 auto;
+    max-height: 360px;
+    padding-right: 0;
+  }
+}
+
+// Cards de Oferta (Fondo Degradado Azul-Celeste Lindo y Selección Blanca)
+.card-oferta {
+  background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 50%, $bg-gradient-end 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(45, 76, 126, 0.2);
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      color: #ffffff; // Texto blanco para alta legibilidad
+      font-weight: 700;
+      line-height: 1.3;
+    }
+  }
+
+  .empresa-nombre {
+    margin: 0 0 12px 0;
+    color: $form-light-bg; // Celeste muy claro para contraste
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .tags-info {
+    display: flex;
+    gap: 14px;
+    font-size: 0.82rem;
+    color: #f1f5f9;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      i {
+        color: $accent-mint; // Íconos resaltados en verde menta
+      }
+    }
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(56, 189, 248, 0.35);
+  }
+
+  // ESTADO SELECCIONADO: Resalta en fondo blanco con borde azul e indicación
+  &.seleccionada {
+    background: #ffffff;
+    border: 2px solid $bg-gradient-start;
+    border-left: 6px solid $bg-gradient-start;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+    transform: translateX(4px);
+
+    @media (max-width: 868px) {
+      transform: none;
+    }
+
+    h3 {
+      color: $bg-gradient-start;
+    }
+
+    .empresa-nombre {
+      color: $text-dark-main;
+    }
+
+    .tags-info {
+      color: $text-dark-muted;
+
+      span i {
+        color: $bg-gradient-start;
+      }
+    }
+  }
+}
+
+// Badges de Estado
+.badge-estado {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  white-space: nowrap;
+
+  &.abierta {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+  }
+}
+
+// Columna Derecha: Panel de Detalle
+.columna-detalle {
+  flex: 1;
+  background-color: #ffffff;
   border: 1px solid $border-light-form;
-  padding: 12px 22px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease-in-out;
+  border-radius: 12px;
+  padding: 30px;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
 
-  &:hover {
-    background-color: #e2e8f0; // Se oscurece un toque al pasar el mouse
-    color: $text-dark-main;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $border-light-form;
+    border-radius: 3px;
+  }
+
+  .sin-seleccion {
+    color: #94a3b8;
+    font-style: italic;
+    text-align: center;
+    margin-top: 100px;
+    font-size: 1.05rem;
   }
 }
 
-.btn-publicar {
-  // Tu degradado insignia con letras blancas para un contraste perfecto
-  background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%);
-  color: #ffffff; 
-  border: none;
-  padding: 12px 26px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 6px rgba(45, 76, 126, 0.12);
-  transition: all 0.2s ease-in-out;
+.card-detalle-completo {
+  .detalle-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
 
-  &:hover {
-    transform: translateY(-2px); // Efecto flotante profesional
-    box-shadow: 0 6px 12px rgba(45, 76, 126, 0.2);
+    h2 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: $bg-gradient-start;
+      font-weight: 700;
+    }
+
+    .empresa-detalle {
+      margin: 6px 0 0 0;
+      color: $text-dark-muted;
+      font-weight: 600;
+    }
+
+    // Modalidad destacada
+    .badge-modalidad {
+      background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+      color: $bg-gradient-start;
+      border: 1px solid $bg-gradient-end;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 2px 6px rgba(56, 189, 248, 0.2);
+    }
   }
 
-  &:active {
-    transform: translateY(0);
+  hr {
+    border: 0;
+    border-top: 2px solid #0461bd;
+    margin: 20px 0;
+  }
+}
+
+.detalle-body {
+  .meta-item {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: $text-dark-muted;
+
+    strong {
+      color: $text-dark-main;
+    }
   }
 
-  // El estado deshabilitado (Disabled) blindado con !important para que no se pise
-  &:disabled {
-    background: #cbd5e1 !important; 
-    color: #94a3b8 !important;
-    cursor: not-allowed !important; 
-    transform: none !important; 
-    box-shadow: none !important;
+  h4 {
+    margin: 22px 0 12px 0;
+    color: $text-dark-main;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-left: 4px solid $accent-mint;
+    padding-left: 10px;
+  }
+
+  .descripcion-texto {
+    line-height: 1.7;
+    color: $text-dark-muted;
+    font-size: 0.98rem;
+    white-space: pre-line;
+  }
+
+  // Habilidades destacadas
+  .habilidades-container-view {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .chip-skill-view {
+    background-color: #6be7ca;
+    border: 1px solid $accent-mint;
+    color: $text-dark-main; // Oscurecido para mayor contraste
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(146, 228, 203, 0.15);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: $accent-mint;
+      color: #0f172a;
+    }
+  }
+}
+
+// Botones y Acciones según Rol
+.detalle-footer {
+  margin-top: 35px;
+  border-top: 2px solid #f1f5f9;
+  padding-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-postularse, .btn-primario, .btn-crear {
+    background-color: $bg-gradient-start;
+    color: #b0e2b0;
+
+    &:hover {
+      background-color: #1e3a63;
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-secundario, .btn-cancelar {
+    background-color: #f1f5f9;
+    color: $text-dark-muted;
+    border: 1px solid $border-light-form;
+
+    &:hover {
+      background-color: #e2e8f0;
+      color: $text-dark-main;
+    }
+  }
+
+  .btn-candidatos {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: 1px solid #1d4ed8;
+
+    &:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-editar {
+    background-color: #f1f5f9;
+    color: $text-dark-main;
+    border: 1px solid $border-light-form;
+
+    &:hover {
+      background-color: #e2e8f0;
+    }
+  }
+
+  .btn-duracion {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+
+    &:hover {
+      background-color: #fde68a;
+    }
+  }
+
+  .btn-cerrar-oferta {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+
+    &:hover {
+      background-color: #fca5a5;
+    }
+  }
+
+  .btn-reabrir-oferta {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+
+    &:hover {
+      background-color: #bbf7d0;
+    }
+  }
+
+  .btn-postulado {
+    background-color: #e2e8f0;
+    color: $text-dark-muted;
+    cursor: default;
+  }
+
+  .btn-deshabilitado {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+
+  .btn-eliminar-admin {
+    background-color: $danger-color;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #dc2626;
+    }
   }
 }

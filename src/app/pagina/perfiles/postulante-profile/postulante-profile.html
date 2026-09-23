@@ -18,12 +18,14 @@
           </div>
         }
 
-        <button type="button" class="btn-foto-badge" (click)="fotoInput.click()" [disabled]="guardando" title="Cambiar foto de perfil">
-          📷
-        </button>
+        <!-- 📷 Botón cambiar foto (Solo visible para el alumno) -->
+        @if (!esVisitante) {
+          <button type="button" class="btn-foto-badge" (click)="fotoInput.click()" [disabled]="guardando" title="Cambiar foto de perfil">
+            📷
+          </button>
+          <input type="file" #fotoInput (change)="onFotoSeleccionada($event)" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+        }
       </div>
-
-      <input type="file" #fotoInput (change)="onFotoSeleccionada($event)" accept="image/png, image/jpeg, image/jpg" style="display: none;">
     </div>
 
     <!-- DATOS DEL USUARIO -->
@@ -37,24 +39,32 @@
 
       <!-- BOTONES PRINCIPALES -->
       <div class="acciones-header">
-        <button type="button" class="btn-editar" (click)="abrirModal('principales')">
-          ✏️ Editar Ubicación
-        </button>
+        @if (esVisitante) {
+          <!-- 👁️ Botón de navegación para Empresas o Admins -->
+          <button type="button" class="btn-secundario" (click)="volver()">
+            ← Volver
+          </button>
+        } @else {
+          <!-- ✏️ Controles de edición del propio alumno -->
+          <button type="button" class="btn-editar" (click)="abrirModal('principales')">
+            ✏️ Editar Ubicación
+          </button>
 
-        <button type="button" class="btn-guardar-main" [disabled]="guardando" (click)="guardarPerfilCompleto()">
-          @if (!guardando) {
-            <span>💾 Guardar Perfil Definitivo</span>
-          } @else {
-            <span>⏳ Guardando...</span>
-          }
-        </button>
+          <button type="button" class="btn-guardar-main" [disabled]="guardando" (click)="guardarPerfilCompleto()">
+            @if (!guardando) {
+              <span>💾 Guardar Perfil Definitivo</span>
+            } @else {
+              <span>⏳ Guardando...</span>
+            }
+          </button>
+        }
       </div>
     </div>
 
   </div>
 
   <!-- MENSAJE DE GUARDADO -->
-  @if (mensajeEstado) {
+  @if (mensajeEstado && !esVisitante) {
     <div class="alert-success-custom">
       {{ mensajeEstado }}
     </div>
@@ -66,16 +76,23 @@
   <div class="perfil-card card-sobre-mi">
     <div class="card-header-actions">
       <h3>💻 Perfil Profesional</h3>
-      <button type="button" class="btn-link-editar" (click)="abrirModal('sobreMi')" title="Editar descripción">
-        ✏️
-      </button>
+      <!-- ✏️ Botón modal (Solo visible para el alumno) -->
+      @if (!esVisitante) {
+        <button type="button" class="btn-link-editar" (click)="abrirModal('sobreMi')" title="Editar descripción">
+          ✏️
+        </button>
+      }
     </div>
 
     @if (perfil.sobre_mi) {
       <p class="texto-descripcion">{{ perfil.sobre_mi }}</p>
     } @else {
       <p class="empty-text">
-        Contale a las empresas tu enfoque técnico: tecnologías principales, orientación y motivación profesional.
+        @if (esVisitante) {
+          El postulante aún no ha cargado su presentación profesional.
+        } @else {
+          Contale a las empresas tu enfoque técnico: tecnologías principales, orientación y motivación profesional.
+        }
       </p>
     }
 
@@ -91,15 +108,19 @@
     </div>
   </div>
 
-  <!-- =====================================================
+
+ <!-- =====================================================
        3. CURRICULUM VITAE
        ===================================================== -->
   <div class="perfil-card card-cv">
     <div class="card-header-actions">
       <h3>📄 Curriculum Vitae</h3>
-      <button type="button" class="btn-link-editar" (click)="irACurriculum()" title="Ir al módulo de Curriculum">
-        ✏️
-      </button>
+      <!-- ✏️ Solo visible para el alumno -->
+      @if (!esVisitante) {
+        <button type="button" class="btn-link-editar" (click)="irACurriculum()" title="Ir al módulo de Curriculum">
+          ✏️
+        </button>
+      }
     </div>
 
     @if (perfil.cv_url) {
@@ -108,35 +129,45 @@
           <span class="icono-doc">📄</span>
           <div class="cv-info">
             <strong>{{ perfil.cv_nombre || 'Curriculum_Vitae.pdf' }}</strong>
-            <span class="cv-estado">✓ CV subido correctamente</span>
+            <span class="cv-estado">✓ CV disponible</span>
           </div>
         </div>
 
         <div class="cv-acciones">
+          <!-- 👁️ ⬇️ Acciones de lectura (Empresa, Admin y Alumno) -->
           <button type="button" class="btn-cv btn-vista-previa" (click)="verCV()">
             👁️ Ver / Previsualizar
           </button>
           <button type="button" class="btn-cv btn-descargar" (click)="descargarCV()">
             ⬇️ Descargar
           </button>
-          <button type="button" class="btn-cv btn-cambiar" (click)="irACurriculum()">
-            📝 Ir a Curriculum
-          </button>
+
+          <!-- 📝 Edición solo para el Alumno -->
+          @if (!esVisitante) {
+            <button type="button" class="btn-cv btn-cambiar" (click)="irACurriculum()">
+              📝 Ir a Curriculum
+            </button>
+          }
         </div>
       </div>
     } @else {
       <div class="cv-content cv-sin-adjuntar">
         <div class="cv-upload-icon">📄</div>
-        <h4>No tenés un CV adjuntado</h4>
-        <p class="cv-descripcion">
-          Ingresá al gestor de CV para cargarlo y configurarlo.
-        </p>
-
-        <div class="cv-acciones">
-          <button type="button" class="btn-cv btn-primary" (click)="irACurriculum()">
-            🚀 Cargar / Ir a Curriculum
-          </button>
-        </div>
+        
+        @if (esVisitante) {
+          <h4>Sin CV adjuntado</h4>
+          <p class="cv-descripcion">El postulante aún no ha subido su Curriculum Vitae.</p>
+        } @else {
+          <h4>No tenés un CV adjuntado</h4>
+          <p class="cv-descripcion">
+            Ingresá al gestor de CV para cargarlo y configurarlo.
+          </p>
+          <div class="cv-acciones">
+            <button type="button" class="btn-cv btn-primary" (click)="irACurriculum()">
+              🚀 Cargar / Ir a Curriculum
+            </button>
+          </div>
+        }
       </div>
     }
   </div>
@@ -147,9 +178,11 @@
   <div class="perfil-card card-skills">
     <div class="card-header-actions">
       <h3>🛠️ Stack Técnico y Habilidades</h3>
-      <button type="button" class="btn-link-editar" (click)="abrirModal('skills')" title="Seleccionar habilidades">
-        ✏️
-      </button>
+      @if (!esVisitante) {
+        <button type="button" class="btn-link-editar" (click)="abrirModal('skills')" title="Seleccionar habilidades">
+          ✏️
+        </button>
+      }
     </div>
 
     <div class="tags-container">
@@ -167,7 +200,11 @@
 
     @if ((perfil.skills.length || 0) === 0 && !perfil.otras_habilidades) {
       <p class="empty-text">
-        Hacé clic en el lápiz para seleccionar tus habilidades del catálogo o agregar otras.
+        @if (esVisitante) {
+          El postulante aún no ha registrado sus habilidades técnicas.
+        } @else {
+          Hacé clic en el lápiz para seleccionar tus habilidades del catálogo o agregar otras.
+        }
       </p>
     }
   </div>
@@ -178,9 +215,11 @@
   <div class="perfil-card card-redes">
     <div class="card-header-actions">
       <h3>🌐 Redes y Portafolio</h3>
-      <button type="button" class="btn-link-editar" (click)="abrirModal('redes')" title="Editar enlaces">
-        ✏️
-      </button>
+      @if (!esVisitante) {
+        <button type="button" class="btn-link-editar" (click)="abrirModal('redes')" title="Editar enlaces">
+          ✏️
+        </button>
+      }
     </div>
 
     <div class="links-grid">
@@ -194,7 +233,13 @@
         <a [href]="perfil.redes.portfolio" target="_blank" rel="noopener noreferrer" class="link-red portfolio">🌐 Web / Portafolio</a>
       }
       @if (!perfil.redes.github && !perfil.redes.linkedin && !perfil.redes.portfolio) {
-        <p class="empty-text">No vinculaste ninguna red profesional aún.</p>
+        <p class="empty-text">
+          @if (esVisitante) {
+            El postulante no ha vinculado redes profesionales.
+          } @else {
+            No vinculaste ninguna red profesional aún.
+          }
+        </p>
       }
     </div>
   </div>
@@ -395,4 +440,3 @@
     </div>
   }
 
-</div>

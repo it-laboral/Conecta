@@ -1,228 +1,281 @@
- @if (!mostrarFormulario) {
-  <div class="vista-principal">
-    
-    <div class="ofertas-header-seccion">
-      <h2>Intermediación Laboral - ITB Conecta</h2>
-      @if (rolUsuario === 'EMPRESA') {
-        <button class="btn-crear-oferta" (click)="toggleVista(true)">
-          <i class="fa-solid fa-plus"></i> Publicar Nueva Oferta
+<div class="ofertas-container">
+
+  <!-- ========================================== -->
+  <!-- VISTA 1: FORMULARIO CREAR / EDITAR OFERTA  -->
+  <!-- ========================================== -->
+  @if (mostrarFormulario) {
+    <div class="formulario-card">
+      <div class="form-header">
+        <h2>{{ modoEdicion ? 'Editar Oferta Laboral' : 'Publicar Nueva Oferta Laboral' }}</h2>
+        <button type="button" class="btn-cancelar" (click)="toggleVista(false)">
+          <i class="fa-solid fa-xmark"></i> Cancelar
         </button>
-      }
-    </div>
-
-    <div class="buscador-container">
-    <div class="buscador-wrapper">
-    <i class="fa-solid fa-magnifying-glass buscador-icono"></i>
-      <input 
-        type="text" 
-        [(ngModel)]="searchQuery" 
-        (input)="filtrarOfertasLocal()" 
-        placeholder="Buscar por título, empresa o habilidad (ej. Angular)..."
-        class="buscador-input"
-    />
-    </div>
-    </div>
-
-    <div class="split-screen-container">
-      
-      <aside class="panel-lista-ofertas">
-        @for (oferta of ofertasFiltradas; track oferta.id_oferta) {
-          <div class="oferta-card" 
-               [class.active]="ofertaSeleccionada?.id_oferta === oferta.id_oferta"
-               (click)="seleccionarOferta(oferta)">
-            <h3>{{ oferta.titulo }}</h3>
-            <p class="empresa-nombre">{{ oferta.razonSocial }}</p>
-            
-            <div class="card-meta">
-              <span><i class="fa-solid fa-laptop-code"></i> {{ oferta.modalidad }}</span>
-              <span><i class="fa-solid fa-graduation-cap"></i> {{ oferta.experiencia }}</span>
-            </div>
-          </div>
-        } @empty {
-          <p class="no-ofertas-msg">No hay ofertas vigentes que coincidan con tu búsqueda.</p>
-        }
-      </aside>
-
-      <main class="panel-detalle-oferta">
-        @if (ofertaSeleccionada) {
-          <div class="detalle-header">
-            <h1>{{ ofertaSeleccionada.titulo }}</h1>
-            <p class="empresa-detalle"><i class="fa-solid fa-building"></i> {{ ofertaSeleccionada.razonSocial }}</p>
-            
-            <div class="meta-badges">
-              <span class="badge-info"><i class="fa-solid fa-laptop-code"></i> {{ ofertaSeleccionada.modalidad }}</span>
-              <span class="badge-info"><i class="fa-solid fa-graduation-cap"></i> {{ ofertaSeleccionada.experiencia }}</span>
-              <span class="badge-info"><i class="fa-solid fa-calendar-day"></i> Duración: {{ ofertaSeleccionada.dias_duracion }} días</span>
-            </div>
-          </div>
-
-          <div class="detalle-body">
-            <h4>Detalles de la Propuesta (Tareas y Beneficios)</h4>
-            <p>{{ ofertaSeleccionada.descripcion }}</p>
-
-            <h4>Habilidades e Instrumentales Requeridas</h4>
-            <div class="skills-tags">
-              @for (skill of ofertaSeleccionada.skills_nombres; track skill) {
-                <span class="tag" style="background-color: rgba(175, 171, 192, 0.15); border-color: #064d6b; color: #166d92; font-weight: 600; font-size: 0.85rem; padding: 6px 12px; margin-right: 6px; display: inline-block; border-radius: 6px;">
-                  {{ skill }}
-                </span>
-              } @empty {
-                <p style="color: #2c405c; font-style: italic;">No se especificaron tecnologías para esta oferta.</p>
-              }
-            </div>
-          </div>
-
-          <div class="detalle-footer">
-            @if (rolUsuario === 'POSTULANTE') {
-              <button class="btn-postularse" (click)="guardarPostulacion(ofertaSeleccionada.id_oferta)">
-                <i class="fa-solid fa-paper-plane"></i> Postularme ahora
-              </button>
-            }
-
-            @if (rolUsuario === 'EMPRESA' && idUsuario === ofertaSeleccionada.empresa_id?.toString()) {
-              <button class="btn-editar-oferta">
-                <i class="fa-solid fa-pen-to-square"></i> Editar Publicación
-              </button>
-            }
-
-            @if (rolUsuario === 'ADMIN') {
-              <button class="btn-eliminar-admin" (click)="bajaOfertaAdmin(ofertaSeleccionada.id_oferta)" style="background-color: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                <i class="fa-solid fa-trash-can"></i> Eliminar (Moderación Admin)
-              </button>
-            }
-          </div>
-        } @else {
-          <p class="sin-seleccion-msg">Selecciona una oferta técnica de la izquierda para analizar sus requerimientos.</p>
-        }
-      </main>
-
-    </div> </div> }
-
-@if (mostrarFormulario) {
-  <div class="vista-formulario">
-    <h2>Publicar una Nueva Oferta de Empleo</h2>
-    <p class="subtitulo-form">Cargue los requisitos que solicita de los futuros Postulantes.</p>
-
-    <form [formGroup]="ofertaForm" (ngSubmit)="guardarOferta()">
-      
-      <div class="form-group" [class.has-error]="esCampoInvalido('titulo')">
-        <label>Título de la Publicación *</label>
-        <input formControlName="titulo" type="text" placeholder="Ej: Analista de Sistemas o Desarrollador IA">
-        @if (esCampoInvalido('titulo')) {
-          <span class="error-message">El título es obligatorio (mínimo 5 caracteres).</span>
-        }
       </div>
 
-      <div class="form-row">
+      <form [formGroup]="ofertaForm" (ngSubmit)="guardarOferta()">
         <div class="form-group">
-          <label>Modalidad *</label>
-          <select formControlName="modalidad">
-            <option value="Híbrido">Híbrido</option>
-            <option value="Remoto">Remoto</option>
-            <option value="Presencial">Presencial</option>
-          </select>
+          <label for="titulo">Título de la Oferta *</label>
+          <input id="titulo" name="titulo" type="text" formControlName="titulo" placeholder="Ej: Desarrollador Frontend Angular" />
+          @if (esCampoInvalido('titulo')) {
+            <small class="error-text">El título debe tener al menos 5 caracteres.</small>
+          }
         </div>
-        
-        <div class="form-group">
-          <label>Nivel de Experiencia Requerido *</label>
-          <select formControlName="experiencia">
-            <option value="Trainee">Trainee (Estudiantes Iniciales)</option>
-            <option value="Junior">Junior (Experiencia inicial)</option>
-            <option value="Semi-Senior">Semi-Senior</option>
-            <option value="Senior">Senior</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Duración de la Publicación *</label>
-          <select formControlName="tipoDuracion" (change)="onTipoDuracionChange()">
-            <option value="10">Estándar (10 días)</option>
-            <option value="personalizado">Personalizado...</option>
-          </select>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="modalidad">Modalidad *</label>
+            <select id="modalidad" name="modalidad" formControlName="modalidad">
+              <option value="Presencial">Presencial</option>
+              <option value="Híbrido">Híbrido</option>
+              <option value="Remoto">Remoto</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="experiencia">Experiencia *</label>
+            <select id="experiencia" name="experiencia" formControlName="experiencia">
+              <option value="Trainee">Trainee</option>
+              <option value="Junior">Junior</option>
+              <option value="Semi-Senior">Semi-Senior</option>
+              <option value="Senior">Senior</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tipoDuracion">Duración de la Convocatoria *</label>
+            <select id="tipoDuracion" name="tipoDuracion" formControlName="tipoDuracion" (change)="onTipoDuracionChange()">
+              <option value="10">10 Días (Estándar)</option>
+              <option value="30">30 Días</option>
+              <option value="personalizado">Personalizado</option>
+            </select>
+          </div>
         </div>
 
         @if (ofertaForm.get('tipoDuracion')?.value === 'personalizado') {
           <div class="form-group">
-            <label>Escriba la cantidad de días *</label>
-            <input formControlName="diasPersonalizados" type="number" min="1" max="90" placeholder="Ej: 30">
-            @if (esCampoInvalido('diasPersonalizados')) {
-              <span class="error-message">Ingrese un número válido entre 1 y 90 días.</span>
-            }
+            <label for="diasPersonalizados">Días personalizados (1 a 90):</label>
+            <input id="diasPersonalizados" name="diasPersonalizados" type="number" formControlName="diasPersonalizados" min="1" max="90" />
           </div>
         }
-      </div>
-      
-      <div class="form-group">
-        <label>Habilidades Técnicas e Instrumentales (Selección por categorías) *</label>
-        <p class="help-text">Haga clic en los chips para activarlos en la oferta:</p>
-        
-        <div class="selector-habilidades-wrapper">
-          @for (cat of categoriasConSkills; track cat.categoria_id) {
-            <div class="grupo-categoria">
-              <h4>{{ cat.nombre }}</h4>
-              <div class="skills-chips-grid">
-                @for (skill of cat.skills; track skill.skill_id) {
-                  <button type="button" 
-                          (click)="alternarHabilidad(skill.skill_id)"
-                          [class.selected]="skillsSeleccionadasIds.includes(skill.skill_id)"
-                          class="chip-button">
-                    {{ skill.nombre }}
-                  </button>
-                }
-              </div>
-            </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción de la Búsqueda *</label>
+          <textarea id="descripcion" name="descripcion" formControlName="descripcion" rows="5" placeholder="Detalla los requisitos, tareas y beneficios..."></textarea>
+          @if (esCampoInvalido('descripcion')) {
+            <small class="error-text">La descripción debe tener al menos 20 caracteres.</small>
           }
         </div>
+
+        <!-- Habilidades Requeridas -->
+        <div class="form-group">
+          <label>Habilidades / Requisitos (Seleccionar)</label>
+          <div class="categorias-container">
+            @for (cat of categoriasConSkills; track cat.categoria_id) {
+              <div class="categoria-group">
+                <h4>{{ cat.nombre }}</h4>
+                <div class="chips-container">
+                  @for (skill of cat.skills; track skill.skill_id) {
+                    <button type="button" 
+                            class="chip-skill" 
+                            [class.seleccionada]="skillsSeleccionadasIds.includes(skill.skill_id)"
+                            (click)="alternarHabilidad(skill.skill_id)">
+                      {{ skill.nombre }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secundario" (click)="toggleVista(false)">Cancelar</button>
+          <button type="submit" class="btn-primario" [disabled]="ofertaForm.invalid || skillsSeleccionadasIds.length === 0">
+            {{ modoEdicion ? 'Guardar Cambios' : 'Publicar Oferta' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- VISTA 2: LISTADO Y DETALLE PRINCIPAL        -->
+  <!-- ========================================== -->
+  @else {
+    <!-- Header de Filtros y Búsqueda -->
+    <header class="header-ofertas">
+      <div class="titulo-seccion">
+        <h2>Bolsa de Trabajos ITB Conecta</h2>
+        <p class="subtitulo">Explora oportunidades laborales o gestiona tus búsquedas publicadas.</p>
       </div>
 
-       @if (skillsSeleccionadasIds.length > 0) {
-          <div class="resumen-seleccionados-box">
-            <span class="titulo-resumen">Habilidades seleccionadas para la oferta:</span>
-            <div class="tags-resumen-flex">
+      <div class="bar-acciones">
+        <input id="searchQuery" name="searchQuery" type="text" [(ngModel)]="searchQuery" (input)="filtrarOfertasLocal()" placeholder="🔍 Buscar por título, empresa o tecnología..." class="input-busqueda" />
+
+        <select id="filtroModalidad" name="filtroModalidad" [(ngModel)]="filtroModalidad" (change)="filtrarOfertasLocal()" class="select-filtro">
+          <option value="todos">Todas las modalidades</option>
+          <option value="Presencial">Presencial</option>
+          <option value="Híbrido">Híbrido</option>
+          <option value="Remoto">Remoto</option>
+        </select>
+
+        <div class="btn-group-estados">
+          <button type="button" [class.activo]="filtroEstado === 'abiertas'" (click)="cambiarFiltroEstado('abiertas')">Abiertas</button>
+          <button type="button" [class.activo]="filtroEstado === 'cerradas'" (click)="cambiarFiltroEstado('cerradas')">Cerradas</button>
+          <button type="button" [class.activo]="filtroEstado === 'todas'" (click)="cambiarFiltroEstado('todas')">Todas</button>
+        </div>
+
+        @if (rolUsuario === 'empresa' || rolUsuario === 'admin') {
+          <button type="button" class="btn-crear" (click)="toggleVista(true)">
+            <i class="fa-solid fa-plus"></i> Nueva Oferta
+          </button>
+        }
+      </div>
+    </header>
+
+    <!-- Panel Dos Columnas (Lista / Detalle) -->
+    <div class="layout-ofertas">
+
+      <!-- COLUMNA IZQUIERDA: LISTA -->
+      <aside class="columna-lista">
+        @for (oferta of ofertasFiltradas; track oferta.id_oferta) {
+          <div class="card-oferta" 
+               [class.seleccionada]="ofertaSeleccionada?.id_oferta === oferta.id_oferta"
+               (click)="seleccionarOferta(oferta)">
+            
+            <div class="card-header">
+              <h3>{{ oferta.titulo }}</h3>
+              <span class="badge-estado" [class.abierta]="esOfertaAbierta(oferta)">
+                {{ esOfertaAbierta(oferta) ? 'Abierta' : 'Cerrada' }}
+              </span>
+            </div>
+
+            <p class="empresa-nombre"><i class="fa-regular fa-building"></i> {{ oferta.razonSocial || oferta.nombre_empresa || 'Empresa' }}</p>
+
+            <div class="tags-info">
+              <span><i class="fa-solid fa-laptop"></i> {{ oferta.modalidad }}</span>
+              <span><i class="fa-solid fa-briefcase"></i> {{ oferta.experiencia }}</span>
+              <span><i class="fa-regular fa-calendar-days"></i> {{ oferta.fecha_publicacion | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        } @empty {
+          <div class="sin-resultados">
+            <p>No se encontraron ofertas laborales con los filtros seleccionados.</p>
+          </div>
+        }
+      </aside>
+
+      <!-- COLUMNA DERECHA: DETALLE SELECCIONADO -->
+      <main class="columna-detalle">
+        @if (ofertaSeleccionada) {
+          <div class="card-detalle-completo">
+            
+            <div class="detalle-header-top">
+              <div>
+                <h2>{{ ofertaSeleccionada.titulo }}</h2>
+                <p class="empresa-detalle"><i class="fa-regular fa-building"></i> {{ ofertaSeleccionada.razonSocial || ofertaSeleccionada.nombre_empresa || 'Empresa ITB' }}</p>
+              </div>
               
-              @for (cat of categoriasConSkills; track cat.categoria_id) {
-                @for (skill of cat.skills; track skill.skill_id) {
-                  @if (skillsSeleccionadasIds.includes(skill.skill_id)) {
-                    <span class="tag-seleccionado">
-                      {{ skill.nombre }}
-                      <button type="button" class="btn-quitar-tag" (click)="alternarHabilidad(skill.skill_id)">
-                        <i class="fa-solid fa-xmark"></i>
-                      </button>
-                    </span>
+              <span class="badge-modalidad">{{ ofertaSeleccionada.modalidad }}</span>
+            </div>
+
+            <hr />
+
+            <div class="detalle-body">
+              <div class="meta-item">
+                <strong>Nivel de experiencia:</strong> {{ ofertaSeleccionada.experiencia }}
+              </div>
+
+              <div class="meta-item">
+              <strong>Publicado el:</strong> {{ ofertaSeleccionada.fecha_publicacion | date:'dd/MM/yyyy' }}
+              </div>
+
+              <!-- ⌛ Fecha de Vencimiento calculada -->
+              @if (obtenerFechaVencimiento(ofertaSeleccionada)) {
+              <div class="meta-item">
+              <strong>Vence el:</strong> {{ obtenerFechaVencimiento(ofertaSeleccionada) | date:'dd/MM/yyyy' }} ({{ ofertaSeleccionada.dias_duracion }} días)
+              </div>
+              }
+              
+              <h4>Descripción del Puesto</h4>
+              <p class="descripcion-texto">{{ ofertaSeleccionada.descripcion }}</p>
+
+              @if (ofertaSeleccionada.skills_nombres && ofertaSeleccionada.skills_nombres.length > 0) {
+                <h4>Habilidades Requeridas</h4>
+                <div class="chips-container">
+                  @for (skill of ofertaSeleccionada.skills_nombres; track skill) {
+                    <span class="chip-skill-view">{{ skill }}</span>
                   }
+                </div>
+              }
+            </div>
+
+            <!-- BLOQUE DE ACCIONES SEGÚN EL ROL -->
+            <div class="detalle-footer">
+              
+              <!-- Rol POSTULANTE O VISITANTE -->
+              @if (rolUsuario === 'postulante' || rolUsuario === 'visitante' || !rolUsuario) {
+                @if (!esOfertaAbierta(ofertaSeleccionada)) {
+                  <button type="button" class="btn-deshabilitado" disabled>
+                    <i class="fa-solid fa-lock"></i> Convocatoria Cerrada
+                  </button>
+                } @else if (estaPostulado(ofertaSeleccionada.id_oferta)) {
+                  <button type="button" class="btn-postulado" disabled>
+                    <i class="fa-solid fa-check-double"></i> Ya te has postulado
+                  </button>
+                } @else {
+                  <button type="button" class="btn-postularse" (click)="guardarPostulacion(ofertaSeleccionada.id_oferta)">
+                    <i class="fa-solid fa-paper-plane"></i> Postularme ahora
+                  </button>
                 }
               }
 
+              <!-- Rol EMPRESA (Propietaria de la oferta) -->
+              @if (rolUsuario === 'empresa' && idUsuario === (ofertaSeleccionada.id_empresa || ofertaSeleccionada.empresa_id)?.toString()) {
+                <button type="button" class="btn-candidatos" (click)="verPostulados(ofertaSeleccionada.id_oferta)">
+                  <i class="fa-solid fa-users"></i> Ver Candidatos
+                </button>
+
+                <button type="button" class="btn-editar" (click)="toggleVista(true, ofertaSeleccionada)">
+                  <i class="fa-solid fa-pen-to-square"></i> Editar Publicación
+                </button>
+
+                <button type="button" class="btn-duracion" (click)="ampliarDuracion(ofertaSeleccionada.id_oferta)">
+                  <i class="fa-solid fa-hourglass-half"></i> Ampliar Días
+                </button>
+
+                @if (esOfertaAbierta(ofertaSeleccionada)) {
+                  <button type="button" class="btn-cerrar-oferta" (click)="cambiarEstadoOferta(ofertaSeleccionada.id_oferta, 'Cerrada')">
+                    <i class="fa-solid fa-folder-closed"></i> Cerrar Convocatoria
+                  </button>
+                } @else {
+                  <button type="button" class="btn-reabrir-oferta" (click)="cambiarEstadoOferta(ofertaSeleccionada.id_oferta, 'Abierta')">
+                    <i class="fa-solid fa-folder-open"></i> Reabrir Convocatoria
+                  </button>
+                }
+              }
+
+              <!-- Rol ADMIN -->
+              @if (rolUsuario === 'admin') {
+                <button type="button" class="btn-candidatos" (click)="verPostulados(ofertaSeleccionada.id_oferta)">
+                  <i class="fa-solid fa-users"></i> Ver Candidatos
+                </button>
+
+                <button type="button" class="btn-eliminar-admin" (click)="bajaOfertaAdmin(ofertaSeleccionada.id_oferta)">
+                  <i class="fa-solid fa-trash-can"></i> Eliminar (Moderación Admin)
+                </button>
+              }
             </div>
+
+          </div>
+        } @else {
+          <div class="sin-seleccion">
+            <p>Selecciona una oferta de la lista para ver sus detalles.</p>
           </div>
         }
+      </main>
 
-        @if (ofertaForm.touched && skillsSeleccionadasIds.length === 0) {
-          <span class="error-message">Debe seleccionar al menos una tecnología requerida.</span>
-        }
-
-      <div class="form-group" [class.has-error]="esCampoInvalido('descripcion')">
-        <label>Detalles de la Propuesta (Tareas y Beneficios) *</label>
-        <textarea formControlName="descripcion" rows="5" placeholder="Describa qué tareas realizará el estudiante de Sistemas o IA..."></textarea>
-        @if (esCampoInvalido('descripcion')) {
-          <span class="error-message">La descripción es obligatoria (mínimo 20 caracteres).</span>
-        }
-      </div>
-
-      <div class="form-buttons">
-      <button type="button" class="btn-limpiar" (click)="toggleVista(false)">
-      <i class="fa-solid fa-broom"></i> Cancelar / Limpiar
-      </button>
-
-      <button 
-      type="submit" 
-     class="btn-publicar" 
-     [disabled]="ofertaForm.invalid || skillsSeleccionadasIds.length === 0">
-     <i class="fa-solid fa-paper-plane"></i> Publicar Oferta
-      </button>
     </div>
-    </form>
-  </div>
-}
+  }
+
+</div>

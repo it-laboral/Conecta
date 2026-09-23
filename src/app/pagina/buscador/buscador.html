@@ -1,0 +1,114 @@
+<div class="buscador-container">
+  <h2>
+    {{ tipoUsuario === 'postulante' ? '🏢 Directorio de Empresas' : '👥 Búsqueda de Talentos' }}
+  </h2>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-bar">
+    <input 
+      type="text" 
+      [(ngModel)]="filtroTexto" 
+      [placeholder]="tipoUsuario === 'postulante' ? 'Buscar por empresa o sector...' : 'Buscar por nombre o conocimientos...'"
+      aria-label="Barra de búsqueda"
+    />
+  </div>
+
+  @if (cargando) {
+    <p class="loading">Cargando resultados...</p>
+  } @else {
+    <div class="table-responsive">
+      <table class="tabla-busqueda">
+        <thead>
+          <tr>
+            @if (tipoUsuario === 'postulante') {
+              <th>Empresa</th>
+              <th>Sector / Rubro</th>
+              <th>Descripción</th>
+              <th class="text-center">Acción</th>
+            } @else {
+              <th>Candidato</th>
+              <th>Carrera / Estado</th>
+              <th>Especialidad / Experiencia</th>
+              <th class="text-center">Acción</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of resultadosFiltrados; track item.id_empresa || item.id_postulante || item.id || $index) {
+            <tr>
+              <!-- VISTA SI ES POSTULANTE (Mira Empresas) -->
+              @if (tipoUsuario === 'postulante') {
+                <td class="col-entidad">
+                  <img [src]="item.logo || 'assets/img/default-company.png'" alt="Logo Empresa" class="avatar-tabla" />
+                  <span class="nombre-entidad">{{ item.fantasia || item.razonSocial || item.razon_social }}</span>
+                </td>
+                <td>
+                  <span class="tag-rubro">{{ item.sector || item.rubro || 'Rubro General' }}</span>
+                </td>
+                <td class="col-descripcion">
+                  {{ item.descripcion || 'Sin descripción disponible.' }}
+                </td>
+                <td class="text-center">
+                  <button class="btn-accion" (click)="abrirPerfilEmpresa(item.id_empresa || item.id)">
+                    Ver Empresa
+                  </button>
+                </td>
+              }
+
+              <!-- VISTA SI ES EMPRESA (Mira Postulantes/Candidatos) -->
+              @if (tipoUsuario === 'empresa') {
+                <td class="col-entidad">
+                  <img [src]="item.foto || 'assets/img/default-user.png'" alt="Foto Candidato" class="avatar-tabla" />
+                  <span class="nombre-entidad">{{ item.nombres || item.nombre }} {{ item.apellidos || item.apellido }}</span>
+                </td>
+                <td>
+                  <span class="tag-carrera">{{ item.carrera || item.estado_academico || 'Estudiante ITB' }}</span>
+                </td>
+                <td class="col-descripcion">
+                  {{ item.especialidad || item.experiencia || 'Sin presentación.' }}
+                </td>
+                <td class="text-center">
+                  <button class="btn-accion" (click)="abrirPerfilPostulante(item.id_postulante || item.id)">
+                    Ver CV / Perfil
+                  </button>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="4" class="empty-cell">
+                No se encontraron resultados para tu búsqueda.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- ========================================== -->
+<!-- CONTENEDORES MODALES DE PERFIL COMPONENTES -->
+<!-- ========================================== -->
+
+@if (empresaPerfilId !== null) {
+  <div class="modal-backdrop" (click)="cerrarPerfilEmpresa()"></div>
+  <div class="modal-container">
+    <button class="btn-close-modal" (click)="cerrarPerfilEmpresa()">✕</button>
+    <app-empresa-profile 
+      [idEmpresaInput]="empresaPerfilId" 
+      (cerrarModal)="cerrarPerfilEmpresa()">
+    </app-empresa-profile>
+  </div>
+}
+
+@if (postulantePerfilId !== null) {
+  <div class="modal-backdrop" (click)="cerrarPerfilPostulante()"></div>
+  <div class="modal-container">
+    <button class="btn-close-modal" (click)="cerrarPerfilPostulante()">✕</button>
+    <app-postulante-profile 
+      [idPostulanteInput]="postulantePerfilId" 
+      (cerrarModal)="cerrarPerfilPostulante()">
+    </app-postulante-profile>
+  </div>
+}
