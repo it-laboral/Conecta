@@ -324,3 +324,297 @@ $border-light-form: #e2e8f0;  // Gris claro para bordes
     }
   }
 }
+
+// ====================================================================
+// SECCIONES NUEVAS (agregadas: estadísticas, cómo funciona,
+// ofertas destacadas, CTA empresas) — mismas variables y lenguaje
+// visual que el resto del archivo.
+// ====================================================================
+
+// Título de sección reutilizable para las secciones nuevas
+// (mismo estilo que ya usás dentro de .razones-section)
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+
+  h2 {
+    font-size: 2rem;
+    color: $bg-gradient-start;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .subtitulo {
+    color: $text-dark-muted;
+    font-size: 1rem;
+  }
+}
+
+// --- 4. ESTADÍSTICAS ---
+.stats-section {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+
+    @media (max-width: 960px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, rgba(146, 228, 203, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+    border: 1px solid $border-light-form;
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px rgba(15, 23, 42, 0.06);
+    }
+  }
+
+  .stat-numero {
+    font-size: 2rem;
+    font-weight: 800;
+    color: $bg-gradient-start;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-dark-muted;
+    margin-top: 6px;
+  }
+}
+
+// --- 5. CÓMO FUNCIONA (PASOS) ---
+.pasos-section {
+  .pasos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+
+    @media (max-width: 960px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .paso-card {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid $border-light-form;
+    border-radius: 16px;
+    padding: 34px 24px 28px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.02);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(15, 23, 42, 0.06);
+      border-color: $bg-gradient-end;
+    }
+  }
+
+  .paso-numero {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $bg-gradient-start 0%, $bg-gradient-end 100%);
+    color: #ffffff;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    box-shadow: 0 6px 14px rgba(45, 76, 126, 0.25);
+  }
+
+  .icon-box {
+    width: 50px;
+    height: 50px;
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 12px auto 18px;
+    font-size: 1.3rem;
+    color: $bg-gradient-start;
+  }
+
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.15rem;
+    color: $text-dark-main;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    color: $text-dark-muted;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+}
+
+// --- 6. OFERTAS DESTACADAS ---
+.ofertas-destacadas-section {
+  .ofertas-destacadas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+
+    @media (max-width: 960px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .oferta-destacada-card {
+    background-color: #ffffff;
+    border: 1px solid $border-light-form;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.02);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(15, 23, 42, 0.06);
+      border-color: $bg-gradient-end;
+    }
+  }
+
+  .oferta-header h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.05rem;
+    color: $text-dark-main;
+    font-weight: 700;
+  }
+
+  .oferta-empresa {
+    font-size: 0.85rem;
+    color: $text-dark-muted;
+    font-weight: 600;
+  }
+
+  .oferta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag-tec {
+    background-color: #f1f5f9;
+    color: $bg-gradient-start;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  .btn-ver-oferta {
+    margin-top: auto;
+    align-self: flex-start;
+    background: none;
+    border: none;
+    color: #16079e;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.2s ease;
+
+    &:hover {
+      gap: 10px;
+    }
+  }
+
+  .sin-ofertas {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: $text-dark-muted;
+    font-style: italic;
+  }
+
+  .ver-todas-wrapper {
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  .btn-secundario {
+    background-color: #ffffff;
+    border: 2px solid $bg-gradient-start;
+    color: $bg-gradient-start;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $bg-gradient-start;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// --- 7. CTA PARA EMPRESAS ---
+.cta-empresas-section {
+  .cta-empresas-content {
+    background: linear-gradient(135deg, $bg-gradient-start 0%, #1e3a8a 100%);
+    border-radius: 24px;
+    padding: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+
+    @media (max-width: 820px) {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    // El badge-tech ya viene con fondo/color mint del hero; sobre este
+    // fondo oscuro lo pasamos a blanco translúcido para que se lea bien.
+    .badge-tech {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    h2 {
+      color: #ffffff;
+      margin: 10px 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 480px;
+      margin: 0;
+    }
+  }
+
+  .cta-empresas-btn {
+    white-space: nowrap;
+    background: #ffffff !important;
+    color: $bg-gradient-start !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+}
