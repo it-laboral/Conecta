@@ -9,6 +9,7 @@ interface Estadistica {
 interface Paso {
   icono: string; // clase de FontAwesome, ej: 'fa-user-plus'
   titulo: string;
+ofertasDestacadas: any;
   descripcion: string;
 }
 
