@@ -32,6 +32,7 @@ export class Sidebar implements OnInit {
   }
 
   cerrarSesion(): void {
+    localStorage.clear(); // O localStorage.removeItem('token'), etc.
     this.authService.logout();
     this.router.navigate(['/sesion']);
   }

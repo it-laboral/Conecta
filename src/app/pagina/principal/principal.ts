@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 interface Estadistica {
@@ -9,7 +9,6 @@ interface Estadistica {
 interface Paso {
   icono: string; // clase de FontAwesome, ej: 'fa-user-plus'
   titulo: string;
-ofertasDestacadas: any;
   descripcion: string;
 }
 
@@ -27,15 +26,8 @@ interface OfertaDestacada {
   templateUrl: './principal.html',
   styleUrl: './principal.scss',
 })
-export class Principal implements OnInit {
 
-  constructor() {}
-
-  ngOnInit(): void {
-    // Cuando tengas el service de ofertas conectado, reemplazá esto por algo como:
-    // this.ofertasService.getUltimas(3).subscribe(ofertas => this.ofertasDestacadas = ofertas);
-  }
-
+export class Principal {
   // ============ ESTADÍSTICAS ============
   estadisticas: Estadistica[] = [
     { valor: '45+', label: 'Ofertas Publicadas' },
@@ -50,16 +42,19 @@ export class Principal implements OnInit {
       icono: 'fa-user-pen',
       titulo: 'Creá tu perfil',
       descripcion: 'Cargá tus habilidades, estudios y links a tu portfolio en pocos minutos.',
+      
     },
     {
       icono: 'fa-magnifying-glass',
       titulo: 'Postulate a ofertas',
       descripcion: 'Explorá oportunidades filtradas por tecnología, empresa o modalidad.',
+      
     },
     {
       icono: 'fa-handshake',
       titulo: 'Conectá con empresas',
       descripcion: 'Las empresas revisan tu perfil y te contactan directamente.',
+      
     },
   ];
 

@@ -57,7 +57,7 @@ export class EmpresaProfile implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
 
   private apiUrl = 'http://localhost:3000/api';
-  readonly serverUrl = 'http://localhost:3000'; // 👈 Base para resolver rutas relativas de logos
+  readonly serverUrl = 'http://localhost:3000'; // Base para resolver rutas relativas de logos
 
   @Input() idEmpresaInput?: number | null = null;
   @Input() esModoAdmin: boolean = false;
@@ -201,10 +201,11 @@ export class EmpresaProfile implements OnInit, OnChanges {
     this.guardando = true;
 
     const user = this.authService.getUsuarioActual();
-    const idEmpresa = user?.id || user?.id_empresa;
+    const idEmpresa = this.idEmpresaInput || user?.id || user?.id_empresa || this.perfil.id_empresa;
 
     if (!idEmpresa) {
       this.guardando = false;
+      alert('No se pudo determinar la empresa a actualizar.');
       return;
     }
 
@@ -222,7 +223,8 @@ export class EmpresaProfile implements OnInit, OnChanges {
       telefono: this.perfilEditado.telefono
     };
 
-    this.http.put<any>(`${this.apiUrl}/empresa/perfil`, payload).subscribe({
+    // ⚡ SE AGREGA EL ID DE LA EMPRESA EN LA RUTA
+    this.http.put<any>(`${this.apiUrl}/empresa/perfil/${idEmpresa}`, payload).subscribe({
       next: (res) => {
         if (res.success) {
           this.perfil = structuredClone(this.perfilEditado);
@@ -275,10 +277,20 @@ export class EmpresaProfile implements OnInit, OnChanges {
     if (this.esVisitante) return;
     this.subiendoLogo = true;
 
+    const user = this.authService.getUsuarioActual();
+    const idEmpresa = this.idEmpresaInput || user?.id || user?.id_empresa || this.perfil.id_empresa;
+
+    if (!idEmpresa) {
+      this.subiendoLogo = false;
+      alert('No se pudo determinar el ID de la empresa para la carga del logo.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('logo', file);
 
-    this.http.post<any>(`${this.apiUrl}/empresa/perfil/logo`, formData).subscribe({
+    // ⚡ SE AGREGA EL ID DE LA EMPRESA Y /logo EN LA RUTA
+    this.http.post<any>(`${this.apiUrl}/empresa/perfil/${idEmpresa}/logo`, formData).subscribe({
       next: (res) => {
         if (res.success && res.logoUrl) {
           let url = res.logoUrl;
@@ -299,12 +311,6 @@ export class EmpresaProfile implements OnInit, OnChanges {
     });
   }
 
-  // 🛠️ Helpers útiles para usar en la plantilla HTML:
-
-  /**
-   * Convierte "Angular, Node.js, TypeScript" en un arreglo ["Angular", "Node.js", "TypeScript"]
-   * Útil para renderizar badges en el HTML mediante *ngFor
-   */
   get stackList(): string[] {
     if (!this.perfil.stack_tecnologico) return [];
     return this.perfil.stack_tecnologico
@@ -313,10 +319,6 @@ export class EmpresaProfile implements OnInit, OnChanges {
       .filter(item => item.length > 0);
   }
 
-  /**
-   * Garantiza que los enlaces externos (web, linkedin) tengan el protocolo https://
-   * evita que el navegador intente abrir la URL como una ruta interna de Angular.
-   */
   obtenerUrlValida(url?: string): string {
     if (!url) return '';
     if (url.startsWith('http://') || url.startsWith('https://')) {

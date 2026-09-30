@@ -14,7 +14,8 @@ export class Header {
   public authService = inject(AuthService);
   private router= inject(Router);
 
-  cerrarSesion() {
+  cerrarSesion(): void{
+    localStorage.clear(); // O localStorage.removeItem('token'), etc.
     this.authService.logout();
     this.router.navigate(['/sesion']);
   }

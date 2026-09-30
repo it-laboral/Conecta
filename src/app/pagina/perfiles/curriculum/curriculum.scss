@@ -1,5 +1,5 @@
 
-// ==========================================
+/// ==========================================
 // VARIABLES
 // ==========================================
 $primary: #1769aa;
@@ -325,7 +325,7 @@ $radius-btn: 10px;
     position: fixed !important;
     left: -9999px !important;
     top: 0 !important;
-    opacity: 1 !important; // Mantiene opacidad activa para que html2canvas capture correctamente
+    opacity: 1 !important; // Mantiene opacidad activa para captura limpia
     pointer-events: none !important;
     z-index: -1 !important;
     padding: 0 !important;
@@ -341,13 +341,13 @@ $radius-btn: 10px;
       overflow: visible !important;
       box-shadow: none !important;
       background: transparent !important;
-      width: 794px !important; // Ancho A4 exacto garantizado
+      width: 794px !important; // Ancho A4 exacto
     }
 
     .cv-preview {
       margin: 0 !important;
       width: 794px !important;
-      padding: 50px !important; // Mantiene el padding de impresión fija
+      padding: 40px 45px 60px !important; // Margen inferior de resguardo
       box-shadow: none !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
@@ -409,7 +409,7 @@ $radius-btn: 10px;
   max-width: 794px; // Ancho A4 a 96 DPI
   min-height: 297mm; // Escala nativa A4
   margin: 30px auto;
-  padding: 50px;
+  padding: 40px 45px 60px; // Padding inferior amplio para evitar cortes
   background: #ffffff !important;
   box-sizing: border-box;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
@@ -419,7 +419,7 @@ $radius-btn: 10px;
 
   @media (max-width: 700px) {
     margin: 15px auto;
-    padding: 30px 20px;
+    padding: 30px 20px 45px;
   }
 }
 
@@ -490,28 +490,34 @@ $radius-btn: 10px;
   }
 }
 
+/* ✉️ DATOS DE CONTACTO (SOLUCIÓN EMAIL Y TELÉFONO EN CIMADOS) */
 .preview-contacto {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-top: 10px;
+  flex-wrap: wrap; // Permite salto de línea fluido si el mail es largo
+  gap: 8px 18px;
+  margin-top: 12px;
+  width: 100%;
 
-  span {
+  span, a {
     color: $text-muted;
     font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word; // Evita desbordamientos
+    overflow-wrap: anywhere;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
 }
 
 /* CONTROL DE SALTOS DE PÁGINA EN SECCIONES */
 .preview-section {
-  margin-top: 28px;
+  margin-top: 26px;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
-  page-break-inside: avoid;
-  break-inside: avoid;
 
   h3 {
     margin: 0 0 14px;
@@ -521,7 +527,7 @@ $radius-btn: 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: $primary;
-    page-break-after: avoid;
+    page-break-after: avoid; // Evita que el título quede solo al final de la hoja
     break-after: avoid;
   }
 
@@ -536,7 +542,7 @@ $radius-btn: 10px;
   .preview-item {
     text-align: left;
     margin-bottom: 18px;
-    page-break-inside: avoid;
+    page-break-inside: avoid; // Evita partir cada ítem laboral/académico
     break-inside: avoid;
 
     &:last-child { margin-bottom: 0; }
@@ -624,9 +630,9 @@ $radius-btn: 10px;
 
   .cv-preview {
     box-shadow: none !important;
-    margin: 0 !important;
+    margin: 0.5mm !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 15mm !important;
+    padding: 15mm 15mm 20mm !important;
   }
 }

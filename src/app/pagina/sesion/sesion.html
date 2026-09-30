@@ -20,29 +20,31 @@
   </div>
 
   <!-- COLUMNA DERECHA -->
+
   <div class="form-column">
-
     <div class="login-box">
-
-      <form [formGroup]="loginForm" (ngSubmit)="ingresar()">
-
+      <form [formGroup]="loginForm" (ngSubmit)="ingresar()"autocomplete="off">
         <!-- EMAIL -->
-        <input 
+        <input
           type="email"
           formControlName="email"
-          placeholder="Tu correo">
+          placeholder="Tu correo"
+          autocomplete="off"
+          readonly
+          onfocus="this.removeAttribute('readonly');">
 
         <!-- PASSWORD -->
         <div class="password-container">
-
           <input
             [type]="mostrarPassword ? 'text' : 'password'"
             formControlName="password"
-            placeholder="Tu contraseña">
+            placeholder="Tu contraseña"
+            autocomplete="new-password"
+          readonly
+          onfocus="this.removeAttribute('readonly');">
 
           <!-- OJITO -->
           <span class="ojo" (click)="togglePassword()">
-
             <i
               class="fa-solid"
               [class.fa-eye]="mostrarPassword"
@@ -50,12 +52,12 @@
             </i>
 
           </span>
-
         </div>
 
         <!-- ERROR PASSWORD -->
+
         @if (loginForm.get('password')?.errors?.['pattern']
-             && loginForm.get('password')?.touched) {
+           && loginForm.get('password')?.touched) {
           <div class="error">
             La contraseña debe tener:
             <br>
@@ -68,16 +70,12 @@
         }
 
         <!-- BOTON -->
-        <button 
+        <button
           type="submit"
           [disabled]="loginForm.invalid">
-
           Iniciar Sesión
-
         </button>
-
       </form>
-
       <!-- ENLACE -->
       <div class="contenedor-enlace">
 
@@ -90,9 +88,7 @@
         </a>
 
       </div>
-
     </div>
-
   </div>
 
-</div>
+

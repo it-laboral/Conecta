@@ -298,97 +298,126 @@ export class Curriculum implements OnInit {
     this.editandoProyecto = false;
   }
 
-  // GENERACIÓN Y SUBIDA DE PDF
-  private async procesarPDF(descargarEnPC: boolean = true): Promise<void> {
-    if (this.perfil?.cv_url && !this.esDuenio) {
-      if (descargarEnPC) {
-        const link = document.createElement('a');
-        link.href = `http://localhost:3000${this.perfil.cv_url}`;
-        link.download = this.perfil.cv_nombre || 'Curriculum.pdf';
-        link.target = '_blank';
-        link.click();
-      }
-      return;
+  // GENERACIÓN Y SUBIDA DE PDF CON MÁRGENES REALES EN TODAS LAS HOJAS
+private async procesarPDF(descargarEnPC: boolean = true): Promise<void> {
+  if (this.perfil?.cv_url && !this.esDuenio) {
+    if (descargarEnPC) {
+      const link = document.createElement('a');
+      link.href = `http://localhost:3000${this.perfil.cv_url}`;
+      link.download = this.perfil.cv_nombre || 'Curriculum.pdf';
+      link.target = '_blank';
+      link.click();
     }
-
-    // Asegura el renderizado previo en el DOM
-    if (!this.mostrandoVistaPrevia) {
-      this.abrirVistaPrevia();
-      this.cdr.detectChanges(); // Fuerza a Angular a montar el HTML de la vista previa inmediatamente
-      await new Promise((resolve) => setTimeout(resolve, 400)); // Espera la carga de imágenes/fuentes
-    }
-
-    const elemento = this.cvPreviewRef?.nativeElement || document.querySelector('.cv-preview') as HTMLElement;
-
-    if (!elemento) {
-      alert('No se pudo preparar la vista del CV.');
-      return;
-    }
-
-    try {
-      const canvas = await html2canvas(elemento, {
-        scale: 2, // Mayor calidad para impresión PDF
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff'
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const anchoPDF = 210;
-      const altoPDF = 297;
-      const anchoImagen = anchoPDF;
-      const altoImagen = (canvas.height * anchoImagen) / canvas.width;
-
-      let posicionY = 0;
-      pdf.addImage(imgData, 'JPEG', 0, posicionY, anchoImagen, altoImagen);
-
-      let alturaRestante = altoImagen - altoPDF;
-
-      while (alturaRestante > 0) {
-        posicionY -= altoPDF;
-        pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, posicionY, anchoImagen, altoImagen);
-        alturaRestante -= altoPDF;
-      }
-
-      const nombreArchivo = `CV-${this.perfil?.nombres || 'Postulante'}-${this.perfil?.apellidos || ''}.pdf`;
-
-      if (descargarEnPC) {
-        pdf.save(nombreArchivo);
-      }
-
-      // SUBIDA AL SERVIDOR
-      if (!this.idPostulante) {
-        this.idPostulante = this.obtenerIdSesion();
-      }
-
-      if (this.esDuenio && this.idPostulante) {
-        const pdfBlob = pdf.output('blob');
-        const archivoPDF = new File([pdfBlob], nombreArchivo, { type: 'application/pdf' });
-
-        this.postulanteService.subirCV(this.idPostulante, archivoPDF).subscribe({
-          next: (res: any) => {
-            console.log('CV guardado en el servidor correctamente:', res);
-            if (res?.cv_url) this.perfil.cv_url = res.cv_url;
-            if (res?.cv_nombre) this.perfil.cv_nombre = res.cv_nombre;
-            alert('¡CV guardado exitosamente en la plataforma!');
-          },
-          error: (err) => {
-            console.error('Error en la petición de subir CV:', err);
-            alert('Ocurrió un error al intentar guardar el CV en el servidor.');
-          }
-        });
-      } else {
-        console.error('No se pudo subir el CV: idPostulante es null o no sos el dueño.');
-        alert('Atención: No se detectó tu sesión (ID de postulante). El PDF se generó pero no se guardó en la base de datos.');
-      }
-    } catch (error) {
-      console.error('Error al procesar el PDF:', error);
-      alert('No se pudo procesar el PDF.');
-    }
+    return;
   }
+
+  // 1. Asegura que la vista previa esté montada en el DOM
+  if (!this.mostrandoVistaPrevia) {
+    this.abrirVistaPrevia();
+    this.cdr.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
+
+  const elemento = (this.cvPreviewRef?.nativeElement || document.querySelector('.cv-preview')) as HTMLElement;
+
+  if (!elemento) {
+    alert('No se pudo preparar la vista del CV.');
+    return;
+  }
+
+  try {
+    // 2. Captura en canvas
+    const canvas = await html2canvas(elemento, {
+      scale: 2, // Calidad HD
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      windowWidth: 800
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+    // 3. Configuración A4 y Márgenes
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = 210;
+    const pageHeight = 297;
+    
+    // Márgenes deseados en mm
+    const marginTop = 12;
+    const marginBottom = 15;
+    const marginLeft = 12;
+
+    const printableWidth = pageWidth - (marginLeft * 2); // 186 mm
+    const printableHeight = pageHeight - marginTop - marginBottom; // 270 mm de área útil por hoja
+
+    const imgWidth = printableWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let yOffset = 0;
+    let page = 0;
+
+    // 4. Renderizado con máscaras de margen por página
+    while (heightLeft > 0) {
+      if (page > 0) {
+        pdf.addPage();
+      }
+
+      // Posición de la imagen para esta hoja
+      const imgY = marginTop - yOffset;
+      pdf.addImage(imgData, 'JPEG', marginLeft, imgY, imgWidth, imgHeight);
+
+      // MÁSCARAS BLANCAS: Tapan cualquier texto que invada los márgenes superior e inferior
+      pdf.setFillColor(255, 255, 255);
+      
+      // Margen Superior
+      pdf.rect(0, 0, pageWidth, marginTop, 'F');
+      
+      // Margen Inferior (Garantiza los 15mm limpios al pie de página)
+      pdf.rect(0, pageHeight - marginBottom, pageWidth, marginBottom, 'F');
+      
+      // Márgenes Laterales
+      pdf.rect(0, 0, marginLeft, pageHeight, 'F');
+      pdf.rect(pageWidth - marginLeft, 0, marginLeft, pageHeight, 'F');
+
+      heightLeft -= printableHeight;
+      yOffset += printableHeight;
+      page++;
+    }
+
+    const nombreArchivo = `CV-${this.perfil?.nombres || 'Postulante'}-${this.perfil?.apellidos || ''}.pdf`;
+
+    if (descargarEnPC) {
+      pdf.save(nombreArchivo);
+    }
+    // 5. Subida al servidor
+    if (!this.idPostulante) {
+      this.idPostulante = this.obtenerIdSesion();
+    }
+
+    if (this.esDuenio && this.idPostulante) {
+      const pdfBlob = pdf.output('blob');
+      const archivoPDF = new File([pdfBlob], nombreArchivo, { type: 'application/pdf' });
+
+      this.postulanteService.subirCV(this.idPostulante, archivoPDF).subscribe({
+        next: (res: any) => {
+          if (res?.cv_url) this.perfil.cv_url = res.cv_url;
+          if (res?.cv_nombre) this.perfil.cv_nombre = res.cv_nombre;
+          alert('¡CV guardado exitosamente en la plataforma!');
+        },
+        error: (err) => {
+          console.error('Error en la petición de subir CV:', err);
+          alert('Ocurrió un error al intentar guardar el CV en el servidor.');
+        }
+      });
+    } else {
+      alert('Atención: No se detectó tu sesión (ID de postulante). El PDF se generó pero no se guardó en la base de datos.');
+    }
+  } catch (error) {
+    console.error('Error al procesar el PDF:', error);
+    alert('No se pudo procesar el PDF.');
+  }
+}
 
   async guardarCV(): Promise<void> {
     await this.procesarPDF(false);

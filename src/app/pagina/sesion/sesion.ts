@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './sesion.html',
   styleUrl: './sesion.scss',
 })
-export class Sesion {
+export class Sesion implements OnInit {
 
   // SERVICIOS
   private authService = inject(AuthService);
@@ -19,10 +19,7 @@ export class Sesion {
   // MOSTRAR / OCULTAR PASSWORD
   mostrarPassword = false;
 
-  togglePassword() {
-    this.mostrarPassword = !this.mostrarPassword;
-  }
-
+  
   // FORMULARIO
   loginForm = new FormGroup({
     email: new FormControl('', [
@@ -35,6 +32,16 @@ export class Sesion {
       Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)
     ])
   });
+
+  ngOnInit(): void{
+    // ⚡ Limpia las cajas de texto cada vez que se entra a la pantalla de sesión
+    this.loginForm.reset();
+    this.mostrarPassword = false;
+  }
+
+  togglePassword() {
+    this.mostrarPassword = !this.mostrarPassword;
+  }
 
   // LOGIN
   ingresar() {

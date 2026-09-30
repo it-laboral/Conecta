@@ -70,6 +70,17 @@ export class PanelAdmin implements OnInit {
     this.mostrarSkills = !this.mostrarSkills;
   }
 
+  irASkills(): void {
+    this.mostrarSkills = true;
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      const seccion = document.getElementById('seccion-skills');
+      if (seccion) {
+        seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
+  }
   // Cambiar de pestaña
   cambiarPestana(nuevaPestana: PestanaAdmin): void {
     this.mostrarSkills = false;
@@ -279,6 +290,7 @@ cambiarEstado(idEmpresa: number, estadoActual: string): void {
 
   // Cierre de Sesión Centralizado
   cerrarSesion(): void {
+    localStorage.clear(); // O localStorage.removeItem('token'), etc.
     this.authService.logout();
     this.router.navigate(['/sesion']);
   }
