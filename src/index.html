@@ -6,8 +6,63 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Ocultar barra superior y avisos molestos de Google Translate -->
+  <style>
+    .goog-te-banner-frame, 
+    .goog-te-balloon-frame,
+    #goog-gt-tt {
+      display: none !important;
+    }
+    body {
+      top: 0px !important;
+    }
+    .goog-text-highlight {
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+  </style>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'es',
+        includedLanguages: 'es,en,pt',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+
+    function cambiarIdiomaGlobal(codigoIdioma) {
+      var domain = window.location.hostname;
+
+      if (codigoIdioma === 'es') {
+        // Para volver a español, BORRAMOS la cookie de traducción de Google
+        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + domain + "; path=/;";
+        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=." + domain + "; path=/;";
+      } else {
+        // Para otros idiomas, fijamos la cookie
+        document.cookie = "googtrans=/es/" + codigoIdioma + "; path=/;";
+        document.cookie = "googtrans=/es/" + codigoIdioma + "; domain=" + domain + "; path=/;";
+      }
+
+      // Intentar forzar el cambio en el select oculto de Google si existe
+      var selectElement = document.querySelector('.goog-te-combo');
+      if (selectElement) {
+        selectElement.value = codigoIdioma;
+        selectElement.dispatchEvent(new Event('change'));
+      }
+
+      // Recargamos levemente la página para garantizar que los textos se restauren/cambien bien
+      location.reload();
+    }
+  </script>
+  
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 <body>
   <app-root></app-root>
+  <div id="google_translate_element" style="display: none;"></div>
 </body>
 </html>

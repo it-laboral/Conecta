@@ -29,9 +29,8 @@
           type="email"
           formControlName="email"
           placeholder="Tu correo"
-          autocomplete="off"
-          readonly
-          onfocus="this.removeAttribute('readonly');">
+          autocomplete="off"/>
+        
 
         <!-- PASSWORD -->
         <div class="password-container">
@@ -39,9 +38,8 @@
             [type]="mostrarPassword ? 'text' : 'password'"
             formControlName="password"
             placeholder="Tu contraseña"
-            autocomplete="new-password"
-          readonly
-          onfocus="this.removeAttribute('readonly');">
+            autocomplete="new-password"/>
+          
 
           <!-- OJITO -->
           <span class="ojo" (click)="togglePassword()">
@@ -78,15 +76,12 @@
       </form>
       <!-- ENLACE -->
       <div class="contenedor-enlace">
-
         <p>
           Si aún no tienes una cuenta, puedes registrarte haciendo clic en el siguiente enlace.
         </p>
-
         <a routerLink="/registrar" class="mi-enlace">
           Ir a Registrarse
         </a>
-
       </div>
     </div>
   </div>

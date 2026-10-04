@@ -1,92 +1,174 @@
 @use '../../../styles/variables';
 
 /* ==========================================================================
-   1. ESTILOS BASE (Tu computadora y Notebooks normales)
+   HEADER Y NAVEGACIÓN
    ========================================================================== */
 header {
   background: linear-gradient(90deg, #06245c, #0aa7b8);
   color: white;
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 2rem;
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center; // Centrado clásico en escritorio
-  gap: 2rem;
   border-radius: 32px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
 
-img {
-  width: 140px;
-  height: auto;
-}
-
-nav {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-nav a {
-  color: #ffffff;
-  text-decoration: none;
-  padding: 0.75rem 1.2rem;
-  font-family: variables.$font-family-base;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border-radius: 999px;
-  transition: 0.3s;
-}
-
-nav a:hover {
-  background-color: rgba(255, 255, 255, 0.18);
-  color: #dffcff;
-  transform: translateY(-2px);
-}
-
-
-/* ==========================================================================
-   2. ADAPTACIONES DE PANTALLA (Debajo de todo, como a vos te gusta)
-   ========================================================================== */
-
-// 📑 PARA TABLETS (O Notebooks con pantallas más compactas)
-@include variables.responder-a(tablet) {
-  header {
-    justify-content: space-between; // Separa el logo a la izquierda y menú a la derecha
-    padding: 1.2rem 1.5rem;
-    gap: 1rem;
+  // Adaptación Responsive del Header
+  @include variables.responder-a(tablet) {
+    padding: 1rem 1.5rem;
   }
 
-  img {
-    width: 110px; // Achicamos un pelín el logo para notebooks chicas
-  }
-
-  nav a {
-    font-size: 1.05rem; // Letra más cómoda para que no desborde
+  @include variables.responder-a(celular) {
     padding: 0.6rem 1rem;
-  }
-}
-
-// 📱 PARA CELULARES (Pantallas bien chicas - Formato horizontal elegante)
-@include variables.responder-a(celular) {
-  header {
-    justify-content: space-between;
-    padding: 0.6rem 1rem;
-    gap: 0.5rem;
     border-radius: 16px;
   }
 
-  img {
-    width: 85px; // Logo sutil en la esquina
+  // --- LOGO ---
+  img.logo-header {
+    width: 140px;
+    height: auto;
+    display: block;
+
+    @include variables.responder-a(tablet) {
+      width: 110px;
+    }
+
+    @include variables.responder-a(celular) {
+      width: 85px;
+    }
   }
 
+  // --- NAVEGACIÓN ---
   nav {
-    gap: 0.2rem; // Enlaces bien juntitos
-  }
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    width: 100%; // Permite que margin-left: auto empuje hacia la derecha
 
-  nav a {
-    font-size: 0.85rem; 
-    padding: 0.4rem 0.6rem;
-    font-weight: 700;
+    @include variables.responder-a(celular) {
+      gap: 0.25rem;
+    }
+
+    // Enlaces de navegación
+    a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.75rem 1.2rem;
+      font-family: variables.$font-family-base;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-radius: 999px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.18);
+        color: #dffcff;
+        transform: translateY(-2px);
+      }
+
+      @include variables.responder-a(tablet) {
+        font-size: 1.05rem;
+        padding: 0.6rem 1rem;
+      }
+
+      @include variables.responder-a(celular) {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+        font-weight: 700;
+      }
+    }
+
+    // Empuja "Registrarse" o el perfil a la extrema derecha
+    .nav-separador {
+      margin-left: auto;
+    }
+
+    // --- TAMAÑO Y ESTILO DE LAS BANDERAS ---
+    .flag-vector {
+      width: 22px;
+      height: 15px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    // --- SELECTOR DE IDIOMA DESPLEGABLE PERSONALIZADO ---
+    .lang-dropdown {
+      position: relative;
+      display: inline-block;
+
+      // Botón principal del selector
+      .lang-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        font-family: variables.$font-family-base;
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 0.5rem 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.25);
+          border-color: #ffffff;
+        }
+
+        .arrow {
+          font-size: 0.65rem;
+          opacity: 0.8;
+          margin-left: 0.2rem;
+        }
+
+        @include variables.responder-a(tablet) {
+          font-size: 0.9rem;
+          padding: 0.45rem 0.7rem;
+        }
+
+        @include variables.responder-a(celular) {
+          font-size: 0.8rem;
+          padding: 0.3rem 0.5rem;
+        }
+      }
+
+      // Menú flotante de opciones (ul)
+      .lang-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        background-color: #06245c;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 0.4rem 0;
+        list-style: none;
+        margin: 0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+        min-width: 95px;
+
+        li {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          padding: 0.5rem 0.8rem;
+          cursor: pointer;
+          color: white;
+          font-family: variables.$font-family-base;
+          font-size: 0.95rem;
+          font-weight: 600;
+          transition: background 0.2s ease;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+          }
+        }
+      }
+    }
   }
 }

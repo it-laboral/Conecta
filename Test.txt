@@ -1,0 +1,25 @@
+npm install
+
+npx playwright install
+para correr los archivos que están en la carpeta e2e
+
+Carpeta e2e contienen archivos para testear 
+Inicio de sesión: autenticación.spec.ts
+Registro(registrarse como postulante y otro como empresa): registro.spec.ts
+Empresa(Editar el perfil) empresa.spec.ts
+Postulante (editar perfil y crear CV) postulante.spec.ts
+Crear oferta por parte de la empresa registrada: crear-oferta.spec.ts
+
+comando para correr la pruebas
+tiene que estar habilitadas las terminales del localhost y del backend, y la BD
+1)se abrirá un nuevo navegador
+(lo que está en negrita es el nombre del archivo a correr es un ejemplo
+npx playwright test empresa.spec.ts --headed
+
+2)se abre un navegador con un panel  de pausa, para analizar linea por linea que pasa en la pantalla
+
+
+npx playwright test empresa.spec.ts --debug
+
+un panel interactivo para ver el navegador paso a paso
+npx playwright test empresa.spec.ts --ui

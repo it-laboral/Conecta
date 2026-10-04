@@ -1,7 +1,6 @@
-<header>
-    
-<nav>
-    <!-- Logo e Inicio (siempre visibles) -->
+<<header>
+  <nav>
+    <!-- Logo e Inicio (Siempre visibles a la izquierda) -->
     <a routerLink="/principal">
       <img src="Logotrans.png" alt="Logo ITB" class="logo-header">
     </a>  
@@ -10,24 +9,49 @@
 
     <!-- SI NO HAY SESIÓN ACTIVA -->
     @if (!authService.isLoggedIn()) {
-      <a routerLink="/registrar">Registrarse</a>
+      <a routerLink="/registrar" class="nav-separador">Registrarse</a>
       <a routerLink="/sesion">Iniciar sesión</a>
     } 
     <!-- SI HAY SESIÓN ACTIVA -->
     @else {
       <!-- Solo si es Admin -->
       @if (authService.getTipoUsuario() === 'admin') {
-        <a routerLink="/panel-admin">Panel Admin</a>
+        <a routerLink="/panel-admin" class="nav-separador">Panel Admin</a>
       }
 
       <!-- Solo si es Postulante o Empresa -->
       @if (authService.getTipoUsuario() === 'postulante' || authService.getTipoUsuario() === 'empresa') {
-        <a routerLink="/perfil">Ir al Perfil</a>
+        <a routerLink="/perfil" role="button" tabindex="0" class="nav-separador" style="cursor: pointer;">Ir al Perfil</a>
       }
 
       <!-- Opción para salir -->
-      <a (click)="cerrarSesion()" style="cursor: pointer;">Cerrar sesión</a>
+      <a (click)="cerrarSesion()" role="button" tabindex="0" style="cursor: pointer;">Cerrar sesión</a>
     }
-  </nav>
 
+    <!-- SELECTOR DE IDIOMA COMPACTO CON BANDERAS PNG -->
+    <div class="lang-dropdown">
+      <button type="button" class="lang-btn" (click)="toggleDropdown()">
+        <img [src]="obtenerBandera(idiomaActual)" [alt]="idiomaActual" class="flag-vector">
+        <span>{{ idiomaActual.toUpperCase() }}</span>
+        <span class="arrow">▼</span>
+      </button>
+
+      @if (dropdownAbierto) {
+        <ul class="lang-menu">
+          <li (click)="traducirA('es')">
+            <img src="banderas/ar.png" alt="Argentina" class="flag-vector">
+            <span>ES</span>
+          </li>
+          <li (click)="traducirA('en')">
+            <img src="banderas/us.png" alt="Reino Unido" class="flag-vector">
+            <span>EN</span>
+          </li>
+          <li (click)="traducirA('pt')">
+            <img src="banderas/br.png" alt="Brasil" class="flag-vector">
+            <span>PT</span>
+          </li>
+        </ul>
+      }
+    </div>
+  </nav>
 </header>
