@@ -1,6 +1,18 @@
-<footer>
+<footer class="footer">
+  <div class="footer__contenido">
+    <div class="footer__col">
+      <h4>&copy; 2026 ITB Conecta</h4>
+      <p>Sistema de Intermediación Laboral · Todos los derechos reservados.</p>
+    </div>
 
-<h4>&copy; 2026 Nuestro Sistema de Intermediación Laboral. Todos los derechos reservados.</h4>
-<p>Contacto: <a href="mailto:info@nuestrosistema.com">info@nuestrosistema.com</a></p>
+    <div class="footer__col">
+      <p>Contacto: <a routerLink="/contacto"></a> · <a href="mailto:itbconecta&#64;gmail.com">itbconecta&#64;gmail.com</a></p>
+    </div>
 
+    <div class="footer__col footer__acciones">
+         <a routerLink="/contacto" class="footer__boton">✉ Escribinos</a>
+      <button type="button" (click)="volver()">← Volver</button>
+      <button type="button" (click)="subir()">↑ Subir</button>
+    </div>
+  </div>
 </footer>

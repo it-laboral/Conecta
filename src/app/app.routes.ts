@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-
+ 
 // Componentes de Carga Directa (Eager)
 import { Principal } from './pagina/principal/principal';
 import { Sesion } from './pagina/sesion/sesion';
@@ -9,13 +9,14 @@ import { RegistrarEmpresa } from './pagina/registrar/registrar-empresa/registrar
 import { Ofertas } from './pagina/ofertas/ofertas';
 import { PostulacionesComponent } from './pagina/postulaciones/postulaciones';
 import { PanelAdmin } from './pagina/panel-admin/panel-admin';
-
+import { Contacto } from './pagina/contacto/contacto';
+ 
 // Guards de Seguridad y Roles
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { postulanteGuard } from './guards/postulante.guard';
 import { empresaGuard } from './guards/empresa.guard';
-
+ 
 export const routes: Routes = [
   // ===================================================
   // 1. RUTAS PÚBLICAS Y AUTENTICACIÓN
@@ -25,11 +26,14 @@ export const routes: Routes = [
   { path: 'registrar', component: RegistrarHome },
   { path: 'registrar-postulante', component: RegistrarPostulante },
   { path: 'registrar-empresa', component: RegistrarEmpresa },
-
+ 
+  // Formulario de contacto (público)
+  { path: 'contacto', component: Contacto },
+ 
   // Cartelera pública (lectura para todos)
   { path: 'ofertas', component: Ofertas },
-
-
+ 
+ 
 // Mis publicaciones (Reutiliza Ofertas filtrando por la empresa logueada)
   { 
     path: 'mis-ofertas', 
@@ -51,7 +55,7 @@ export const routes: Routes = [
       import('./pagina/perfiles/postulante-profile/postulante-profile').then(m => m.PostulanteProfile),
     canActivate: [authGuard] 
   },
-
+ 
   // ===================================================
   // 3. RUTAS POR ROL ESPECÍFICO
   // ===================================================
@@ -61,7 +65,7 @@ export const routes: Routes = [
     component: PostulacionesComponent, 
     canActivate: [authGuard]
   },
-
+ 
   // Vista para la Empresa ("Candidatos de una Oferta concreta")
   { 
     path: 'postulaciones/oferta/:idOferta', 
@@ -74,7 +78,7 @@ export const routes: Routes = [
     component: PanelAdmin, 
     canActivate: [adminGuard] 
   },
-
+ 
   // ===================================================
   // 4. EDICIÓN DE PERFILES Y PANEL (Layout con Sidebar)
   // ===================================================
@@ -102,7 +106,7 @@ export const routes: Routes = [
           import('./pagina/perfiles/empresa-profile/empresa-profile').then(m => m.EmpresaProfile),
         canActivate: [empresaGuard]
       },
-
+ 
       // 👈 RUTAS DEL BUSCADOR INTEGRADAS AL SIDEBAR
       {
         path: 'empresas',
@@ -116,9 +120,10 @@ export const routes: Routes = [
       }
     ]
   },
-
+ 
   // ===================================================
   // 5. REDIRECCIÓN POR DEFECTO
   // ===================================================
   { path: '**', redirectTo: '' }
 ];
+ 

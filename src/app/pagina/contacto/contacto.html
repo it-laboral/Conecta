@@ -1,0 +1,32 @@
+<section class="contacto">
+  <h2>Contactanos</h2>
+  <p>Escribinos tu consulta o comentario y te respondemos por mail.</p>
+
+  <form #f="ngForm" (ngSubmit)="f.valid && enviar()">
+    <label>
+      Nombre
+      <input type="text" name="nombre" [(ngModel)]="nombre" required maxlength="100" />
+    </label>
+
+    <label>
+      Email
+      <input type="email" name="email" [(ngModel)]="email" required />
+    </label>
+
+    <label>
+      Mensaje
+      <textarea name="mensaje" rows="5" [(ngModel)]="mensaje" required maxlength="2000"></textarea>
+    </label>
+
+    <button type="submit" [disabled]="f.invalid || enviando">
+      {{ enviando ? 'Enviando...' : 'Enviar mensaje' }}
+    </button>
+
+    @if (exito) {
+      <p class="ok">¡Mensaje enviado! Te vamos a responder a la brevedad.</p>
+    }
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+  </form>
+</section>
