@@ -6,13 +6,14 @@ const { uploadFotoPerfil, uploadCV } = require('../middlewares/upload.middleware
 
 // 🔒 Middlewares de seguridad
 const { verificarToken, esDuenioDelPerfil } = require('../middlewares/auth.middleware');
-
 // ====================================================================
 // 0. GET: OBTENER TODOS LOS POSTULANTES (PARA EL BUSCADOR DE EMPRESAS)
 // (Acceso: Usuarios autenticados)
 // ====================================================================
+
 router.get('/', verificarToken, async (req, res) => {
   try {
+
     const [postulantes] = await db.query(
       `SELECT 
          p.id_postulante, 

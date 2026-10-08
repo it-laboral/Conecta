@@ -2,13 +2,16 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const router = express.Router();
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+// 🔒 Si DISABLE_EMAIL=true, creamos un transporte simulado que no toca la red
+const transporter = process.env.DISABLE_EMAIL === 'true'
+  ? { sendMail: async () => ({ messageId: 'test-mock-id' }) }
+  : nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
 
 router.post('/', async (req, res) => {
   const { nombre, email, mensaje } = req.body;
@@ -24,6 +27,7 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    // Si DISABLE_EMAIL=true, esto resuelve al instante sin llamar a Gmail
     await transporter.sendMail({
       from: `"ITB Conecta" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_USER,
@@ -31,6 +35,7 @@ router.post('/', async (req, res) => {
       subject: `Nueva consulta de ${nombre}`,
       text: `Nombre: ${nombre}\nEmail: ${email}\n\nMensaje:\n${mensaje}`
     });
+    
     res.json({ ok: true });
   } catch (err) {
     console.error('Error enviando mail:', err);

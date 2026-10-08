@@ -11,15 +11,38 @@ Postulante (editar perfil y crear CV) postulante.spec.ts
 Crear oferta por parte de la empresa registrada: crear-oferta.spec.ts
 
 comando para correr la pruebas
-tiene que estar habilitadas las terminales del localhost y del backend, y la BD
+Previamente tiene que estar habilitadas las terminales del localhost y del backend, y la BD
 1)se abrirá un nuevo navegador
-(lo que está en negrita es el nombre del archivo a correr es un ejemplo
+(ejecutar archivo npx playwright (aqui nombre archivo a ejecutar) --headed Por ejemplo:
 npx playwright test empresa.spec.ts --headed
 
 2)se abre un navegador con un panel  de pausa, para analizar linea por linea que pasa en la pantalla
-
-
 npx playwright test empresa.spec.ts --debug
 
-un panel interactivo para ver el navegador paso a paso
+3) Un panel interactivo para ver el navegador paso a paso
 npx playwright test empresa.spec.ts --ui
+
+Prueba de Stress- Carpeta test-k6
+instalar k6 en tu sistema operativo (no requiere dependencias de npm dentro del proyecto):
+Windows CMD
+winget install k6 --source winget
+
+Linux
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C45C430E38C48F31
+echo "deb https://dl.bintray.com/loadimpact/deb stable main" | sudo tee -a /etc/apt/sources.list.d/k6.list
+sudo apt-get update
+sudo apt-get install k6
+Verificar instalación:
+k6 version
+Requisitos:
+1)MySQL (Puerto 3306): Servicio activo y con la base de datos de ITBConecta cargada.
+2)Backend Express (Puerto 3000): Servidor escuchando en http://localhost:3000.
+3)Usuarios de Prueba en BD: Verificar que existan al menos un usuario Postulante y un usuario Empresa activos en la base de datos local.
+4)No es necesario tener encendido el cliente frontend en Angular para ejecutar estas pruebas.
+5)Abrí los archivos dentro de la carpeta test-k6/ y asegurate de que el email y contraseña coincidan con usuarios reales de tu base de datos local:
+Comandos de ejecucion parado en la terminal del proyecto:
+a) k6 run test-k6/stress-postulante.js
+b) k6 run test-k6/stress-empresa.js
+c) k6 run test-k6/stress-combined.js
+
+Cualquiera de los comandos ejecutados correra durante 40 segundos. En Terminal se podrá verificar trabajo e informe final

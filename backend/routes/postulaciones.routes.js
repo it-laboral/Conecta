@@ -90,7 +90,7 @@ router.get('/postulante/:id', verificarToken, async (req, res) => {
 });
 
 // =========================================================================
-// 3. GET: Obtener postulantes/candidatos de la EMPRESA por ID (CORREGIDO)
+// 3. GET: Obtener postulantes/candidatos de la EMPRESA por ID
 // URL: GET /api/postulaciones/empresa/:id
 // =========================================================================
 router.get('/empresa/:id', verificarToken, async (req, res) => {
@@ -174,10 +174,10 @@ router.get('/oferta/:idOferta', verificarToken, async (req, res) => {
     }
 });
 
-// =========================================================================
-// 5. GET: Obtener TODAS las postulaciones (Admin - INTACTO)
+// =============================================================
+// 5. GET: Obtener TODAS las postulaciones 
 // URL: GET /api/postulaciones/todas
-// =========================================================================
+// =============================================================
 router.get('/todas', verificarToken, async (req, res) => {
     if (req.usuario.tipoUsuario !== 'admin') {
         return res.status(403).json({ error: 'Acceso denegado: Solo administradores.' });

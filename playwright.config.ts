@@ -8,7 +8,7 @@ export default defineConfig({
     headless: false,                 // 'false' abre la ventana de Chrome para ver las pruebas
     viewport: { width: 1280, height: 720 },
     screenshot: 'off',
-    video: 'off',
+    video: 'on',
   },
   projects: [
     {

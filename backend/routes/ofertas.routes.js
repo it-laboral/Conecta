@@ -92,14 +92,9 @@ router.get('/vigentes', async (req, res) => {
 // 3. POST: Crear una nueva oferta laboral
 // (Acceso: Solo rol 'empresa' o 'admin')
 // =========================================================================
-// =========================================================================
-// 3. POST: Crear una nueva oferta laboral
-// (Acceso: Solo rol 'empresa' o 'admin')
-// =========================================================================
 router.post('/crear', verificarToken, async (req, res) => {
-    console.log('--- DATOS DE USUARIO EN TOKEN DECODEADO ---', req.usuario);
     
-    // ✅ CORRECCIÓN: Leemos 'rol' o en su defecto 'tipo' si 'rol' viene vacío
+    // ✅ Leemos 'rol' o en su defecto 'tipo' si 'rol' viene vacío
     const rolUsuario = (req.usuario?.rol || req.usuario?.tipo || '').toString().toLowerCase();
 
     // 🔒 Verificar rol
@@ -141,6 +136,58 @@ router.post('/crear', verificarToken, async (req, res) => {
     } catch (error) {
         console.error('Error al crear oferta:', error);
         res.status(500).json({ OK: false, error: 'Error al guardar la oferta en la base de datos' });
+    }
+});
+
+// =========================================================================
+// 4. PUT: Actualizar una oferta existente por ID
+// (Acceso: Solo rol 'empresa' o 'admin')
+// =========================================================================
+router.put('/:id', verificarToken, async (req, res) => {
+    const id_oferta = req.params.id;
+
+    // 🔒 Verificar rol
+    const rolUsuario = (req.usuario?.rol || req.usuario?.tipo || '').toString().toLowerCase();
+    if (rolUsuario !== 'empresa' && rolUsuario !== 'admin') {
+        return res.status(403).json({ OK: false, error: 'Solo las empresas pueden modificar ofertas.' });
+    }
+
+    const { titulo, descripcion, modalidad, experiencia, dias_duracion, tipoDuracion, skill, skills } = req.body;
+    const duracionFinal = dias_duracion || tipoDuracion;
+
+    try {
+        // 1. Actualizar la tabla principal 'ofertas'
+        const [resultado] = await db.query(`
+            UPDATE ofertas 
+            SET titulo = ?, descripcion = ?, modalidad = ?, experiencia = ?, dias_duracion = ?
+            WHERE id_oferta = ?
+        `, [titulo, descripcion, modalidad, experiencia, duracionFinal, id_oferta]);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ OK: false, error: 'Oferta no encontrada.' });
+        }
+
+        // 2. Actualizar las habilidades (oferta_skill)
+        const listaSkills = skill || skills;
+        if (Array.isArray(listaSkills)) {
+            // Reemplazamos las habilidades previas por las nuevas
+            await db.query(`DELETE FROM oferta_skill WHERE id_oferta = ?`, [id_oferta]);
+
+            if (listaSkills.length > 0) {
+                const skillValues = listaSkills.map(skillId => [id_oferta, skillId]);
+                await db.query(`INSERT INTO oferta_skill (id_oferta, skill_id) VALUES ?`, [skillValues]);
+            }
+        }
+
+        res.json({ 
+            OK: true, 
+            message: 'Oferta actualizada con éxito.',
+            id_oferta: id_oferta 
+        });
+
+    } catch (error) {
+        console.error('Error al actualizar oferta:', error);
+        res.status(500).json({ OK: false, error: 'Error al actualizar la oferta en la base de datos' });
     }
 });
 
