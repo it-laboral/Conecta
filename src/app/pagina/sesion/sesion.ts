@@ -67,11 +67,11 @@ export class Sesion implements OnInit {
             } 
             else if (res.tipo === 'empresa') {
               alert('¡Bienvenida Empresa!');
-              this.router.navigate(['/perfil']);
+              this.router.navigate(['/perfil/empresa']);
             } 
             else if (res.tipo === 'postulante') {
               alert('¡Bienvenido/a Postulante!');
-              this.router.navigate(['/perfil']);
+              this.router.navigate(['/perfil/postulante']);
             } 
             else {
               alert('¡Bienvenido/a!');

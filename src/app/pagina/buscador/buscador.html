@@ -58,7 +58,6 @@
               <!-- VISTA SI ES EMPRESA (Mira Postulantes/Candidatos) -->
               @if (tipoUsuario === 'empresa') {
                 <td class="col-entidad">
-                  <img [src]="item.foto || 'assets/img/default-user.png'" alt="Foto Candidato" class="avatar-tabla" />
                   <span class="nombre-entidad">{{ item.nombres || item.nombre }} {{ item.apellidos || item.apellido }}</span>
                 </td>
                 <td>
