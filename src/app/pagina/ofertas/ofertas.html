@@ -244,15 +244,6 @@
                   <i class="fa-solid fa-hourglass-half"></i> Ampliar Días
                 </button>
 
-                @if (esOfertaAbierta(ofertaSeleccionada)) {
-                  <button type="button" class="btn-cerrar-oferta" (click)="cambiarEstadoOferta(ofertaSeleccionada.id_oferta, 'Cerrada')">
-                    <i class="fa-solid fa-folder-closed"></i> Cerrar Convocatoria
-                  </button>
-                } @else {
-                  <button type="button" class="btn-reabrir-oferta" (click)="cambiarEstadoOferta(ofertaSeleccionada.id_oferta, 'Abierta')">
-                    <i class="fa-solid fa-folder-open"></i> Reabrir Convocatoria
-                  </button>
-                }
               }
 
               <!-- Rol ADMIN -->

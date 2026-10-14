@@ -1,0 +1,167 @@
+<div class="reportes-container">
+  <div class="reportes-header">
+    <h3>📊 Centro de Reportes y Estadísticas</h3>
+    @if (tipoReporte !== 'graficos') {
+      <button class="btn-exportar" (click)="exportarCSV()">
+        📥 Exportar Lista a Excel (CSV)
+      </button>
+    }
+  </div>
+
+  <!-- Sub-pestañas -->
+  <div class="reportes-tabs">
+    <button [class.active]="tipoReporte === 'graficos'" (click)="cambiarTipoReporte('graficos')">
+      📈 Panel Estadístico
+    </button>
+    <button [class.active]="tipoReporte === 'postulantes'" (click)="cambiarTipoReporte('postulantes')">
+      👥 Talentos por Skill / Carrera
+    </button>
+    <button [class.active]="tipoReporte === 'empresas'" (click)="cambiarTipoReporte('empresas')">
+      🏢 Empresas por Stack / Rubro
+    </button>
+    <button [class.active]="tipoReporte === 'ofertas'" (click)="cambiarTipoReporte('ofertas')">
+      💼 Ofertas por Rol / Puesto
+    </button>
+  </div>
+
+  <!-- PESTAÑA 1: 4 GRÁFICOS COMPACTOS -->
+  @if (tipoReporte === 'graficos') {
+    <div class="grid-graficos">
+      <div class="card-grafico">
+        <canvas #chartCarreras></canvas>
+      </div>
+      <div class="card-grafico">
+        <canvas #chartModalidad></canvas>
+      </div>
+      <div class="card-grafico">
+        <canvas #chartSkills></canvas>
+      </div>
+      <div class="card-grafico">
+        <canvas #chartEstadoEmpresas></canvas>
+      </div>
+    </div>
+  }
+
+  <!-- PESTAÑA 2: TABLA POSTULANTES -->
+  @if (tipoReporte === 'postulantes') {
+    <div class="panel-filtros">
+      <div class="input-grupo">
+        <label>Skill / Habilidad Técnica:</label>
+        <input type="text" [(ngModel)]="filtroSkill" (input)="buscarReportePostulantes()" placeholder="Ej: Angular, Power BI..." />
+      </div>
+      <div class="input-grupo">
+        <label>Carrera / Especialidad:</label>
+        <input type="text" [(ngModel)]="filtroCarrera" (input)="buscarReportePostulantes()" placeholder="Ej: Analista de Sistemas..." />
+      </div>
+    </div>
+
+    <div class="tabla-wrapper">
+      <table class="tabla-admin">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Postulante</th>
+            <th>Carrera</th>
+            <th>Skills Asignadas</th>
+            <th>Email</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (post of resultadosPostulantes; track (post.id_postulante || post.id)) {
+            <tr>
+              <td>#{{ post.id_postulante || post.id }}</td>
+              <td><strong>{{ post.nombres || post.nombre }} {{ post.apellidos || post.apellido }}</strong></td>
+              <td>{{ post.carrera || 'Analista de Sistemas / IA' }}</td>
+              <td><span class="skill-tag">{{ post.skills || 'Sin skills registradas' }}</span></td>
+              <td>{{ post.email }}</td>
+              <td>
+                <span class="badge" [class.activo]="post.estado === 'Activo'" [class.pendiente]="post.estado === 'Pendiente'">
+                  {{ post.estado || 'Activo' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- PESTAÑA 3: TABLA EMPRESAS -->
+  @if (tipoReporte === 'empresas') {
+    <div class="panel-filtros">
+      <div class="input-grupo">
+        <label>Buscar por Stack Tecnológico / Rubro:</label>
+        <input type="text" [(ngModel)]="filtroStack" (input)="buscarReporteEmpresas()" placeholder="Ej: React, Docker, AWS..." />
+      </div>
+    </div>
+
+    <div class="tabla-wrapper">
+      <table class="tabla-admin">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Razón Social</th>
+            <th>Stack Tecnológico</th>
+            <th>Email</th>
+            <th>Sector</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (emp of resultadosEmpresas; track emp.id_empresa) {
+            <tr>
+              <td>#{{ emp.id_empresa }}</td>
+              <td><strong>{{ emp.razonSocial }}</strong></td>
+              <td><span class="stack-text">{{ emp.stack_tecnologico || 'No especificado' }}</span></td>
+              <td>{{ emp.email }}</td>
+              <td>{{ emp.sector || 'S/D' }}</td>
+              <td>
+                <span class="badge" [class.activo]="emp.estado === 'Activo'" [class.inactivo]="emp.estado === 'Inactivo'">
+                  {{ emp.estado }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- PESTAÑA 4: TABLA OFERTAS CON ANCHO Y ESTRUCTURA ORDENADA -->
+  @if (tipoReporte === 'ofertas') {
+    <div class="panel-filtros">
+      <div class="input-grupo">
+        <label>Buscar por Título / Puesto / Descripción:</label>
+        <input type="text" [(ngModel)]="filtroTituloOferta" (input)="buscarReporteOfertas()" placeholder="Ej: Desarrollador, Frontend, Analista..." />
+      </div>
+    </div>
+
+    <div class="tabla-wrapper">
+      <table class="tabla-admin tabla-ofertas">
+        <thead>
+          <tr>
+            <th style="width: 80px;">ID</th>
+            <th style="min-width: 220px;">Título de Oferta</th>
+            <th style="min-width: 180px;">Empresa</th>
+            <th style="width: 130px;">Modalidad</th>
+            <th style="width: 150px;">Fecha Publicación</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (oferta of resultadosOfertas; track oferta.id_oferta) {
+            <tr>
+              <td>#{{ oferta.id_oferta }}</td>
+              <td><strong class="titulo-destacado">{{ oferta.titulo }}</strong></td>
+              <td>{{ oferta.razonSocial || 'Empresa #' + oferta.id_empresa }}</td>
+              <td>
+                <span class="badge-modalidad">{{ oferta.modalidad }}</span>
+              </td>
+              <td>{{ oferta.fecha_publicacion | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

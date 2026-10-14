@@ -159,7 +159,7 @@ router.put('/:id', verificarToken, async (req, res) => {
         // 1. Actualizar la tabla principal 'ofertas'
         const [resultado] = await db.query(`
             UPDATE ofertas 
-            SET titulo = ?, descripcion = ?, modalidad = ?, experiencia = ?, dias_duracion = ?
+            SET titulo = ?, descripcion = ?, modalidad = ?, experiencia = ?, dias_duracion = ?, fecha_publicacion = NOW()
             WHERE id_oferta = ?
         `, [titulo, descripcion, modalidad, experiencia, duracionFinal, id_oferta]);
 
@@ -190,5 +190,115 @@ router.put('/:id', verificarToken, async (req, res) => {
         res.status(500).json({ OK: false, error: 'Error al actualizar la oferta en la base de datos' });
     }
 });
+// =========================================================================
+// 5. GET: Obtener TODAS las ofertas de una empresa (Vigentes, Vencidas, Cerradas)
+// (Acceso: Autenticado - Empresa / Admin)
+// =========================================================================
+router.get('/empresa/:idEmpresa', verificarToken, async (req, res) => {
+    const { idEmpresa } = req.params;
+
+    try {
+        const [ofertas] = await db.query(`
+            SELECT 
+                o.id_oferta, 
+                o.titulo, 
+                o.descripcion, 
+                o.modalidad, 
+                o.experiencia, 
+                o.dias_duracion, 
+                o.fecha_publicacion,
+                DATE_ADD(o.fecha_publicacion, INTERVAL o.dias_duracion DAY) AS fecha_vencimiento,
+                (DATE_ADD(o.fecha_publicacion, INTERVAL o.dias_duracion DAY) >= CURDATE()) AS esta_vigente,
+                o.id_empresa, 
+                e.razonSocial AS razonSocial,
+                GROUP_CONCAT(s.nombre SEPARATOR ',') AS skills_nombres_str
+            FROM ofertas o
+            JOIN empresa e ON o.id_empresa = e.id_empresa
+            LEFT JOIN oferta_skill os ON o.id_oferta = os.id_oferta
+            LEFT JOIN skill s ON os.skill_id = s.skill_id
+            WHERE o.id_empresa = ?
+            GROUP BY o.id_oferta
+            ORDER BY o.id_oferta DESC
+        `, [idEmpresa]);
+
+        const resultado = ofertas.map(oferta => ({
+            ...oferta,
+            skills_nombres: oferta.skills_nombres_str ? oferta.skills_nombres_str.split(',') : []
+        }));
+
+        res.json(resultado);
+    } catch (error) {
+        console.error('Error al obtener ofertas de la empresa:', error);
+        res.status(500).json({ OK: false, error: 'Error al consultar las ofertas de la empresa.' });
+    }
+});
+
+// =========================================================================
+// 6. PATCH: Ampliar los días de duración de una oferta
+// (Acceso: Solo rol 'empresa' o 'admin')
+// =========================================================================
+router.patch('/:id/ampliar', verificarToken, async (req, res) => {
+    const id_oferta = req.params.id;
+    const { dias } = req.body;
+
+    const rolUsuario = (req.usuario?.rol || req.usuario?.tipo || '').toString().toLowerCase();
+    if (rolUsuario !== 'empresa' && rolUsuario !== 'admin') {
+        return res.status(403).json({ OK: false, error: 'Solo las empresas pueden ampliar plazos.' });
+    }
+
+    if (!dias || isNaN(dias) || dias <= 0) {
+        return res.status(400).json({ OK: false, error: 'Ingrese una cantidad válida de días a sumar.' });
+    }
+
+    try {
+        const [resultado] = await db.query(`
+            UPDATE ofertas 
+            SET dias_duracion = dias_duracion + ? 
+            WHERE id_oferta = ?
+        `, [parseInt(dias, 10), id_oferta]);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ OK: false, error: 'Oferta no encontrada.' });
+        }
+
+        res.json({ 
+            OK: true, 
+            message: `Se ampliaron ${dias} días a la vigencia de la oferta exitosamente.` 
+        });
+    } catch (error) {
+        console.error('Error al ampliar días de la oferta:', error);
+        res.status(500).json({ OK: false, error: 'Error al actualizar los días de duración.' });
+    }
+});
+
+// =========================================================================
+// 7. DELETE: Eliminar una oferta por ID
+// (Acceso: Solo rol 'empresa' o 'admin')
+// =========================================================================
+router.delete('/:id', verificarToken, async (req, res) => {
+    const id_oferta = req.params.id;
+
+    const rolUsuario = (req.usuario?.rol || req.usuario?.tipo || '').toString().toLowerCase();
+    if (rolUsuario !== 'empresa' && rolUsuario !== 'admin') {
+        return res.status(403).json({ OK: false, error: 'Solo las empresas pueden eliminar ofertas.' });
+    }
+
+    try {
+        // Eliminar dependencias primero si no hay ON DELETE CASCADE en MySQL
+        await db.query(`DELETE FROM oferta_skill WHERE id_oferta = ?`, [id_oferta]);
+
+        const [resultado] = await db.query(`DELETE FROM ofertas WHERE id_oferta = ?`, [id_oferta]);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ OK: false, error: 'Oferta no encontrada.' });
+        }
+
+        res.json({ OK: true, message: 'Oferta eliminada correctamente.' });
+    } catch (error) {
+        console.error('Error al eliminar oferta:', error);
+        res.status(500).json({ OK: false, error: 'Error interno al eliminar la oferta.' });
+    }
+});
+
 
 module.exports = router;

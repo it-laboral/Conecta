@@ -1,14 +1,21 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
-// 1. MODELOS DE DATOS (Ajusta los nombres según tu BD de Node.js)
+// 1. MODELOS DE DATOS
 export interface MetricasAdmin {
   totalOfertas: number;
   totalEmpresas: number;
   totalPostulantes: number;
   totalPostulaciones: number;
+}
+
+export interface PendientesCountResponse {
+  success: boolean;
+  totalPendientes: number;
+  totalEmpresas: number;
+  totalPostulantes: number;
 }
 
 export interface EmpresaAdmin {
@@ -18,9 +25,10 @@ export interface EmpresaAdmin {
   email: string;
   telefono?: string;
   sector?: string;
-  estado: string;
-  [key: string]: any; // Para permitir campos adicionales dinámicos
+  estado: 'Pendiente' | 'Activo' | 'Inactivo' | string;
+  [key: string]: any;
 }
+
 export interface OfertaAdmin {
   id_oferta: number;
   id_empresa: number;
@@ -37,17 +45,18 @@ export interface OfertaAdmin {
 export interface PostulanteAdmin {
   id_postulante?: number;
   id?: number;
-  nombres?: string;      // 👈 Campo de tu BD (plural)
-  apellidos?: string;    // 👈 Campo de tu BD (plural)
-  nombre?: string;       // Opcional para compatibilidad
-  apellido?: string;     // Opcional para compatibilidad
+  nombres?: string;
+  apellidos?: string;
+  nombre?: string;
+  apellido?: string;
   dni?: string;
-  legajo?: string;       // 👈 Campo agregado
+  legajo?: string;
   email?: string;
   carrera?: string;
-  estado?: string;
-  [key: string]: any;    // Permite campos dinámicos extra
+  estado?: 'Pendiente' | 'Activo' | 'Inactivo' | string;
+  [key: string]: any;
 }
+
 export interface CategoriaAdmin {
   id: number;
   nombre: string;
@@ -57,7 +66,7 @@ export interface SkillAdmin {
   id: number;
   nombre: string;
   categoria_id: number;
-  categoria_nombre?: string; // Nombre de la categoría para mostrar
+  categoria_nombre?: string;
 }
 
 export interface RespuestaApi {
@@ -69,9 +78,8 @@ export interface RespuestaApi {
   skills?: SkillAdmin[];
   ofertas?: OfertaAdmin[];
   postulantes?: PostulanteAdmin[];
-  [key: string]: any; // Permite campos adicionales dinámicos
+  [key: string]: any;
 }
-
 
 // 2. SERVICIO
 @Injectable({
@@ -81,41 +89,66 @@ export class AdminService {
   private readonly http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:3000/api/admin';
 
+  // ------------------------------------------
+  // A. MÉTRICAS Y NOTIFICACIONES PENDIENTES
+  // ------------------------------------------
+
   getMetricas(): Observable<MetricasAdmin> {
-    return this.http.get<MetricasAdmin>(`${this.API_URL}/metricas`);
+    return this.http.get<RespuestaApi>(`${this.API_URL}/metricas`).pipe(
+      map(res => res.metricas || { totalOfertas: 0, totalEmpresas: 0, totalPostulantes: 0, totalPostulaciones: 0 })
+    );
   }
-// ------------------------------------------
+
+  getPendientesCount(): Observable<PendientesCountResponse> {
+    return this.http.get<PendientesCountResponse>(`${this.API_URL}/pendientes-count`);
+  }
+
+  // ------------------------------------------
   // B. GESTIÓN DE EMPRESAS
   // ------------------------------------------
 
   getEmpresas(): Observable<EmpresaAdmin[]> {
-    return this.http.get<EmpresaAdmin[]>(`${this.API_URL}/empresas`);
+    return this.http.get<RespuestaApi>(`${this.API_URL}/empresas`).pipe(
+      map(res => res.empresas || [])
+    );
   }
 
-  cambiarEstadoEmpresa(id_empresa: number, estado: string): Observable<RespuestaApi> {
+  cambiarEstadoEmpresa(id_empresa: number, estado: 'Pendiente' | 'Activo' | 'Inactivo' | string): Observable<RespuestaApi> {
     return this.http.put<RespuestaApi>(`${this.API_URL}/empresa/estado`, { id_empresa, estado });
   }
+
   // ------------------------------------------
   // C. GESTIÓN DE OFERTAS
   // ------------------------------------------
+
   getOfertas(): Observable<OfertaAdmin[]> {
-    return this.http.get<OfertaAdmin[]>(`${this.API_URL}/ofertas`);
+    return this.http.get<RespuestaApi>(`${this.API_URL}/ofertas`).pipe(
+      map(res => res.ofertas || [])
+    );
   }
 
   eliminarOferta(id_oferta: number): Observable<RespuestaApi> {
-    return this.http.delete<RespuestaApi>(`${this.API_URL}/oferta/${id_oferta}`);
+    return this.http.delete<RespuestaApi>(`${this.API_URL}/ofertas/${id_oferta}`);
   }
 
   // ------------------------------------------
   // D. GESTIÓN DE POSTULANTES
   // ------------------------------------------
+
   getPostulantes(): Observable<PostulanteAdmin[]> {
-    return this.http.get<PostulanteAdmin[]>(`${this.API_URL}/postulantes`);
+    return this.http.get<RespuestaApi>(`${this.API_URL}/postulantes`).pipe(
+      map(res => res.postulantes || [])
+    );
+  }
+
+  cambiarEstadoPostulante(id_postulante: number, estado: 'Pendiente' | 'Activo' | 'Inactivo' | string): Observable<RespuestaApi> {
+    return this.http.put<RespuestaApi>(`${this.API_URL}/postulante/estado`, { id_postulante, estado });
   }
 
   // ------------------------------------------
   // E. CATÁLOGOS Y TABLAS MAESTRAS (Categorías y Skills)
   // ------------------------------------------
+
   getCategoriasSkills(): Observable<CategoriaAdmin[]> {
     return this.http.get<RespuestaApi>(`${this.API_URL}/categorias-skills`).pipe(
       map(res => res.categorias || [])
@@ -128,13 +161,11 @@ export class AdminService {
     );
   }
 
-  // Opcional: si necesitás obtener skills filtradas por una categoría en particular
   getSkillsPorCategoria(idCategoria: number): Observable<SkillAdmin[]> {
     return this.http.get<RespuestaApi>(`${this.API_URL}/categorias/${idCategoria}/skills`).pipe(
       map(res => res.skills || [])
     );
   }
-
 
   crearSkill(payload: { nombre: string; categoria_id: number }): Observable<RespuestaApi> {
     return this.http.post<RespuestaApi>(`${this.API_URL}/skills`, payload);
@@ -146,5 +177,27 @@ export class AdminService {
 
   eliminarSkill(id: number): Observable<RespuestaApi> {
     return this.http.delete<RespuestaApi>(`${this.API_URL}/skills/${id}`);
+  }
+
+  // ------------------------------------------
+  // 🟢 F. REPORTES Y BÚSQUEDAS AVANZADAS
+  // ------------------------------------------
+
+  getReportePostulantesSkills(filtros: { skill?: string; carrera?: string; estado?: string }): Observable<PostulanteAdmin[]> {
+    return this.http.get<RespuestaApi>(`${this.API_URL}/reportes/postulantes-skills`, { params: filtros as any }).pipe(
+      map(res => res.postulantes || [])
+    );
+  }
+
+  getReporteEmpresasStack(filtros: { tecnologia?: string; sector?: string }): Observable<EmpresaAdmin[]> {
+    return this.http.get<RespuestaApi>(`${this.API_URL}/reportes/empresas-stack`, { params: filtros as any }).pipe(
+      map(res => res.empresas || [])
+    );
+  }
+
+  getReporteOfertas(filtros: { titulo?: string; modalidad?: string }): Observable<OfertaAdmin[]> {
+    return this.http.get<RespuestaApi>(`${this.API_URL}/reportes/ofertas-busqueda`, { params: filtros as any }).pipe(
+      map(res => res.ofertas || [])
+    );
   }
 }

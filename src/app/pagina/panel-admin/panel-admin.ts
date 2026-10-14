@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Skills } from './skills/skills';
-import {PostulanteProfile} from '../perfiles/postulante-profile/postulante-profile';
-import {EmpresaProfile  } from '../perfiles/empresa-profile/empresa-profile';
+import { PostulanteProfile } from '../perfiles/postulante-profile/postulante-profile';
+import { EmpresaProfile } from '../perfiles/empresa-profile/empresa-profile';
 import { PostulacionesComponent } from '../postulaciones/postulaciones';
+import { ReportesAdminComponent } from './reportes/reportes';
 import { 
   AdminService, 
   EmpresaAdmin, 
@@ -15,12 +16,12 @@ import {
   RespuestaApi 
 } from '../../services/admin';
 
-export type PestanaAdmin = 'empresas' | 'ofertas' | 'postulantes' | 'postulaciones' | 'skills';
+export type PestanaAdmin = 'empresas' | 'ofertas' | 'postulantes' | 'postulaciones' | 'reportes' | 'skills';
 
 @Component({
   selector: 'app-panel-admin',
   standalone: true,
-  imports: [CommonModule, Skills, PostulanteProfile, EmpresaProfile, PostulacionesComponent],
+  imports: [CommonModule, Skills, PostulanteProfile, EmpresaProfile, PostulacionesComponent, ReportesAdminComponent],
   templateUrl: './panel-admin.html',
   styleUrl: './panel-admin.scss'
 })
@@ -34,7 +35,7 @@ export class PanelAdmin implements OnInit {
   mostrarSkills: boolean = false;
   pestanaActiva: PestanaAdmin = 'empresas';
 
-  // Control de Cargas Únicas (Evita re-peticiones a la API)
+  // Control de Cargas Únicas
   cargadoEmpresas: boolean = false;
   cargadoOfertas: boolean = false;
   cargadoPostulantes: boolean = false;
@@ -48,23 +49,31 @@ export class PanelAdmin implements OnInit {
     totalPostulaciones: 0 
   };
   
+  // 🟢 ALERTAS Y PENDIENTES
+  pendientesEmpresas: number = 0;
+  pendientesPostulantes: number = 0;
+  totalPendientes: number = 0;
+
   // Arreglos de Datos
   empresas: EmpresaAdmin[] = [];
   ofertas: OfertaAdmin[] = [];
   postulantes: PostulanteAdmin[] = [];
 
-  // Modales
+  // Modales Empresas
   empresaSeleccionada: EmpresaAdmin | null = null;
   mostrarModal: boolean = false;
-// 👈 Modal Perfil de Empresa (EmpresaProfile)
   empresaPerfilId: number | null = null;
 
+  // Modales Postulantes
   postulanteSeleccionado: PostulanteAdmin | null = null;
   mostrarModalPostulante: boolean = false;
   
   ngOnInit(): void {
+    // 🟢 Usamos setTimeout para posponer la actualización de métricas al siguiente tick del event loop
+  setTimeout(() => {
     this.cargarDatos();
-  }
+  }, 0);
+}
 
   toggleSkills(): void {
     this.mostrarSkills = !this.mostrarSkills;
@@ -81,12 +90,12 @@ export class PanelAdmin implements OnInit {
       }
     }, 50);
   }
+
   // Cambiar de pestaña
   cambiarPestana(nuevaPestana: PestanaAdmin): void {
     this.mostrarSkills = false;
     this.pestanaActiva = nuevaPestana;
     
-    // Carga perezosa (Lazy loading): solo pide los datos la primera vez que se entra a la pestaña
     if (nuevaPestana === 'empresas' && !this.cargadoEmpresas) {
       this.cargarEmpresas();
     } else if (nuevaPestana === 'ofertas' && !this.cargadoOfertas) {
@@ -98,15 +107,32 @@ export class PanelAdmin implements OnInit {
 
   cargarDatos(): void {
     this.cargarMetricas();
+    this.cargarPendientes(); // 👈 Carga el número de alertas rojas al iniciar
     this.cargarEmpresas();
+  }
+
+  // 🟢 Consultar alertas de usuarios pendientes
+  cargarPendientes(): void {
+    this.adminService.getPendientesCount().subscribe({
+      next: (res) => {
+        if (res && res.success) {
+          this.pendientesEmpresas = res.totalEmpresas || 0;
+          this.pendientesPostulantes = res.totalPostulantes || 0;
+          this.totalPendientes = res.totalPendientes || 0;
+         // Forza la actualización correcta sin romper el ciclo
+        this.cdr.markForCheck();
+        }
+      },
+      error: (err) => console.error('Error al consultar solicitudes pendientes:', err)
+    });
   }
 
   // Métricas Generales
   cargarMetricas(): void {
     this.adminService.getMetricas().subscribe({
-      next: (res: any) => {
-        if (res && res.success && res.metricas) {
-          this.metricas = res.metricas;
+      next: (metricas: MetricasAdmin) => {
+        if (metricas) {
+          this.metricas = metricas;
         }
       },
       error: (err) => console.error('Error al cargar métricas:', err)
@@ -117,12 +143,11 @@ export class PanelAdmin implements OnInit {
   cargarEmpresas(): void {
     this.cargando = true;
     this.adminService.getEmpresas().subscribe({
-      next: (res: any) => {
-        if (res && res.success && res.empresas) {
-          this.empresas = res.empresas;
-        }
+      next: (empresas: EmpresaAdmin[]) => {
+        this.empresas = empresas || [];
         this.cargadoEmpresas = true;
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar empresas:', err);
@@ -136,14 +161,11 @@ export class PanelAdmin implements OnInit {
   cargarOfertas(): void {
     this.cargando = true;
     this.adminService.getOfertas().subscribe({
-      next: (res: any) => {
-        if (res && res.success && res.ofertas) {
-          this.ofertas = res.ofertas;
-        } else if (Array.isArray(res)) {
-          this.ofertas = res;
-        }
+      next: (ofertas: OfertaAdmin[]) => {
+        this.ofertas = ofertas || [];
         this.cargadoOfertas = true;
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar ofertas en el admin:', err);
@@ -157,14 +179,11 @@ export class PanelAdmin implements OnInit {
   cargarPostulantes(): void {
     this.cargando = true;
     this.adminService.getPostulantes().subscribe({
-      next: (res: any) => {
-        if (res && res.success && res.postulantes) {
-          this.postulantes = res.postulantes;
-        } else if (Array.isArray(res)) {
-          this.postulantes = res;
-        }
+      next: (postulantes: PostulanteAdmin[]) => {
+        this.postulantes = postulantes || [];
         this.cargadoPostulantes = true;
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar postulantes en el admin:', err);
@@ -182,6 +201,7 @@ export class PanelAdmin implements OnInit {
           if (res.success) {
             alert(`Oferta #${idOferta} eliminada con éxito.`);
             this.ofertas = this.ofertas.filter(o => o.id_oferta !== idOferta);
+            this.cdr.detectChanges();
           }
         },
         error: (err) => console.error('Error al eliminar oferta:', err)
@@ -226,39 +246,51 @@ export class PanelAdmin implements OnInit {
     };
   }
 
-// Modales y Acciones (Empresas)
-cambiarEstado(idEmpresa: number, estadoActual: string): void {
-  // 1. Normalizamos la cadena a minúsculas y sin espacios para evitar fallos de formato
-  const esActivo = estadoActual?.toString().trim().toLowerCase() === 'activo';
-  const nuevoEstado = esActivo ? 'Inactivo' : 'Activo';
+  // ==========================================
+  // GESTIÓN DE ESTADOS: EMPRESAS
+  // ==========================================
 
-  this.adminService.cambiarEstadoEmpresa(idEmpresa, nuevoEstado).subscribe({
-    next: (res: RespuestaApi) => {
-      if (res.success) {
-        // 2. Actualizar objeto en la lista principal de empresas
-        const emp = this.empresas.find(e => e.id_empresa === idEmpresa);
-        if (emp) {
-          emp.estado = nuevoEstado;
+  cambiarEstado(idEmpresa: number, estadoActual: string): void {
+    const estadoLimpio = (estadoActual || '').trim().toLowerCase();
+    const nuevoEstado = estadoLimpio === 'activo' ? 'Inactivo' : 'Activo';
+
+    this.adminService.cambiarEstadoEmpresa(idEmpresa, nuevoEstado).subscribe({
+      next: (res: RespuestaApi) => {
+        if (res.success) {
+          const emp = this.empresas.find(e => e.id_empresa === idEmpresa);
+          if (emp) emp.estado = nuevoEstado;
+
+          if (this.empresaSeleccionada && this.empresaSeleccionada.id_empresa === idEmpresa) {
+            this.empresaSeleccionada.estado = nuevoEstado;
+          }
+
+          this.cargarPendientes(); // 👈 Actualiza el badge
+          this.cdr.detectChanges();
+        } else {
+          alert(res.mensaje || 'No se pudo cambiar el estado de la empresa.');
         }
-
-        // 3. Actualizar objeto si está seleccionado en un modal de detalle
-        if (this.empresaSeleccionada && this.empresaSeleccionada.id_empresa === idEmpresa) {
-          this.empresaSeleccionada.estado = nuevoEstado;
-        }
-
-        // 4. Forzar la actualización visual de la tabla y los botones
-        this.cdr.detectChanges();
-      } else {
-        // Si el backend devolvió success: false, mostramos el mensaje
-        alert(res.mensaje || 'No se pudo cambiar el estado de la empresa.');
+      },
+      error: (err) => {
+        console.error('Error al cambiar estado:', err);
+        alert('Ocurrió un error al comunicarse con el servidor.');
       }
-    },
-    error: (err) => {
-      console.error('Error al cambiar estado:', err);
-      alert('Ocurrió un error al comunicarse con el servidor.');
-    }
-  });
-}
+    });
+  }
+
+  aprobarEmpresa(idEmpresa: number): void {
+    this.adminService.cambiarEstadoEmpresa(idEmpresa, 'Activo').subscribe({
+      next: (res: RespuestaApi) => {
+        if (res.success) {
+          const emp = this.empresas.find(e => e.id_empresa === idEmpresa);
+          if (emp) emp.estado = 'Activo';
+          this.cargarPendientes(); // 👈 Descuenta de la alerta roja
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('Error al aprobar empresa:', err)
+    });
+  }
+
   verDetalle(empresa: EmpresaAdmin): void {
     this.empresaSeleccionada = empresa;
     this.mostrarModal = true;
@@ -268,16 +300,60 @@ cambiarEstado(idEmpresa: number, estadoActual: string): void {
     this.mostrarModal = false;
     this.empresaSeleccionada = null;
   }
-// 👈  MODAL 2 PERFIL COMPLETO (EmpresaProfile)
+
   abrirPerfilEmpresa(idEmpresa: number): void {
     this.empresaPerfilId = idEmpresa;
   }
 
   cerrarModalPerfil(): void {
-  this.empresaPerfilId = null;
-}
+    this.empresaPerfilId = null;
+  }
 
-  // Modales y Acciones (Postulantes)
+  // ==========================================
+  // GESTIÓN DE ESTADOS: POSTULANTES
+  // ==========================================
+
+  cambiarEstadoPostulante(idPostulante: number, estadoActual: string): void {
+    const estadoLimpio = (estadoActual || '').trim().toLowerCase();
+    const nuevoEstado = estadoLimpio === 'activo' ? 'Inactivo' : 'Activo';
+
+    this.adminService.cambiarEstadoPostulante(idPostulante, nuevoEstado).subscribe({
+      next: (res: RespuestaApi) => {
+        if (res.success) {
+          const post = this.postulantes.find(p => (p.id_postulante || p.id) === idPostulante);
+          if (post) post.estado = nuevoEstado;
+
+          if (this.postulanteSeleccionado && (this.postulanteSeleccionado.id_postulante || this.postulanteSeleccionado.id) === idPostulante) {
+            this.postulanteSeleccionado.estado = nuevoEstado;
+          }
+
+          this.cargarPendientes(); // 👈 Actualiza el badge
+          this.cdr.detectChanges();
+        } else {
+          alert(res.mensaje || 'No se pudo cambiar el estado del postulante.');
+        }
+      },
+      error: (err) => {
+        console.error('Error al cambiar estado del postulante:', err);
+        alert('Ocurrió un error al comunicarse con el servidor.');
+      }
+    });
+  }
+
+  aprobarPostulante(idPostulante: number): void {
+    this.adminService.cambiarEstadoPostulante(idPostulante, 'Activo').subscribe({
+      next: (res: RespuestaApi) => {
+        if (res.success) {
+          const post = this.postulantes.find(p => (p.id_postulante || p.id) === idPostulante);
+          if (post) post.estado = 'Activo';
+          this.cargarPendientes(); // 👈 Descuenta de la alerta roja
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('Error al aprobar postulante:', err)
+    });
+  }
+
   verDetallePostulante(postulante: PostulanteAdmin): void {
     this.postulanteSeleccionado = postulante;
     this.mostrarModalPostulante = true;
@@ -290,7 +366,7 @@ cambiarEstado(idEmpresa: number, estadoActual: string): void {
 
   // Cierre de Sesión Centralizado
   cerrarSesion(): void {
-    localStorage.clear(); // O localStorage.removeItem('token'), etc.
+    localStorage.clear();
     this.authService.logout();
     this.router.navigate(['/sesion']);
   }

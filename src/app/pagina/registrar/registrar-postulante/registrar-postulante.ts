@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 
 import {
@@ -15,15 +15,14 @@ import { Router, RouterLink } from '@angular/router';
   selector: 'app-registrar-postulante',
   standalone: true,
   imports: [
-  ReactiveFormsModule,
-  CommonModule,
-  RouterLink
-],
+    ReactiveFormsModule,
+    CommonModule,
+    RouterLink
+  ],
   templateUrl: './registrar-postulante.html',
   styleUrl: './registrar-postulante.scss',
 })
-
-export class RegistrarPostulante {
+export class RegistrarPostulante implements OnInit {
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -79,6 +78,11 @@ export class RegistrarPostulante {
 
   });
 
+  // LIMPIAR FORMULARIO AL CARGAR LA PÁGINA
+  ngOnInit(): void {
+    this.formRegistro.reset();
+  }
+
   // REGISTRAR POSTULANTE
   registrarPostulante() {
 
@@ -101,6 +105,9 @@ export class RegistrarPostulante {
           console.log('¡Postulante creado con éxito!', res);
 
           alert('Registro exitoso.');
+
+          // Resetear el formulario tras enviar
+          this.formRegistro.reset();
 
           this.router.navigate(['/sesion']);
 

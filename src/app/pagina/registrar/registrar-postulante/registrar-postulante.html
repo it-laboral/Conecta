@@ -2,7 +2,7 @@
   <h2>¿Quieres registrarte como postulante?</h2>
   <p>Completa los datos para acceder al Sistema de intermediación Laboral</p>
 
-  <form [formGroup]="formRegistro" (ngSubmit)="registrarPostulante(); $event.preventDefault()">
+  <form [formGroup]="formRegistro" (ngSubmit)="registrarPostulante(); $event.preventDefault()"autocomplete="off">
     <!-- NOMBRES -->
     <div class="form-group">
       <label>Nombres:</label>
@@ -46,7 +46,7 @@
     <!-- EMAIL -->
     <div class="form-group">
       <label>Correo Electrónico:</label>
-      <input type="email" formControlName="email" placeholder="Ej: usuario@ibeltran.com.ar">
+      <input type="email" formControlName="email" autocomplete="off" placeholder="Ej: usuario@ibeltran.com.ar">
       @if (formRegistro.get('email')?.invalid && formRegistro.get('email')?.touched) {
         <div class="error-msg">
           @if (formRegistro.get('email')?.errors?.['required']) {
@@ -63,7 +63,7 @@
     <div class="form-group">
       <label>Contraseña</label>
       <div class="password-container">
-        <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres">
+        <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
         <span class="ojo" (click)="togglePassword()">
           <i class="fa-solid" [class.fa-eye]="mostrarPassword" [class.fa-eye-slash]="!mostrarPassword"></i>
         </span>
@@ -87,7 +87,7 @@
     <div class="form-group">
       <label>Confirmar Contraseña</label>
       <div class="password-container">
-        <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Repetí tu contraseña">
+        <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="confirmPassword" autocomplete="new-password" placeholder="Repetí tu contraseña">
         <span class="ojo" (click)="togglePassword()">
           <i class="fa-solid" [class.fa-eye]="mostrarPassword" [class.fa-eye-slash]="!mostrarPassword"></i>
         </span>

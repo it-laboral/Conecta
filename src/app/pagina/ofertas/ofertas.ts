@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router , ActivatedRoute} from '@angular/router';
 
 import { OfertaService } from '../../services/oferta_service';
 import { PostulacionesService } from '../../services/postulaciones.service';
@@ -30,6 +30,9 @@ export class Ofertas implements OnInit {
   idUsuario: string | null = '';
   nombreUsuario: string | null = '';
 
+  // 🆕 Bandera para alternar entre Cartelera General (false) y Mis Publicaciones (true)
+  verMisOfertas: boolean = false;
+
   mostrarFormulario: boolean = false;
   modoEdicion: boolean = false;
   idOfertaEnEdicion: number | null = null;
@@ -54,6 +57,7 @@ export class Ofertas implements OnInit {
     private postulacionesService: PostulacionesService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
@@ -64,15 +68,20 @@ export class Ofertas implements OnInit {
     const rolRaw = this.authService.getTipoUsuario() || usuarioLogueado?.rol || 'visitante';
     this.rolUsuario = String(rolRaw).toLowerCase();
 
-    this.idUsuario = usuarioLogueado ? String(usuarioLogueado.id_postulante || usuarioLogueado.id_empresa || usuarioLogueado.id) : null;
+    this.idUsuario = usuarioLogueado ? String(usuarioLogueado.id_empresa || usuarioLogueado.id_postulante || usuarioLogueado.id) : null;
     this.nombreUsuario = usuarioLogueado ? usuarioLogueado.nombre : 'Usuario';
 
     this.inicializarFormulario();
 
-    // 1. Cargar ofertas vigentes (Acceso público)
+    // Detectar si ingresó por "Mis Ofertas" o por la Cartelera General
+    this.route.queryParams.subscribe(params => {
+      this.verMisOfertas = (params['vista'] === 'mis-ofertas');
+      this.filtroEstado = this.verMisOfertas ? 'todas' : 'abiertas';
+   
+    // 1. Carga inicial (Cartelera General Pública por defecto)
     this.cargarOfertasDesdeBackend();
-
-    // 2. Solo si hay sesión iniciada cargamos categorías/skills y postulaciones
+  });
+    // 2. Cargas adicionales si hay sesión activa
     if (usuarioLogueado) {
       this.cargarHabilidadesYCategorias();
 
@@ -127,8 +136,15 @@ export class Ofertas implements OnInit {
     });
   }
 
+  // 🔄 Carga condicional según verMisOfertas
   cargarOfertasDesdeBackend(): void {
-    this.ofertaService.getOfertasVigentes().subscribe({
+    let peticion$ = this.ofertaService.getOfertasVigentes();
+
+    if (this.verMisOfertas && this.rolUsuario === 'empresa' && this.idUsuario) {
+      peticion$ = this.ofertaService.getOfertasPorEmpresa(Number(this.idUsuario));
+    }
+
+    peticion$.subscribe({
       next: (data: any[]) => {
         this.ofertasDeBaseDeDatos = (data || []).map(o => {
           const fechaDetectada = 
@@ -141,6 +157,7 @@ export class Ofertas implements OnInit {
 
           return {
             ...o,
+            id_oferta: o.id_oferta || o.id,
             dias_duracion: o.dias_duracion || o.diasDuracion || 10,
             fecha_publicacion: fechaDetectada
           };
@@ -151,6 +168,13 @@ export class Ofertas implements OnInit {
       },
       error: (err) => console.error('Error al cargar ofertas:', err)
     });
+  }
+
+  // 🆕 Método para que el Sidebar o los botones cambien de vista
+  alternarVistaEmpresa(soloMias: boolean): void {
+    this.verMisOfertas = soloMias;
+    this.filtroEstado = soloMias ? 'todas' : 'abiertas';
+    this.cargarOfertasDesdeBackend();
   }
 
   cargarHabilidadesYCategorias(): void {
@@ -225,7 +249,9 @@ export class Ofertas implements OnInit {
           descripcion: editarOferta.descripcion,
           tipoDuracion: String(editarOferta.dias_duracion || '10')
         });
-        this.skillsSeleccionadasIds = [...(editarOferta.skills_ids || [])];
+
+        this.skillsSeleccionadasIds = (editarOferta.skills || editarOferta.skill || [])
+          .map((s: any) => typeof s === 'object' ? s.skill_id : s);
       } else {
         this.resetearFormulario();
       }
@@ -286,7 +312,7 @@ export class Ofertas implements OnInit {
     
     return fechaVencimiento;
   }
-  
+
   filtrarOfertasLocal(): void {
     this.ofertasFiltradas = this.ofertasDeBaseDeDatos.filter(o => {
       const coincideBusqueda = 
@@ -355,11 +381,12 @@ export class Ofertas implements OnInit {
         alert(this.modoEdicion ? 'Oferta actualizada con éxito.' : 'Oferta publicada con éxito.');
         this.resetearFormulario();
         this.toggleVista(false);
+        this.verMisOfertas = true; // Al guardar pasa al panel privado de la empresa
+        this.filtroEstado = 'abiertas';
         this.cargarOfertasDesdeBackend();
       },
       error: (err) => {
         console.error('Error al guardar la oferta:', err);
-        
         if (err.status === 403) {
           alert('Acceso denegado (403): Tu usuario no cuenta con el rol "Empresa" o la sesión expiró.');
         } else {
@@ -369,23 +396,6 @@ export class Ofertas implements OnInit {
     });
   }
 
-  cambiarEstadoOferta(ofertaId: number, nuevoEstado: 'Abierta' | 'Cerrada'): void {
-    if (confirm(`¿Confirma que desea marcar esta oferta como ${nuevoEstado}?`)) {
-      this.ofertaService.cambiarEstado(ofertaId, nuevoEstado).subscribe({
-        next: () => {
-          if (this.ofertaSeleccionada && this.ofertaSeleccionada.id_oferta === ofertaId) {
-            this.ofertaSeleccionada.estado = nuevoEstado;
-          }
-          const item = this.ofertasDeBaseDeDatos.find(o => o.id_oferta === ofertaId);
-          if (item) item.estado = nuevoEstado;
-          this.filtrarOfertasLocal();
-          alert(`La oferta ahora está ${nuevoEstado}.`);
-        },
-        error: (err) => console.error('Error al cambiar estado:', err)
-      });
-    }
-  }
-
   ampliarDuracion(ofertaId: number): void {
     const diasStr = prompt('¿Cuántos días desea agregar al plazo de vigencia?', '10');
     const dias = Number(diasStr);
@@ -393,13 +403,13 @@ export class Ofertas implements OnInit {
     if (dias && dias > 0) {
       this.ofertaService.ampliarPlazo(ofertaId, dias).subscribe({
         next: () => {
-          if (this.ofertaSeleccionada && this.ofertaSeleccionada.id_oferta === ofertaId) {
-            this.ofertaSeleccionada.dias_duracion = Number(this.ofertaSeleccionada.dias_duracion) + dias;
-          }
           this.cargarOfertasDesdeBackend();
           alert(`Plazo ampliado exitosamente en ${dias} días.`);
         },
-        error: (err) => console.error('Error al ampliar plazo:', err)
+        error: (err) => {
+          console.error('Error al ampliar plazo:', err);
+          alert(err.error?.error || 'No se pudo ampliar el plazo de la oferta.');
+        }
       });
     }
   }

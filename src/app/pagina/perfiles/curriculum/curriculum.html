@@ -555,7 +555,7 @@
 
   </div>
 
-  <!-- VISTA PREVIA (MODAL) -->
+  <!-- VISTA PREVIA (MODAL CORREGIDO) -->
   <div class="preview-overlay" [class.preview-oculta]="!mostrandoVistaPrevia">
     <div class="preview-modal">
 
@@ -571,172 +571,177 @@
         </button>
       </div>
 
-      <!-- CV QUE SE EXPORTA -->
-      <div #cvPreview class="cv-preview">
+      <!-- 🟢 CONTENEDOR DE SCROLL ÚNICO QUE EVITA DOBLE SCROLLBAR Y DESBORDAMIENTO -->
+      <div class="preview-body-scroll">
+        
+        <!-- CV QUE SE EXPORTA -->
+        <div #cvPreview class="cv-preview">
 
-        <!-- ENCABEZADO PREVIEW -->
-        <div class="preview-personal">
-          @if (perfil.foto) {
-            <div class="preview-photo">
-              <img [src]="perfil.foto" alt="Foto para CV" />
-            </div>
-          }
+          <!-- ENCABEZADO PREVIEW -->
+          <div class="preview-personal">
+            @if (perfil.foto) {
+              <div class="preview-photo">
+                <img [src]="perfil.foto" alt="Foto para CV" />
+              </div>
+            }
 
-          <div class="preview-datos-personales">
-            <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+            <div class="preview-datos-personales">
+              <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
 
-            <p>
-              {{ perfil.ciudad }}
-              @if (perfil.pais) {
-                , {{ perfil.pais }}
-              }
-            </p>
+              <p>
+                {{ perfil.ciudad }}
+                @if (perfil.pais) {
+                  , {{ perfil.pais }}
+                }
+              </p>
 
-            <div class="preview-contacto">
-              @if (perfil.email) {
-                <span>✉ {{ perfil.email }}</span>
-              }
-              @if (perfil.telefono) {
-                <span>☎ {{ perfil.telefono }}</span>
-              }
-              @if (perfil.redes.linkedin) {
-                <span>🔗 {{ perfil.redes.linkedin }}</span>
-              }
-              @if (perfil.redes.github) {
-                <span>💻 {{ perfil.redes.github }}</span>
-              }
-              @if (perfil.redes.portfolio) {
-                <span>🌐 {{ perfil.redes.portfolio }}</span>
-              }
+              <div class="preview-contacto">
+                @if (perfil.email) {
+                  <span>✉ {{ perfil.email }}</span>
+                }
+                @if (perfil.telefono) {
+                  <span>☎ {{ perfil.telefono }}</span>
+                }
+                @if (perfil.redes.linkedin) {
+                  <span>🔗 {{ perfil.redes.linkedin }}</span>
+                }
+                @if (perfil.redes.github) {
+                  <span>💻 {{ perfil.redes.github }}</span>
+                }
+                @if (perfil.redes.portfolio) {
+                  <span>🌐 {{ perfil.redes.portfolio }}</span>
+                }
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- PERFIL PROFESIONAL -->
-        @if (perfil.sobre_mi) {
-          <section class="preview-section">
-            <h3>Perfil profesional</h3>
-            <p>{{ perfil.sobre_mi }}</p>
-          </section>
-        }
+          <!-- PERFIL PROFESIONAL -->
+          @if (perfil.sobre_mi) {
+            <section class="preview-section">
+              <h3>Perfil profesional</h3>
+              <p>{{ perfil.sobre_mi }}</p>
+            </section>
+          }
 
-        <!-- FORMACIÓN -->
-        @if (perfil.estudios.length) {
-          <section class="preview-section">
-            <h3>Formación académica</h3>
+          <!-- FORMACIÓN -->
+          @if (perfil.estudios.length) {
+            <section class="preview-section">
+              <h3>Formación académica</h3>
 
-            @for (estudio of perfil.estudios; track $index) {
-              <div class="preview-item">
-                <strong>{{ estudio.titulo }}</strong>
-                <span>
-                  {{ estudio.institucion }}
-                  @if (estudio.estado) {
-                    · {{ estudio.estado }}
-                  }
-                </span>
-              </div>
-            }
-          </section>
-        }
-
-        <!-- EXPERIENCIA -->
-        @if (perfil.experiencias.length) {
-          <section class="preview-section">
-            <h3>Experiencia laboral</h3>
-
-            @for (experiencia of perfil.experiencias; track $index) {
-              <div class="preview-item">
-                <strong>{{ experiencia.puesto }}</strong>
-                <span>
-                  {{ experiencia.empresa }}
-                  @if (experiencia.desde) {
-                    · {{ experiencia.desde }}
-                  }
-                  @if (experiencia.hasta) {
-                    - {{ experiencia.hasta }}
-                  }
-                </span>
-
-                @if (experiencia.descripcion) {
-                  <p>{{ experiencia.descripcion }}</p>
-                }
-              </div>
-            }
-          </section>
-        }
-
-        <!-- HABILIDADES -->
-        @if (perfil.skills.length) {
-          <section class="preview-section">
-            <h3>Habilidades</h3>
-
-            <div class="preview-skills">
-              @for (skill of perfil.skills; track $index) {
-                <span>{{ skill.nombre }}</span>
+              @for (estudio of perfil.estudios; track $index) {
+                <div class="preview-item">
+                  <strong>{{ estudio.titulo }}</strong>
+                  <span>
+                    {{ estudio.institucion }}
+                    @if (estudio.estado) {
+                      · {{ estudio.estado }}
+                    }
+                  </span>
+                </div>
               }
-            </div>
-          </section>
-        }
+            </section>
+          }
 
-        <!-- IDIOMAS -->
-        @if (perfil.idiomas.length) {
-          <section class="preview-section">
-            <h3>Idiomas</h3>
+          <!-- EXPERIENCIA -->
+          @if (perfil.experiencias.length) {
+            <section class="preview-section">
+              <h3>Experiencia laboral</h3>
 
-            @for (idioma of perfil.idiomas; track $index) {
-              <div class="preview-item">
-                <strong>{{ idioma.idioma }}</strong>
-                <span>{{ idioma.nivel }}</span>
-              </div>
-            }
-          </section>
-        }
+              @for (experiencia of perfil.experiencias; track $index) {
+                <div class="preview-item">
+                  <strong>{{ experiencia.puesto }}</strong>
+                  <span>
+                    {{ experiencia.empresa }}
+                    @if (experiencia.desde) {
+                      · {{ experiencia.desde }}
+                    }
+                    @if (experiencia.hasta) {
+                      - {{ experiencia.hasta }}
+                    }
+                  </span>
 
-        <!-- CURSOS -->
-        @if (perfil.cursos.length) {
-          <section class="preview-section">
-            <h3>Cursos y certificaciones</h3>
-
-            @for (curso of perfil.cursos; track $index) {
-              <div class="preview-item">
-                <strong>{{ curso.nombre }}</strong>
-                <span>
-                  {{ curso.institucion }}
-                  @if (curso.fecha) {
-                    · {{ curso.fecha }}
+                  @if (experiencia.descripcion) {
+                    <p>{{ experiencia.descripcion }}</p>
                   }
-                </span>
-                @if (curso.descripcion) {
-                  <p>{{ curso.descripcion }}</p>
+                </div>
+              }
+            </section>
+          }
+
+          <!-- HABILIDADES -->
+          @if (perfil.skills.length) {
+            <section class="preview-section">
+              <h3>Habilidades</h3>
+
+              <div class="preview-skills">
+                @for (skill of perfil.skills; track $index) {
+                  <span>{{ skill.nombre }}</span>
                 }
               </div>
-            }
-          </section>
-        }
+            </section>
+          }
 
-        <!-- PROYECTOS -->
-        @if (perfil.proyectos.length) {
-          <section class="preview-section">
-            <h3>Proyectos</h3>
+          <!-- IDIOMAS -->
+          @if (perfil.idiomas.length) {
+            <section class="preview-section">
+              <h3>Idiomas</h3>
 
-            @for (proyecto of perfil.proyectos; track $index) {
-              <div class="preview-item">
-                <strong>{{ proyecto.nombre }}</strong>
-                @if (proyecto.tecnologias) {
-                  <span>{{ proyecto.tecnologias }}</span>
-                }
-                @if (proyecto.enlace) {
-                  <p><a [href]="proyecto.enlace" target="_blank">{{ proyecto.enlace }}</a></p>
-                }
-                @if (proyecto.descripcion) {
-                  <p>{{ proyecto.descripcion }}</p>
-                }
-              </div>
-            }
-          </section>
-        }
+              @for (idioma of perfil.idiomas; track $index) {
+                <div class="preview-item">
+                  <strong>{{ idioma.idioma }}</strong>
+                  <span>{{ idioma.nivel }}</span>
+                </div>
+              }
+            </section>
+          }
 
+          <!-- CURSOS -->
+          @if (perfil.cursos.length) {
+            <section class="preview-section">
+              <h3>Cursos y certificaciones</h3>
+
+              @for (curso of perfil.cursos; track $index) {
+                <div class="preview-item">
+                  <strong>{{ curso.nombre }}</strong>
+                  <span>
+                    {{ curso.institucion }}
+                    @if (curso.fecha) {
+                      · {{ curso.fecha }}
+                    }
+                  </span>
+                  @if (curso.descripcion) {
+                    <p>{{ curso.descripcion }}</p>
+                  }
+                </div>
+              }
+            </section>
+          }
+
+          <!-- PROYECTOS -->
+          @if (perfil.proyectos.length) {
+            <section class="preview-section">
+              <h3>Proyectos</h3>
+
+              @for (proyecto of perfil.proyectos; track $index) {
+                <div class="preview-item">
+                  <strong>{{ proyecto.nombre }}</strong>
+                  @if (proyecto.tecnologias) {
+                    <span>{{ proyecto.tecnologias }}</span>
+                  }
+                  @if (proyecto.enlace) {
+                    <p><a [href]="proyecto.enlace" target="_blank" rel="noopener">{{ proyecto.enlace }}</a></p>
+                  }
+                  @if (proyecto.descripcion) {
+                    <p>{{ proyecto.descripcion }}</p>
+                  }
+                </div>
+              }
+            </section>
+          }
+
+        </div>
       </div>
+
     </div>
   </div>
 

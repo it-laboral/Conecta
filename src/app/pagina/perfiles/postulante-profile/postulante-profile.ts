@@ -164,15 +164,12 @@ export class PostulanteProfile implements OnInit, OnChanges {
     const idParam = this.route.snapshot.paramMap.get('id');
 
     if (this.idPostulanteInput) {
-      // Viene como componente hijo en Panel Admin o Modal
       this.esVisitante = true;
       this.idPostulanteAObtener = Number(this.idPostulanteInput);
     } else if (idParam) {
-      // Viene por URL directa (/postulante/:id)
       this.esVisitante = true;
       this.idPostulanteAObtener = Number(idParam);
     } else {
-      // El propio alumno ingresando a su perfil (/perfil/postulante)
       this.esVisitante = false;
       this.idPostulanteAObtener = this.obtenerIdDeSesion();
     }
@@ -203,15 +200,17 @@ export class PostulanteProfile implements OnInit, OnChanges {
   }
 
   // ==========================================
-  // GESTIÓN DE CURRICULUM VITAE
+  // GESTIÓN DE CURRICULUM VITAE (OPTIMIZADO)
   // ==========================================
 
   private obtenerUrlCV(): string | null {
     if (!this.perfil?.cv_url) return null;
     const backendUrl = 'http://localhost:3000';
-    return this.perfil.cv_url.startsWith('http')
-      ? this.perfil.cv_url
-      : `${backendUrl}${this.perfil.cv_url}`;
+    const urlLimpia = this.perfil.cv_url.replace(/\\/g, '/');
+
+    return urlLimpia.startsWith('http')
+      ? urlLimpia
+      : `${backendUrl}${urlLimpia.startsWith('/') ? '' : '/'}${urlLimpia}`;
   }
 
   irACurriculum(): void {
@@ -223,7 +222,9 @@ export class PostulanteProfile implements OnInit, OnChanges {
     const rawUrl = this.obtenerUrlCV();
 
     if (rawUrl) {
-      this.cvPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl);
+      // 🟢 Formateamos la URL con parámetros para adaptar el PDF al ancho sin toolbar
+      const urlFormateada = `${rawUrl}#toolbar=0&navpanes=0&view=FitH`;
+      this.cvPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(urlFormateada);
       this.mostrarVistaPreviaCV = true;
       this.cdr.detectChanges();
     } else {
@@ -274,7 +275,7 @@ export class PostulanteProfile implements OnInit, OnChanges {
     }
 
     if (this.perfil?.foto) {
-      const foto = this.perfil.foto;
+      const foto = this.perfil.foto.replace(/\\/g, '/');
 
       if (foto.startsWith('http') || foto.startsWith('data:')) {
         return foto;

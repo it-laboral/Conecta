@@ -21,8 +21,9 @@
       <!-- ==================== OPCIONES PARA EMPRESA ==================== -->
       @if (esEmpresa) {
         <a routerLink="/perfil/empresa" routerLinkActive="active">🏢 Perfil Empresa</a>
-        <a routerLink="/perfil/postulantes" routerLinkActive="active">👥 Buscar Candidatos</a>
-        <a routerLink="/postulaciones" routerLinkActive="active">📢 Mis Publicaciones / Candidatos</a>
+        <a routerLink="/perfil/postulantes" routerLinkActive="active">👥 Buscar Candidatos/Talentos</a>
+        <a routerLink="/postulaciones" routerLinkActive="active">📢 Mis Candidatos/Postulaciones</a>
+        <a routerLink="/ofertas" [queryParams]="{ vista: 'mis-ofertas' }" routerLinkActive="active">📂 Mis Ofertas</a>
         <a routerLink="/ofertas" routerLinkActive="active">➕ Publicar Oferta</a>
       }
 

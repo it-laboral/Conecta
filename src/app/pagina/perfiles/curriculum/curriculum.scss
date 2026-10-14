@@ -307,25 +307,26 @@ $radius-btn: 10px;
 }
 
 // ==========================================
-// VISTA PREVIA (MODAL Y HOJA CV)
+// VISTA PREVIA (MODAL Y HOJA CV) - CORREGIDO
 // ==========================================
 .preview-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(15, 23, 42, 0.75); // Fondo oscuro elegante
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 30px;
+  padding: 20px;
   z-index: 9999;
-  overflow-y: auto;
+  overflow: hidden; // Evita scrollbar exterior en la pantalla principal
 
   /* RENDERIZADO FUERA DE PANTALLA PARA CAPTURA HTML2CANVAS / PDF */
   &.preview-oculta {
     position: fixed !important;
     left: -9999px !important;
     top: 0 !important;
-    opacity: 1 !important; // Mantiene opacidad activa para captura limpia
+    opacity: 1 !important;
     pointer-events: none !important;
     z-index: -1 !important;
     padding: 0 !important;
@@ -341,13 +342,13 @@ $radius-btn: 10px;
       overflow: visible !important;
       box-shadow: none !important;
       background: transparent !important;
-      width: 794px !important; // Ancho A4 exacto
+      width: 794px !important; // Ancho A4 exacto (96 DPI)
     }
 
     .cv-preview {
       margin: 0 !important;
       width: 794px !important;
-      padding: 40px 45px 60px !important; // Margen inferior de resguardo
+      padding: 40px 45px 60px !important; // Margen inferior amplio para captura limpia
       box-shadow: none !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
@@ -356,21 +357,26 @@ $radius-btn: 10px;
 
   @media (max-width: 700px) {
     padding: 10px;
-    align-items: flex-start;
   }
 }
 
 .preview-modal {
-  width: 100%;
-  max-width: 900px;
+  width: 94vw;
+  max-width: 1100px; // Ampliado para que la hoja A4 se vea en tamaño completo
+  height: 92vh;
   max-height: 92vh;
-  background: #f5f6f8;
+  background: #eef1f6; // Fondo gris suave que resalta la hoja blanca A4
   border-radius: 16px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column; // Mantiene el header fijo arriba y el PDF scrolleable abajo
+  overflow: hidden; 
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
 
-  @media (max-width: 700px) { max-height: 96vh; }
+  @media (max-width: 700px) { 
+    width: 98vw;
+    height: 96vh; 
+    max-height: 96vh;
+  }
 }
 
 .preview-header {
@@ -378,48 +384,72 @@ $radius-btn: 10px;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  padding: 20px 25px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 25px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0; // Impide que el header se achique
 
-  h2 { margin: 0; font-size: 22px; }
-  p { margin: 5px 0 0; color: $text-muted; }
+  h2 { 
+    margin: 0; 
+    font-size: 20px; 
+    color: $purple-dark;
+    font-weight: 700;
+  }
+  p { 
+    margin: 3px 0 0; 
+    color: $text-muted; 
+    font-size: 13px;
+  }
 
   .btn-cancelar {
-    border-color: #b9cde0;
-    color: $primary;
+    border-color: #cbd5e1;
+    color: #475569;
 
     &:hover {
-      background: $primary-light;
-      border-color: $primary;
-      color: $primary-hover;
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
     }
   }
 
   @media (max-width: 700px) {
-    padding: 15px;
-    h2 { font-size: 18px; }
+    padding: 12px 15px;
+    h2 { font-size: 16px; }
   }
 }
 
-/* DOCUMENTO IMPRESO / HOJA DE CV (FORMATO A4) */
+/* CONTENEDOR DEL VISOR / ÁREA DE SCROLL ÚNICA */
+.preview-body-scroll {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto; // Único scrollbar limpio vertical
+  overflow-x: hidden; // Elimina la barra espaciadora horizontal molesta
+  padding: 25px 15px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
 
+/* DOCUMENTO IMPRESO / HOJA DE CV (FORMATO A4) */
 .cv-preview {
   width: 100%;
-  max-width: 794px; // Ancho A4 a 96 DPI
+  max-width: 794px; // Ancho A4 exacto a 96 DPI
   min-height: 297mm; // Escala nativa A4
-  margin: 30px auto;
-  padding: 40px 45px 60px; // Padding inferior amplio para evitar cortes
+  margin: 0 auto 30px auto;
+  padding: 45px 50px 65px 50px; // Padding inferior amplio para garantizar el espacio al final de hoja
   background: #ffffff !important;
   box-sizing: border-box;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   color: #1f2937;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
+  position: relative;
 
-  @media (max-width: 700px) {
-    margin: 15px auto;
-    padding: 30px 20px 45px;
+  @media (max-width: 820px) {
+    padding: 30px 25px 45px 25px;
+    margin: 0 auto;
   }
 }
 
@@ -427,26 +457,27 @@ $radius-btn: 10px;
   display: flex;
   align-items: center;
   gap: 22px;
-  padding-bottom: 25px;
+  padding-bottom: 22px;
   border-bottom: 2px solid #e5e7eb;
   page-break-inside: avoid;
   break-inside: avoid;
 
   h1 {
-    margin: 0 0 8px;
-    font-size: 32px;
+    margin: 0 0 6px;
+    font-size: 30px;
     color: $text-dark;
+    font-weight: 700;
   }
 
   p {
     margin: 0;
     color: $text-muted;
-    font-size: 15px;
+    font-size: 14px;
   }
 
   @media (max-width: 700px) {
     align-items: flex-start;
-    h1 { font-size: 25px; }
+    h1 { font-size: 24px; }
   }
 }
 
@@ -478,7 +509,7 @@ $radius-btn: 10px;
 
   h1 {
     margin: 0 0 8px;
-    font-size: 32px;
+    font-size: 30px;
     color: $text-dark;
     font-weight: 700;
   }
@@ -486,25 +517,25 @@ $radius-btn: 10px;
   p {
     margin: 0;
     color: $text-muted;
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 
-/* ✉️ DATOS DE CONTACTO (SOLUCIÓN EMAIL Y TELÉFONO EN CIMADOS) */
+/* ✉️ DATOS DE CONTACTO */
 .preview-contacto {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap; // Permite salto de línea fluido si el mail es largo
+  flex-wrap: wrap;
   gap: 8px 18px;
   margin-top: 12px;
   width: 100%;
 
   span, a {
     color: $text-muted;
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.5;
-    word-break: break-word; // Evita desbordamientos
+    word-break: break-word;
     overflow-wrap: anywhere;
     display: inline-flex;
     align-items: center;
@@ -512,46 +543,52 @@ $radius-btn: 10px;
   }
 }
 
-/* CONTROL DE SALTOS DE PÁGINA EN SECCIONES */
+/* CONTROL DE SALTOS DE PÁGINA EN SECCIONES Y MARGEN INFERIOR */
 .preview-section {
-  margin-top: 26px;
+  margin-top: 24px;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
 
   h3 {
-    margin: 0 0 14px;
-    padding-bottom: 7px;
-    border-bottom: 1px solid #e5e7eb;
-    font-size: 16px;
+    margin: 0 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1.5px solid #e2e8f0;
+    font-size: 15px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     color: $primary;
-    page-break-after: avoid; // Evita que el título quede solo al final de la hoja
+    font-weight: 700;
+    page-break-after: avoid; // Evita título huérfano al final de la página
     break-after: avoid;
   }
 
   > p {
     margin: 0;
-    line-height: 1.7;
-    color: #4b5563;
+    line-height: 1.65;
+    color: #334155;
+    font-size: 14px;
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
   .preview-item {
     text-align: left;
-    margin-bottom: 18px;
-    page-break-inside: avoid; // Evita partir cada ítem laboral/académico
-    break-inside: avoid;
+    margin-bottom: 20px; // Espaciado entre elementos
+    padding-bottom: 4px;
+    page-break-inside: avoid !important; // FUERZA a que el elemento o experiencia salte ENTERA a la hoja 2 sin cortarse
+    break-inside: avoid !important;
 
-    &:last-child { margin-bottom: 0; }
+    &:last-child { 
+      margin-bottom: 0; 
+    }
 
     strong {
       display: block;
       margin-bottom: 4px;
-      font-size: 15px;
+      font-size: 14.5px;
       color: $text-dark;
+      font-weight: 600;
     }
 
     span {
@@ -564,7 +601,8 @@ $radius-btn: 10px;
     p {
       margin: 6px 0 0;
       line-height: 1.6;
-      color: #4b5563;
+      color: #334155;
+      font-size: 13.5px;
     }
   }
 }
@@ -581,11 +619,11 @@ $radius-btn: 10px;
   span {
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
-    border-radius: 16px;
+    padding: 5px 12px;
+    border-radius: 14px;
     background: $primary-light;
     color: $primary;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     white-space: nowrap;
     page-break-inside: avoid;
@@ -630,9 +668,9 @@ $radius-btn: 10px;
 
   .cv-preview {
     box-shadow: none !important;
-    margin: 0.5mm !important;
+    margin: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 15mm 15mm 20mm !important;
+    padding: 15mm 18mm 20mm !important; // Márgenes de impresión A4 limpios
   }
 }

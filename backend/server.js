@@ -1,4 +1,3 @@
-
 // ====================================================================
 // 1. IMPORTACIONES, CONFIGURACIÓN E INICIALIZACIÓN
 // ====================================================================
@@ -51,10 +50,10 @@ app.get('/test-db', async (req, res) => {
 // ====================================================================
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
- 
+
     const jwtSecret = process.env.JWT_SECRET;
     const jwtExpires = process.env.JWT_EXPIRES_IN;
- 
+
     try {
         // 1. Buscar en ADMINISTRADOR
         const [administradores] = await db.query('SELECT * FROM administrador WHERE email = ?', [email]);
@@ -62,17 +61,17 @@ app.post('/api/login', async (req, res) => {
         if (administradores.length > 0) {
             const admin = administradores[0];
             const match = await bcrypt.compare(password, admin.password);
- 
+
             if (!match) {
                 return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
             }
- 
+
             const token = jwt.sign(
                 { id: admin.id, email: admin.email, tipo: 'admin' },
                 jwtSecret,
                 { expiresIn: jwtExpires }
             );
- 
+
             return res.json({
                 success: true,
                 tipo: 'admin',
@@ -84,23 +83,40 @@ app.post('/api/login', async (req, res) => {
                 }
             });
         }
- 
+
         // 2. Buscar en POSTULANTE
         const [postulantes] = await db.query('SELECT * FROM postulante WHERE email = ?', [email]);
         if (postulantes.length > 0) {
             const postulante = postulantes[0];
             const esValida = await bcrypt.compare(password, postulante.password);
- 
+
             if (!esValida) {
                 return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
             }
- 
+
+            // 🛑 VALIDACIÓN DE ESTADO PARA POSTULANTE
+            const estadoPostulante = (postulante.estado || 'Pendiente').toLowerCase();
+            
+            if (estadoPostulante === 'pendiente') {
+                return res.status(403).json({ 
+                    success: false, 
+                    message: 'Tu cuenta está pendiente de aprobación por la administración. Te notificaaremos por e-mail cuando sea activada.' 
+                });
+            }
+
+            if (estadoPostulante === 'inactivo' || estadoPostulante === 'rechazado') {
+                return res.status(403).json({ 
+                    success: false, 
+                    message: 'Tu cuenta ha sido inhabilitada. Comunicate con la administración.' 
+                });
+            }
+
             const token = jwt.sign(
                 { id: postulante.id_postulante, email: postulante.email, tipo: 'postulante' },
                 jwtSecret,
                 { expiresIn: jwtExpires }
             );
- 
+
             return res.json({
                 success: true,
                 tipo: 'postulante',
@@ -108,27 +124,45 @@ app.post('/api/login', async (req, res) => {
                 user: { 
                     id: postulante.id_postulante, 
                     nombre: postulante.Nombres || postulante.nombres, 
-                    email: postulante.email 
+                    email: postulante.email,
+                    estado: postulante.estado
                 }
             });
         }
- 
+
         // 3. Buscar en EMPRESA
         const [empresas] = await db.query('SELECT * FROM empresa WHERE email = ?', [email]);
         if (empresas.length > 0) {
             const empresa = empresas[0];
             const esValida = await bcrypt.compare(password, empresa.password);
- 
+
             if (!esValida) {
                 return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
             }
- 
+
+            // 🛑 VALIDACIÓN DE ESTADO PARA EMPRESA
+            const estadoEmpresa = (empresa.estado || 'Pendiente').toLowerCase();
+
+            if (estadoEmpresa === 'pendiente') {
+                return res.status(403).json({ 
+                    success: false, 
+                    message: 'La cuenta de tu empresa se encuentra en revisión. Te avisaremos por e-mail cuando el administrador la apruebe.' 
+                });
+            }
+
+            if (estadoEmpresa === 'inactivo' || estadoEmpresa === 'rechazado') {
+                return res.status(403).json({ 
+                    success: false, 
+                    message: 'La cuenta de tu empresa ha sido inhabilitada. Comunicate con la administración.' 
+                });
+            }
+
             const token = jwt.sign(
                 { id: empresa.id_empresa, email: empresa.email, tipo: 'empresa' },
                 jwtSecret,
                 { expiresIn: jwtExpires }
             );
- 
+
             return res.json({
                 success: true,
                 tipo: 'empresa',
@@ -136,58 +170,64 @@ app.post('/api/login', async (req, res) => {
                 user: { 
                     id: empresa.id_empresa, 
                     nombre: empresa.RazonSocial || empresa.razonSocial, 
-                    email: empresa.email 
+                    email: empresa.email,
+                    estado: empresa.estado
                 }
             });
         }
- 
+
         // Si llegó acá, no encontró el correo en ninguna tabla
         return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
- 
+
     } catch (error) {
         console.error('ERROR CRÍTICO EN LOGIN:', error);
         return res.status(500).json({ success: false, message: 'Error en el servidor' });
     }
 });
- 
+
 app.post('/api/registrar/postulante', async (req, res) => {
     const { nombres, apellidos, dni, legajo, carrera, email, password } = req.body;
     try {
         const [existe] = await db.query('SELECT id_postulante FROM postulante WHERE email = ?', [email]);
         if (existe.length > 0) return res.status(409).json({ success: false, message: 'El email ya está registrado.' });
- 
+
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
- 
+
         await db.query(
-            `INSERT INTO postulante (nombres, apellidos, dni, legajo, carrera, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO postulante (nombres, apellidos, dni, legajo, carrera, email, password, estado) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendiente')`,
             [nombres, apellidos, dni, legajo, carrera || '', email, passwordHash]
         );
-        res.status(201).json({ success: true, message: 'Postulante registrado con éxito.' });
+        res.status(201).json({ 
+            success: true, 
+            message: 'Registro completado con éxito. Tu cuenta quedó en revisión por la administración.' 
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Error en el servidor.' });
     }
 });
- 
+
 app.post('/api/registrar/empresa', async (req, res) => {
     const { razonSocial, fantasia, organizacion, cuit, sector, pais, provincia, ciudad, cp, calle, numero, piso, dpto, email, web, telefono, responsable, password } = req.body;
     try {
         const [existe] = await db.query('SELECT id_empresa FROM empresa WHERE email = ?', [email]);
         if (existe.length > 0) return res.status(409).json({ success: false, message: 'El email ya está registrado.' });
- 
+
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
- 
-        const sqlInsert = `INSERT INTO empresa (razonSocial, fantasia, organizacion, cuit, sector, pais, provincia, ciudad, cp, calle, numero, piso, dpto, email, web, telefono, responsable, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const sqlInsert = `INSERT INTO empresa (razonSocial, fantasia, organizacion, cuit, sector, pais, provincia, ciudad, cp, calle, numero, piso, dpto, email, web, telefono, responsable, password, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pendiente')`;
         const valores = [razonSocial, fantasia || '', organizacion, cuit, sector, pais, provincia, ciudad, cp || '', calle, numero || '', piso || '', dpto || '', email, web || '', telefono, responsable, passwordHash];
         
         await db.query(sqlInsert, valores);
-        res.status(201).json({ success: true, message: 'Empresa registrada con éxito.' });
+        res.status(201).json({ 
+            success: true, 
+            message: 'Empresa registrada con éxito. La cuenta se encuentra en proceso de habilitación por el administrador.' 
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Error en el servidor.' });
     }
 });
- 
 // ====================================================================
 // 4. RUTAS PROTEGIDAS (REQUIEREN VERIFICARTOKEN)
 // ====================================================================
