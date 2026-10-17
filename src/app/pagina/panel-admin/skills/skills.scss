@@ -15,6 +15,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 
     h3 {
       font-size: 1.4rem;
@@ -26,9 +28,14 @@
       color: $muted-text;
       font-size: 0.875rem;
     }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
   }
 
-  /* Botones base con tus variables */
   .btn-primary {
     background-color: $button-bg;
     color: $button-text;
@@ -60,13 +67,27 @@
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: color.adjust($link-hover-bg, $lightness: -4%);
     }
   }
 
-  /* Tarjeta de Lista (Full Width) */
+  .btn-link-sm {
+    background: none;
+    border: none;
+    color: $link-color;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   .card-list {
     background: $surface-bg;
     border: 1px solid $surface-border;
@@ -90,6 +111,7 @@
       .controles-busqueda {
         display: flex;
         gap: 0.5rem;
+        flex-wrap: wrap;
 
         .input-search,
         .select-cat {
@@ -109,6 +131,12 @@
         .input-search {
           min-width: 200px;
         }
+
+        .grupo-categoria-filtro {
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+        }
       }
     }
 
@@ -126,6 +154,7 @@
           border-bottom: 1px solid $surface-border;
           font-size: 0.9rem;
           color: $color-text-dark-main;
+          white-space: nowrap;
         }
 
         th {
@@ -155,6 +184,7 @@
           font-size: 1rem;
           padding: 0.3rem 0.5rem;
           border-radius: 4px;
+          transition: background-color 0.2s ease;
 
           &:hover {
             background-color: $link-hover-bg;
@@ -170,7 +200,6 @@
     }
   }
 
-  /* MODAL FLOTANTE */
   .modal-backdrop {
     position: fixed;
     top: 0;
@@ -183,6 +212,7 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 1rem;
 
     .modal-content {
       background: $surface-bg;
@@ -224,6 +254,12 @@
         gap: 0.4rem;
         margin-bottom: 1rem;
 
+        .label-with-action {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
         label {
           font-size: 0.85rem;
           font-weight: 600;
@@ -260,6 +296,65 @@
         justify-content: flex-end;
         gap: 0.75rem;
         margin-top: 1.5rem;
+      }
+    }
+  }
+}
+
+/* RESPONSIVE PANTALLAS CHICAS */
+@media (max-width: 768px) {
+  .skills-container {
+    .header-section {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .header-actions {
+        width: 100%;
+
+        button {
+          flex: 1;
+        }
+      }
+    }
+
+    .card-list {
+      padding: 1rem;
+
+      .list-header {
+        flex-direction: column;
+        align-items: stretch;
+
+        .controles-busqueda {
+          flex-direction: column;
+
+          .input-search,
+          .select-cat {
+            width: 100%;
+            min-width: auto;
+          }
+
+          .grupo-categoria-filtro {
+            width: 100%;
+
+            .select-cat {
+              flex: 1;
+            }
+          }
+        }
+      }
+    }
+
+    .modal-backdrop {
+      .modal-content {
+        padding: 1.2rem;
+
+        .form-actions {
+          flex-direction: column-reverse;
+
+          button {
+            width: 100%;
+          }
+        }
       }
     }
   }

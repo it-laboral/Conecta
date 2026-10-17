@@ -1,5 +1,5 @@
 // ==========================================
-// 1. IMPORTACIONES
+// 1. IMPORTACIONES Y VARIABLES
 // ==========================================
 @use '../../../styles/variables' as *;
 @use 'sass:color';
@@ -10,7 +10,7 @@
 @keyframes fadeIn {
   from { 
     opacity: 0; 
-    transform: scale(0.95); 
+    transform: scale(0.98); 
   }
   to { 
     opacity: 1; 
@@ -45,19 +45,20 @@
 }
 
 // ==========================================
-// LAYOUT PRINCIPAL RESPONSIVE
+// LAYOUT PRINCIPAL RESPONSIVE Y ALINEADO
 // ==========================================
 .dashboard-layout {
   display: flex;
-  height: 100vh;
   width: 100%;
+  max-width: 1440px; /* 👈 Limita el ancho global para alinearlo con la grilla del header */
+  margin: 0 auto;
+  min-height: calc(100vh - 70px);
   background-color: #f8f9fa;
-  overflow: hidden;
+  align-items: stretch;
 
-  /* SIDEBAR: DEGRADADO DE CELESTE A TURQUESA */
+  /* SIDEBAR INSTITUCIONAL */
   .sidebar {
-    width: 260px;
-    height: 100%;
+    width: 210px;
     flex-shrink: 0;
     background: linear-gradient(180deg, #38bdf8 0%, #0284c7 40%, #06b6d4 75%, #14b8a6 100%);
     color: #ffffff;
@@ -110,6 +111,26 @@
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
+        /* 🟢 FLECHA NEÓN/FLÚOR PARA DEPLOY DE SKILLS */
+        .flecha-fluor,
+        .flecha_bajar{
+          color: #ccff00; // Amarillo Flúor Neón impactante
+          font-weight: 900;
+          font-size: 1.25rem;
+          margin-left: 6px;
+          text-shadow: 0 0 8px rgba(204, 255, 0, 0.8);
+          display: inline-block;
+          transition: transform 0.25s ease;
+
+          &.rotada {
+            transform: rotate(180deg);
+          }
+        }
+
+        &:hover .flecha-fluor {
+          transform: translateY(2px); // Efecto visual sutil de descenso
+        }
+
         .badge-pendientes {
           background-color: #ef4444;
           color: #ffffff;
@@ -146,15 +167,14 @@
   }
 
   // ==========================================
-  // CONTENEDOR PRINCIPAL Y TABLAS
+  // CONTENEDOR PRINCIPAL DERECHO (ALINEADO CON EL HEADER)
   // ==========================================
   .admin-container {
     flex: 1;
-    height: 100%;
-    overflow-y: auto;
-    padding: 30px 24px;
-    max-width: 1280px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 1200px; /* 👈 ALINEA EL FLANCO DERECHO EXACTO CON EL HEADER */
+    padding: 1.5rem 2rem;
+    margin: 0;
     font-family: $font-family-base;
     animation: fadeIn 0.3s ease-in-out;
 
@@ -170,19 +190,19 @@
       margin-bottom: 25px;
     }
 
-    /* TARJETAS KPI */
+    /* TARJETAS KPI CON NÚMEROS RESALTADOS */
     .metricas-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
-      margin-bottom: 35px;
+      margin-bottom: 30px;
     }
     
     .card-kpi {
       background: $surface-bg;
       border: 1px solid $surface-border;
       border-radius: 18px;
-      padding: 20px;
+      padding: 1.25rem 1.5rem;
       box-shadow: 0 10px 25px rgba(103, 87, 176, 0.06);
       display: flex;
       flex-direction: column;
@@ -202,12 +222,14 @@
         box-shadow: 0 12px 26px rgba(103, 87, 176, 0.12);
       }
 
+      /* 🟢 NÚMEROS EN NEGRITA Y MÁS GRANDES CORREGIDOS */
       .numero {
-        font-size: 2.2rem;
-        font-weight: bold;
-        color: $button-bg;
-        line-height: 1.1;
-        margin-bottom: 6px;
+        font-size: 2.5rem; /* Corregido error de espacio */
+        font-weight: 800; /* Extra negrita */
+        color: #0284c7; /* Azul corporativo vibrante */
+        line-height: 1;
+        margin-bottom: 8px;
+        letter-spacing: -1px;
       }
 
       .label {
@@ -226,7 +248,7 @@
       }
     }
 
-    /* SECCIÓN TABLAS RESPONSIVES CON SCROLL HORIZONTAL */
+    /* SECCIÓN TABLAS ALINEADAS */
     .tabla-seccion {
       background: $surface-bg;
       border: 1px solid $form-border;
@@ -234,8 +256,7 @@
       padding: 24px;
       box-shadow: 0 16px 30px rgba(103, 87, 176, 0.08);
       margin-bottom: 30px;
-      overflow-x: auto; /* PERMITE SCROLL SUAVE EN MÓVILES */
-      -webkit-overflow-scrolling: touch;
+      overflow-x: auto;
 
       h3 {
         color: $header-text;
@@ -252,9 +273,8 @@
 
       .tabla-admin {
         width: 100%;
-        min-width: 750px; /* GARANTIZA QUE LAS COLUMNAS NO SE APLASTEN EN MÓVIL */
         border-collapse: collapse;
-        text-align: left;
+        text-align: center;
         font-size: 0.95rem;
 
         thead tr {
@@ -284,13 +304,13 @@
             padding: 14px 16px;
             color: $color-text-dark-main;
             vertical-align: middle;
-            white-space: nowrap;
 
             &.acciones-cell {
               display: flex;
               gap: 6px;
               flex-wrap: wrap;
               align-items: center;
+              justify-content: center;
             }
           }
         }
@@ -370,20 +390,14 @@
 }
 
 // ==========================================
-// MEDIA QUERIES (DISPOSITIVOS MÓVILES Y TABLETS)
+// MEDIA QUERIES (RESPONSIVE)
 // ==========================================
-
-/* Tablets y Pantallas Medianas (<= 992px) */
 @media (max-width: 992px) {
   .dashboard-layout {
     flex-direction: column;
-    height: auto;
-    min-height: 100vh;
-    overflow-y: auto;
 
     .sidebar {
       width: 100%;
-      height: auto;
       padding: 1.2rem;
       flex-direction: row;
       flex-wrap: wrap;
@@ -423,156 +437,20 @@
   }
 }
 
-/* Teléfonos Móviles (<= 576px) */
 @media (max-width: 576px) {
   .dashboard-layout {
-    .sidebar {
-      nav a {
-        flex: 1 1 100%; /* Cada enlace ocupa toda la línea en celulares */
-      }
+    .sidebar nav a {
+      flex: 1 1 100%;
     }
 
     .admin-container {
-      h2 {
-        font-size: 1.35rem;
-      }
-
-      .subtitulo {
-        font-size: 0.9rem;
-      }
-
       .metricas-grid {
-        grid-template-columns: 1fr; /* 1 sola tarjeta por fila */
+        grid-template-columns: 1fr;
       }
 
       .tabla-seccion {
         padding: 15px 10px;
-        border-radius: 14px;
       }
-    }
-  }
-}
-
-// ==========================================
-// VENTANAS MODALES RESPONSIVES
-// ==========================================
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(42, 31, 76, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 15px;
-
-  .modal-content {
-    background: $surface-bg;
-    border: 1px solid $form-border;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 650px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 20px 40px rgba(42, 31, 76, 0.25);
-    animation: modalEntrada 0.25s ease-out;
-
-    .modal-header {
-      padding: 18px 20px;
-      border-bottom: 1px solid $surface-border;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      h3 {
-        margin: 0;
-        color: $header-text;
-        font-size: 1.2rem;
-      }
-
-      .btn-cerrar {
-        background: transparent;
-        border: none;
-        font-size: 1.3rem;
-        color: $muted-text;
-        cursor: pointer;
-      }
-    }
-
-    .modal-body {
-      padding: 20px;
-      overflow-y: auto;
-
-      .grid-datos {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 14px;
-
-        .dato-item {
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-
-          label {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: $muted-text;
-            text-transform: uppercase;
-          }
-
-          span {
-            font-size: 0.9rem;
-            color: $color-text-dark-main;
-            word-break: break-word;
-          }
-        }
-      }
-    }
-
-    .modal-footer {
-      padding: 14px 20px;
-      border-top: 1px solid $surface-border;
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
-
-      .btn-secundario {
-        background-color: $link-hover-bg;
-        color: $link-hover-text;
-        border: 1px solid $surface-border;
-        padding: 9px 16px;
-        border-radius: 10px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-    }
-  }
-}
-.grid-graficos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
-  margin-top: 10px;
-
-  .card-grafico {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-height: 380px;
-
-    canvas {
-      max-height: 320px;
     }
   }
 }

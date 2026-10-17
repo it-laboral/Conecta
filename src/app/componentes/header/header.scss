@@ -4,46 +4,59 @@
    HEADER Y NAVEGACIÓN
    ========================================================================== */
 header {
-  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 40%, #06b6d4 75%, #14b8a6 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
   color: white;
-  padding: 1.2rem 2rem;
   width: 100%;
-  display: flex;
-  align-items: center;
-  border-radius: 32px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  padding: 0.65rem 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 
-  // Adaptación Responsive del Header
+  // Adaptación Responsive en contenedores
   @include variables.responder-a(tablet) {
-    padding: 1rem 1.5rem;
+    padding: 0.6rem 1rem;
   }
 
   @include variables.responder-a(celular) {
-    padding: 0.6rem 1rem;
-    border-radius: 16px;
+    padding: 0.5rem 0.75rem;
+  }
+
+  // Contenedor interno alineado con las tarjetas principales (Max 1200px)
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 
   // --- LOGO ---
   img.logo-header {
-    width: 140px;
+    width: 110px;
     height: auto;
     display: block;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
 
     @include variables.responder-a(tablet) {
-      width: 110px;
+      width: 95px;
     }
 
     @include variables.responder-a(celular) {
-      width: 85px;
+      width: 80px;
     }
   }
 
   // --- NAVEGACIÓN ---
   nav {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     align-items: center;
-    width: 100%; // Permite que margin-left: auto empuje hacia la derecha
 
     @include variables.responder-a(celular) {
       gap: 0.25rem;
@@ -53,115 +66,103 @@ header {
     a {
       color: #ffffff;
       text-decoration: none;
-      padding: 0.75rem 1.2rem;
+      padding: 0.45rem 0.85rem;
       font-family: variables.$font-family-base;
-      font-size: 1.2rem;
-      font-weight: 600;
-      border-radius: 999px;
-      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all 0.2s ease;
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.18);
-        color: #dffcff;
-        transform: translateY(-2px);
+        background-color: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
       }
 
       @include variables.responder-a(tablet) {
-        font-size: 1.05rem;
-        padding: 0.6rem 1rem;
+        font-size: 0.875rem;
+        padding: 0.4rem 0.65rem;
       }
 
       @include variables.responder-a(celular) {
-        font-size: 0.85rem;
-        padding: 0.4rem 0.6rem;
-        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.45rem;
       }
     }
 
-    // Empuja "Registrarse" o el perfil a la extrema derecha
     .nav-separador {
       margin-left: auto;
     }
 
-    // --- TAMAÑO Y ESTILO DE LAS BANDERAS ---
+    // --- BANDERAS ---
     .flag-vector {
-      width: 22px;
-      height: 15px;
+      width: 20px;
+      height: 14px;
       object-fit: cover;
       border-radius: 2px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       display: inline-block;
       vertical-align: middle;
     }
 
-    // --- SELECTOR DE IDIOMA DESPLEGABLE PERSONALIZADO ---
+    // --- SELECTOR DE IDIOMA ---
     .lang-dropdown {
       position: relative;
       display: inline-block;
 
-      // Botón principal del selector
       .lang-btn {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        background: rgba(255, 255, 255, 0.15);
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.12);
         color: #ffffff;
         font-family: variables.$font-family-base;
-        font-size: 1rem;
-        font-weight: 600;
-        padding: 0.5rem 0.8rem;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        border-radius: 999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.35rem 0.65rem;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 6px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.25);
-          border-color: #ffffff;
+          background-color: rgba(255, 255, 255, 0.22);
+          border-color: rgba(255, 255, 255, 0.5);
         }
 
         .arrow {
-          font-size: 0.65rem;
+          font-size: 0.6rem;
           opacity: 0.8;
-          margin-left: 0.2rem;
-        }
-
-        @include variables.responder-a(tablet) {
-          font-size: 0.9rem;
-          padding: 0.45rem 0.7rem;
         }
 
         @include variables.responder-a(celular) {
-          font-size: 0.8rem;
-          padding: 0.3rem 0.5rem;
+          font-size: 0.75rem;
+          padding: 0.25rem 0.45rem;
         }
       }
 
-      // Menú flotante de opciones (ul)
       .lang-menu {
         position: absolute;
-        top: calc(100% + 6px);
+        top: calc(100% + 4px);
         right: 0;
-        background-color: #06245c;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        padding: 0.4rem 0;
+        background-color: #0c4a6e;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 0.3rem 0;
         list-style: none;
         margin: 0;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         z-index: 100;
-        min-width: 95px;
+        min-width: 90px;
 
         li {
           display: flex;
           align-items: center;
-          gap: 0.6rem;
-          padding: 0.5rem 0.8rem;
+          gap: 0.5rem;
+          padding: 0.4rem 0.75rem;
           cursor: pointer;
           color: white;
           font-family: variables.$font-family-base;
-          font-size: 0.95rem;
-          font-weight: 600;
+          font-size: 0.85rem;
+          font-weight: 500;
           transition: background 0.2s ease;
 
           &:hover {

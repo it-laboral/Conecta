@@ -39,8 +39,13 @@
 
     <!-- CARRERA -->
     <div class="form-group">
-      <label>Carrera:</label>
-      <input type="text" formControlName="carrera" placeholder="Ej: Analista de Sistemas">
+      <label for="carreraSelect">Carrera:</label>
+      <select id="carreraSelect" formControlName="carrera" class="form-control">
+      <option value="" disabled selected>Seleccioná tu carrera...</option>
+      @for (carrera of carrerasDisponibles; track carrera) {
+      <option [value]="carrera">{{ carrera }}</option>
+    }
+  </select>
     </div>
 
     <!-- EMAIL -->

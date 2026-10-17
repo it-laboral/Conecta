@@ -15,7 +15,11 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// 1. Obtener métricas generales del sistema
+// ==========================================
+// 1. MÉTRICAS Y CONTEOS GENERALES
+// ==========================================
+
+// 1.a Obtener métricas generales del sistema
 router.get('/metricas', async (req, res) => {
   try {
     const [[{ totalOfertas }]] = await db.query('SELECT COUNT(*) as totalOfertas FROM ofertas');
@@ -33,7 +37,7 @@ router.get('/metricas', async (req, res) => {
   }
 });
 
-// 🟢 NUEVO: 1.b Contar usuarios pendientes de aprobación (para el badge/notificación en rojo del sidebar)
+// 1.b Contar usuarios pendientes de aprobación (para el badge en el sidebar)
 router.get('/pendientes-count', async (req, res) => {
   try {
     const [[{ totalEmpresas }]] = await db.query(
@@ -57,7 +61,11 @@ router.get('/pendientes-count', async (req, res) => {
   }
 });
 
-// 2. Obtener lista completa de empresas (con IFNULL default en "Pendiente")
+// ==========================================
+// 2. CONSULTAS PRINCIPALES DE ENTIDADES
+// ==========================================
+
+// Lista completa de empresas
 router.get('/empresas', async (req, res) => {
   try {
     const [empresas] = await db.query(
@@ -95,7 +103,7 @@ router.get('/ofertas', async (req, res) => {
   }
 });
 
-// Padrón de Postulantes (con IFNULL default en "Pendiente")
+// Padrón de Postulantes
 router.get('/postulantes', async (req, res) => {
   try {
     const [postulantes] = await db.query(
@@ -108,58 +116,21 @@ router.get('/postulantes', async (req, res) => {
   }
 });
 
-// Categorías de Skills
-router.get('/categorias-skills', async (req, res) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT 
-        categoria_id AS id, 
-        Nombre AS nombre 
-      FROM categoria_skill 
-      ORDER BY Nombre ASC
-    `);
-    res.json({ success: true, categorias: rows });
-  } catch (error) {
-    console.error('Error al obtener categorías:', error);
-    res.status(500).json({ success: false, message: 'Error al obtener categorías' });
-  }
-});
-
-// GET - Obtener Skills con su nombre de categoría
-router.get('/skills', async (req, res) => {
-  try {
-    const query = `
-      SELECT s.skill_id AS id, s.nombre, s.categoria_id, c.nombre AS categoria_nombre
-      FROM skill s
-      LEFT JOIN categoria_skill c ON s.categoria_id = c.categoria_id
-      ORDER BY s.nombre ASC
-    `;
-    const [rows] = await db.query(query);
-    res.json({ success: true, skills: rows });
-  } catch (error) {
-    console.error('Error al obtener skills:', error);
-    res.status(500).json({ success: false, message: 'Error al consultar skills en BD' });
-  }
-});
-
 // ==========================================
-// 3. ACCIONES Y MODERACIÓN (PUT / DELETE)
+// 3. ACCIONES Y MODERACIÓN (EMPRESAS / POSTULANTES / OFERTAS)
 // ==========================================
 
 // Cambiar estado de una empresa y NOTIFICAR por Email si pasa a 'Activo'
 router.put('/empresa/estado', async (req, res) => {
   const { id_empresa, estado } = req.body;
   try {
-    // 1. Obtenemos el email y la razón social antes de actualizar
     const [[empresa]] = await db.query(
       'SELECT email, razonSocial FROM empresa WHERE id_empresa = ?', 
       [id_empresa]
     );
 
-    // 2. Actualizamos el estado en la BD
     await db.query('UPDATE empresa SET estado = ? WHERE id_empresa = ?', [estado, id_empresa]);
 
-    // 3. 📧 Si se aprobó (pasó a Activo), enviamos el correo automático
     if (estado === 'Activo' && empresa && empresa.email) {
       transporter.sendMail({
         from: '"ITB Conecta" <itbconecta@gmail.com>',
@@ -188,16 +159,13 @@ router.put('/empresa/estado', async (req, res) => {
 router.put('/postulante/estado', async (req, res) => {
   const { id_postulante, estado } = req.body;
   try {
-    // 1. Obtenemos el email y nombre del postulante
     const [[postulante]] = await db.query(
       'SELECT email, nombres FROM postulante WHERE id_postulante = ?', 
       [id_postulante]
     );
 
-    // 2. Actualizamos el estado en la BD
     await db.query('UPDATE postulante SET estado = ? WHERE id_postulante = ?', [estado, id_postulante]);
 
-    // 3. 📧 Si se aprobó (pasó a Activo), enviamos el correo automático
     if (estado === 'Activo' && postulante && postulante.email) {
       transporter.sendMail({
         from: '"ITB Conecta" <itbconecta@gmail.com>',
@@ -234,9 +202,102 @@ router.delete('/ofertas/:id', async (req, res) => {
   }
 });
 
-// --- CATÁLOGOS: SKILLS ---
+// ==========================================
+// 4. TABLAS MAESTRAS: CATEGORÍAS DE SKILLS (ABM COMPLETO)
+// ==========================================
 
-// Crear nueva Skill
+// GET - Obtener todas las categorías
+router.get('/categorias-skills', async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        categoria_id AS id, 
+        Nombre AS nombre 
+      FROM categoria_skill 
+      ORDER BY Nombre ASC
+    `);
+    res.json({ success: true, categorias: rows });
+  } catch (error) {
+    console.error('Error al obtener categorías:', error);
+    res.status(500).json({ success: false, message: 'Error al obtener categorías' });
+  }
+});
+
+// POST - Crear nueva categoría
+router.post('/categorias-skills', async (req, res) => {
+  const { nombre } = req.body;
+  if (!nombre || !nombre.trim()) {
+    return res.status(400).json({ success: false, message: 'El nombre de la categoría es obligatorio' });
+  }
+
+  try {
+    const [result] = await db.query(
+      'INSERT INTO categoria_skill (Nombre) VALUES (?)',
+      [nombre.trim()]
+    );
+    res.status(201).json({ success: true, id: result.insertId, message: 'Categoría creada correctamente' });
+  } catch (error) {
+    console.error('Error al crear categoría:', error);
+    res.status(500).json({ success: false, message: 'Error al crear la categoría en la BD' });
+  }
+});
+
+// PUT - Actualizar categoría existente
+router.put('/categorias-skills/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre } = req.body;
+
+  if (!nombre || !nombre.trim()) {
+    return res.status(400).json({ success: false, message: 'El nombre de la categoría es obligatorio' });
+  }
+
+  try {
+    await db.query(
+      'UPDATE categoria_skill SET Nombre = ? WHERE categoria_id = ?',
+      [nombre.trim(), id]
+    );
+    res.json({ success: true, message: 'Categoría actualizada correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar categoría:', error);
+    res.status(500).json({ success: false, message: 'Error al actualizar la categoría en la BD' });
+  }
+});
+
+// DELETE - Eliminar categoría
+router.delete('/categorias-skills/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await db.query('DELETE FROM categoria_skill WHERE categoria_id = ?', [id]);
+    res.json({ success: true, message: 'Categoría eliminada correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar categoría:', error);
+    res.status(500).json({ success: false, message: 'Error al eliminar la categoría de la BD' });
+  }
+});
+
+// ==========================================
+// 5. TABLAS MAESTRAS: SKILLS (ABM COMPLETO)
+// ==========================================
+
+// GET - Obtener Skills con su nombre de categoría
+router.get('/skills', async (req, res) => {
+  try {
+    const query = `
+      SELECT s.skill_id AS id, s.nombre, s.categoria_id, c.nombre AS categoria_nombre
+      FROM skill s
+      LEFT JOIN categoria_skill c ON s.categoria_id = c.categoria_id
+      ORDER BY s.nombre ASC
+    `;
+    const [rows] = await db.query(query);
+    res.json({ success: true, skills: rows });
+  } catch (error) {
+    console.error('Error al obtener skills:', error);
+    res.status(500).json({ success: false, message: 'Error al consultar skills en BD' });
+  }
+});
+
+// POST - Crear nueva Skill
 router.post('/skills', async (req, res) => {
   const { nombre, categoria_id } = req.body;
   if (!nombre || !categoria_id) {
@@ -255,7 +316,7 @@ router.post('/skills', async (req, res) => {
   }
 });
 
-// Actualizar Skill existente
+// PUT - Actualizar Skill existente
 router.put('/skills/:id', async (req, res) => {
   const { id } = req.params;
   const { nombre, categoria_id } = req.body;
@@ -272,7 +333,7 @@ router.put('/skills/:id', async (req, res) => {
   }
 });
 
-// Eliminar Skill
+// DELETE - Eliminar Skill
 router.delete('/skills/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -286,10 +347,10 @@ router.delete('/skills/:id', async (req, res) => {
 });
 
 // ==========================================
-// 4. REPORTES Y BÚSQUEDAS AVANZADAS
+// 6. REPORTES Y BÚSQUEDAS AVANZADAS (BI)
 // ==========================================
 
-// 🟢 Reporte y Consulta para Estadísticas: Postulantes con TODAS sus Skills
+// Postulantes con sus Skills
 router.get('/reportes/postulantes-skills', async (req, res) => {
   const { skill, carrera, estado } = req.query;
 
@@ -347,7 +408,7 @@ router.get('/reportes/postulantes-skills', async (req, res) => {
   }
 });
 
-// 🟢 Reporte y Consulta para Estadísticas: Empresas por Stack y Sector
+// Empresas por Stack y Sector
 router.get('/reportes/empresas-stack', async (req, res) => {
   const { tecnologia, sector } = req.query;
 
@@ -368,13 +429,11 @@ router.get('/reportes/empresas-stack', async (req, res) => {
     `;
     const params = [];
 
-    // Filtro por Stack Tecnológico o Razón Social
     if (tecnologia && tecnologia.trim() !== '') {
       query += ` AND (pe.stack_tecnologico LIKE ? OR e.razonSocial LIKE ?)`;
       params.push(`%${tecnologia.trim()}%`, `%${tecnologia.trim()}%`);
     }
 
-    // Filtro por Sector / Rubro
     if (sector && sector.trim() !== '') {
       query += ` AND e.sector LIKE ?`;
       params.push(`%${sector.trim()}%`);
@@ -390,7 +449,7 @@ router.get('/reportes/empresas-stack', async (req, res) => {
   }
 });
 
-// 🟢 Reporte: Buscar Ofertas por Título / Puesto / Modalidad
+// Buscar Ofertas por Título / Puesto / Modalidad
 router.get('/reportes/ofertas-busqueda', async (req, res) => {
   const { titulo, modalidad } = req.query;
 

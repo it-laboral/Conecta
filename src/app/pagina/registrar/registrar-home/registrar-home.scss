@@ -1,167 +1,177 @@
-@use '../../../../styles/variables';
+@use '../../../../styles/variables' as *;
 
-.main-split-container {
-  display: flex;
-  min-height: 100vh;
+:host {
+  display: block;
   width: 100%;
+  background-color: #f8fafc;
+  padding: 2.5rem 1rem;
+  min-height: calc(100vh - 120px);
 }
 
-/* ==========================================
-   PANEL IZQUIERDO (Gradiente Institucional)
-   ========================================== */
+/* CONTENEDOR PRINCIPAL TARJETA (Centrado en pantalla) */
+.main-split-container {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto; /* 👈 ESTO LO CENTRA HORIZONTALMENTE */
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(6, 36, 92, 0.08);
+  border: 1px solid #e2e8f0;
+  min-height: 520px;
+}
+
+/* PANEL IZQUIERDO (Gradiente Institucional) */
 .info-column {
-  flex: 1;
+  flex: 0.9;
   background: linear-gradient(135deg, #06245c, #0aa7b8);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 50px;
-}
+  padding: 2.5rem;
 
-.info-content {
-  max-width: 500px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  h2 {
+  .info-content {
+    max-width: 380px;
+    text-align: center;
     color: white;
-    font-size: 3rem;
-    margin-bottom: 10px;
+
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+
+    h3 {
+      color: #dffcff;
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+    }
   }
 
-  h3 {
-    color: #dffcff;
-    margin-bottom: 25px;
-    font-weight: 400;
+  .img-fluida {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* IMAGEN FLUIDA */
-.img-fluida {
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  border-radius: 24px;
-  margin-top: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-}
-
-/* ==========================================
-   PANEL DERECHO (Selección de Perfiles)
-   ========================================== */
+/* PANEL DERECHO (Selección de Perfiles) */
 .registro-container {
-  flex: 1;
-  background-color: #eefafb;
+  flex: 1.1;
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 60px 40px;
+  padding: 2.5rem 2rem;
 
   h2 {
     color: #06245c;
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
   }
 
   p {
-    color: #4c5b73;
-    font-size: 1.1rem;
+    color: #64748b;
+    font-size: 0.95rem;
   }
 
-  /* Contenedor de las tarjetas en Horizontal */
+  /* Contenedor de Tarjetas */
   .cards-grid {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin-top: 40px;
+    gap: 1.25rem;
+    margin-top: 2rem;
     width: 100%;
-    max-width: 600px;
   }
 
   /* Tarjetas de Postulante y Empresa */
   .card {
     flex: 1;
-    background: rgba(255, 255, 255, 0.85);
-    border: 2px solid #b8ece5;
-    border-radius: 24px;
-    padding: 30px 20px;
-    width: 290px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 12px 30px rgba(6, 36, 92, 0.08);
+    transition: all 0.25s ease;
 
     &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(6, 36, 92, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(6, 36, 92, 0.1);
       border-color: #0aa7b8;
+      background: #ffffff;
     }
 
     .icon {
-      font-size: 60px;
-      margin-bottom: 20px;
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
     }
 
     h3 {
       color: #06245c;
-      margin-bottom: 15px;
-      font-size: 1.6rem;
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
     }
 
     p {
-      color: #4c5b73;
-      margin-bottom: 20px;
-      line-height: 1.5;
+      color: #64748b;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
     }
 
     .btn-select {
       background: linear-gradient(90deg, #06245c, #0aa7b8);
       color: white;
       border: none;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-weight: bold;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
-      transition: transform 0.2s ease;
-      margin-top: 15px;
+      width: 100%;
+      transition: opacity 0.2s ease;
 
       &:hover {
-        transform: scale(1.05);
+        opacity: 0.9;
       }
     }
   }
 }
 
-/* ==========================================
-   RESPONSIVE (Ajuste para celulares)
-   ========================================== */
-@media (max-width: 950px) {
+/* RESPONSIVE MÓVIL */
+@media (max-width: 900px) {
+  :host {
+    padding: 1rem;
+  }
+
   .main-split-container {
-    flex-direction: column; /* Acá recién se pone una columna abajo de la otra */
+    flex-direction: column;
+    max-width: 500px;
+    margin: 0 auto;
   }
 
-  .info-column,
-  .registro-container {
-    width: 100%;
-    min-height: auto;
-    padding: 40px 20px;
+  .info-column {
+    padding: 2rem 1rem;
   }
 
   .registro-container {
-    /* En pantallas chicas o celulares, acá SÍ permitimos que las tarjetas 
-       se apilen una abajo de la otra si el celular es angosto */
+    padding: 2rem 1rem;
+
     .cards-grid {
-      flex-wrap: wrap; 
-    }
-    
-    .card {
-      width: 100%;
-      max-width: 340px; /* Para que en el celular queden cómodas */
+      flex-direction: column;
+      align-items: center;
+
+      .card {
+        width: 100%;
+        max-width: 320px;
+      }
     }
   }
 }

@@ -149,10 +149,27 @@ export class AdminService {
   // E. CATÁLOGOS Y TABLAS MAESTRAS (Categorías y Skills)
   // ------------------------------------------
 
+  // ------------------------------------------
+  // E. CATÁLOGOS Y TABLAS MAESTRAS (Categorías y Skills)
+  // ------------------------------------------
+
   getCategoriasSkills(): Observable<CategoriaAdmin[]> {
     return this.http.get<RespuestaApi>(`${this.API_URL}/categorias-skills`).pipe(
       map(res => res.categorias || [])
     );
+  }
+
+  // ➕ Métodos para administrar Categorías
+  crearCategoria(nombre: string): Observable<RespuestaApi> {
+    return this.http.post<RespuestaApi>(`${this.API_URL}/categorias-skills`, { nombre });
+  }
+
+  actualizarCategoria(id: number, nombre: string): Observable<RespuestaApi> {
+    return this.http.put<RespuestaApi>(`${this.API_URL}/categorias-skills/${id}`, { nombre });
+  }
+
+  eliminarCategoria(id: number): Observable<RespuestaApi> {
+    return this.http.delete<RespuestaApi>(`${this.API_URL}/categorias-skills/${id}`);
   }
 
   getSkills(): Observable<SkillAdmin[]> {

@@ -4,9 +4,14 @@
       <h3>🛠️ Gestión de Habilidades (Skills)</h3>
       <p>Catálogo global de conocimientos técnicos e institucionales.</p>
     </div>
-    <button class="btn-primary" (click)="abrirModalCrear()">
-      ➕ Nueva Habilidad
-    </button>
+    <div class="header-actions">
+      <button class="btn-secondary" (click)="agregarNuevaCategoria()">
+        📁 Nueva Categoría
+      </button>
+      <button class="btn-primary" (click)="abrirModalCrear()">
+        ➕ Nueva Habilidad
+      </button>
+    </div>
   </header>
 
   <!-- Tabla Principal de Ancho Completo -->
@@ -22,12 +27,33 @@
           (input)="onBuscarTexto($event)"
         />
 
-        <select class="select-cat" (change)="onSeleccionarCategoria($event)">
-          <option value="todas">Todas las categorías</option>
-          @for (cat of categorias; track cat.id) {
-            <option [value]="cat.id">{{ cat.nombre }}</option>
+        <div class="grupo-categoria-filtro">
+          <select class="select-cat" (change)="onSeleccionarCategoria($event)">
+            <option value="todas">Todas las categorías</option>
+            @for (cat of categorias; track cat.id) {
+              <option [value]="cat.id">{{ cat.nombre }}</option>
+            }
+          </select>
+
+          @if (categoriaSeleccionadaId !== 'todas') {
+            <button
+              type="button"
+              class="btn-icon edit"
+              (click)="editarCategoriaActual()"
+              title="Editar categoría seleccionada"
+            >
+              ✏️
+            </button>
+            <button
+              type="button"
+              class="btn-icon delete"
+              (click)="eliminarCategoriaActual()"
+              title="Eliminar categoría seleccionada"
+            >
+              🗑️
+            </button>
           }
-        </select>
+        </div>
       </div>
     </div>
 
@@ -50,10 +76,10 @@
                 <span class="badge-cat">{{ obtenerNombreCategoria(skill.categoria_id) }}</span>
               </td>
               <td class="text-right">
-                <button class="btn-icon edit" (click)="prepararEdicion(skill)" title="Editar">
+                <button class="btn-icon edit" (click)="prepararEdicion(skill)" title="Editar Habilidad">
                   ✏️
                 </button>
-                <button class="btn-icon delete" (click)="eliminarSkill(skill.id)" title="Eliminar">
+                <button class="btn-icon delete" (click)="eliminarSkill(skill.id)" title="Eliminar Habilidad">
                   🗑️
                 </button>
               </td>
@@ -70,7 +96,7 @@
     </div>
   </section>
 
-  <!-- MODAL FLOTANTE DE REGISTRO / EDICIÓN -->
+  <!-- MODAL FLOTANTE DE REGISTRO / EDICIÓN DE HABILIDAD -->
   @if (modalAbierto) {
     <div class="modal-backdrop" (click)="cerrarModal()">
       <div class="modal-content card-form" (click)="$event.stopPropagation()">
@@ -95,7 +121,16 @@
           </div>
 
           <div class="form-group">
-            <label for="categoria_id">Categoría</label>
+            <div class="label-with-action">
+              <label for="categoria_id">Categoría</label>
+              <button
+                type="button"
+                class="btn-link-sm"
+                (click)="agregarNuevaCategoria()"
+              >
+                + Crear nueva
+              </button>
+            </div>
             <select
               id="categoria_id"
               formControlName="categoria_id"

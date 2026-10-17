@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-
+import { CARRERAS_ITB } from '../../../constants/carreras';
 import {
   FormControl,
   FormGroup,
@@ -26,7 +26,8 @@ export class RegistrarPostulante implements OnInit {
 
   private authService = inject(AuthService);
   private router = inject(Router);
-
+  carrerasDisponibles = CARRERAS_ITB;
+  
   // MOSTRAR / OCULTAR PASSWORD
   mostrarPassword = false;
 

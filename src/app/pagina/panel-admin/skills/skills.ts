@@ -36,18 +36,75 @@ export class Skills implements OnInit {
     this.cargarSkills();
   }
 
+  // ==========================================
+  // LÓGICA DE CATEGORÍAS
+  // ==========================================
   cargarCategorias(): void {
     this.adminService.getCategoriasSkills().subscribe({
-      next: (data) => (this.categorias =data),
+      next: (data) => (this.categorias = data),
       error: (err) => console.error('Error al cargar categorías', err)
     });
   }
-  obtenerNombreCategoria(categoriaId: number): string {
-  if (!categoriaId || this.categorias.length === 0) return 'Sin categoría';
-  const cat = this.categorias.find(c => Number(c.id) === Number(categoriaId));
-  return cat ? cat.nombre : 'Sin categoría';
-}
 
+  obtenerNombreCategoria(categoriaId: number): string {
+    if (!categoriaId || this.categorias.length === 0) return 'Sin categoría';
+    const cat = this.categorias.find(c => Number(c.id) === Number(categoriaId));
+    return cat ? cat.nombre : 'Sin categoría';
+  }
+
+  agregarNuevaCategoria(): void {
+    const nombre = prompt('Ingresá el nombre de la nueva categoría:');
+    if (!nombre || !nombre.trim()) return;
+
+    this.adminService.crearCategoria(nombre.trim()).subscribe({
+      next: () => {
+        this.cargarCategorias();
+      },
+      error: (err) => console.error('Error al crear categoría:', err)
+    });
+  }
+
+  editarCategoriaActual(): void {
+    if (this.categoriaSeleccionadaId === 'todas') {
+      alert('Seleccioná una categoría específica para editar.');
+      return;
+    }
+
+    const catActual = this.categorias.find(c => Number(c.id) === Number(this.categoriaSeleccionadaId));
+    if (!catActual) return;
+
+    const nuevoNombre = prompt('Editar nombre de la categoría:', catActual.nombre);
+    if (!nuevoNombre || !nuevoNombre.trim() || nuevoNombre === catActual.nombre) return;
+
+    this.adminService.actualizarCategoria(Number(catActual.id), nuevoNombre.trim()).subscribe({
+      next: () => {
+        this.cargarCategorias();
+      },
+      error: (err) => console.error('Error al actualizar categoría:', err)
+    });
+  }
+
+  eliminarCategoriaActual(): void {
+    if (this.categoriaSeleccionadaId === 'todas') {
+      alert('Seleccioná una categoría específica para eliminar.');
+      return;
+    }
+
+    if (confirm('¿Estás seguro de eliminar esta categoría? Se desvinculará de sus habilidades.')) {
+      this.adminService.eliminarCategoria(Number(this.categoriaSeleccionadaId)).subscribe({
+        next: () => {
+          this.categoriaSeleccionadaId = 'todas';
+          this.cargarCategorias();
+          this.cargarSkills();
+        },
+        error: (err) => console.error('Error al eliminar categoría:', err)
+      });
+    }
+  }
+
+  // ==========================================
+  // LÓGICA DE SKILLS
+  // ==========================================
   cargarSkills(): void {
     this.cargando = true;
     this.adminService.getSkills().subscribe({
@@ -150,5 +207,4 @@ export class Skills implements OnInit {
       });
     }
   }
-
 }
