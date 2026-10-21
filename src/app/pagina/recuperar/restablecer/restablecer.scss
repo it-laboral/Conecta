@@ -1,0 +1,144 @@
+.contenedor-recupero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  padding: 20px;
+  background-color: #f8fafc;
+}
+
+.tarjeta-recupero {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+
+  h2 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .subtitulo {
+    color: #64748b;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.5rem;
+  }
+
+  input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #2d4c7e;
+    }
+
+    &:disabled {
+      background-color: #f1f5f9;
+      cursor: not-allowed;
+    }
+  }
+
+  .texto-requisitos {
+    font-size: 0.78rem;
+    margin-top: 0.4rem;
+    line-height: 1.3;
+
+    &.ayuda {
+      color: #64748b;
+    }
+
+    &.error {
+      color: #dc2626;
+      font-weight: 500;
+    }
+  }
+}
+
+.btn-principal {
+  width: 100%;
+  padding: 0.85rem;
+  background-color: #2d4c7e;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background-color: #1e3456;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.alerta {
+  padding: 0.85rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+
+  &.exito {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+
+  &.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .redirigiendo {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+}
+
+.acciones {
+  margin-top: 1.5rem;
+  text-align: center;
+
+  .link-volver {
+    color: #2d4c7e;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

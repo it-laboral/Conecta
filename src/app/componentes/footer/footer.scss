@@ -1,16 +1,23 @@
 @use '../../../styles/variables';
 
 /* ==========================================================================
-   FOOTER INSTITUCIONAL (Ancho Completo y Responsive)
+   FOOTER INSTITUCIONAL (Ancho Completo y Tecnológico)
    ========================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
 footer {
-  background: linear-gradient(90deg, #06245c, #0aa7b8);
+  // Degradado alineado con la paleta tecnológica del Header
+  background: linear-gradient(135deg, #0f172a 0%, #0284c7 50%, #06b6d4 100%);
   color: white;
   padding: 1.25rem 1.5rem;
   width: 100%;
   margin-top: auto;
-  border-radius: 0; // 👈 Eliminamos la cápsula para que sea una barra continua profesional
-  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
 
   .footer__contenido {
     max-width: 1200px; // Alineado con la grilla del Header y de las Tarjetas
@@ -29,13 +36,15 @@ footer {
       font-size: 0.95rem;
       font-weight: 700;
       color: #ffffff;
+      text-align: left;
     }
 
     p {
       margin: 0;
       font-size: 0.85rem;
-      color: #e6f2f3;
+      color: #e2e8f0;
       opacity: 0.9;
+      text-align: left;
     }
   }
 
@@ -45,7 +54,7 @@ footer {
     transition: color 0.2s ease;
 
     &:hover {
-      color: #dffcff;
+      color: #7dd3fc;
     }
   }
 
@@ -57,11 +66,11 @@ footer {
 
     button,
     .footer__boton {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.12);
       color: white;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 6px; // Bordes suaves pero sobrios
-      padding: 0.4rem 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      padding: 0.45rem 0.85rem;
       cursor: pointer;
       font-family: inherit;
       font-size: 0.85rem;
@@ -76,16 +85,13 @@ footer {
         background: rgba(255, 255, 255, 0.25);
         border-color: #ffffff;
         color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       }
     }
   }
-}
 
-/* ==========================================================================
-   RESPONSIVE MÓVIL Y TABLET
-   ========================================================================== */
-@media (max-width: 768px) {
-  footer {
+  // --- RESPONSIVE MÓVIL Y TABLET CON MIXIN DEL PROYECTO ---
+  @include variables.responder-a(celular) {
     padding: 1.25rem 1rem;
 
     .footer__contenido {
@@ -95,6 +101,10 @@ footer {
     }
 
     .footer__info {
+      h4, p {
+        text-align: center;
+      }
+
       h4 {
         font-size: 0.9rem;
       }

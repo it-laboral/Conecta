@@ -1,28 +1,34 @@
 @use '../../../styles/variables';
 
 /* ==========================================================================
-   HEADER Y NAVEGACIÓN
+   HEADER Y NAVEGACIÓN FULL-WIDTH Y TECNOLÓGICO
    ========================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
 header {
-  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+  // Degradado profundo más tecnológico (Azul Marino -> Turquesa Cian)
+  background: linear-gradient(135deg, #0f172a 0%, #0284c7 50%, #06b6d4 100%);
   color: white;
   width: 100%;
-  padding: 0.65rem 1.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 0.85rem 2rem;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.25);
   position: sticky;
   top: 0;
   z-index: 1000;
 
-  // Adaptación Responsive en contenedores
   @include variables.responder-a(tablet) {
-    padding: 0.6rem 1rem;
+    padding: 0.75rem 1.25rem;
   }
 
   @include variables.responder-a(celular) {
-    padding: 0.5rem 0.75rem;
+    padding: 0.6rem 1rem;
   }
 
-  // Contenedor interno alineado con las tarjetas principales (Max 1200px)
+  // Contenedor interno limitado a 1200px y centrado
   .header-content {
     max-width: 1200px;
     margin: 0 auto;
@@ -32,60 +38,62 @@ header {
     width: 100%;
   }
 
-  // --- LOGO ---
+  // --- LOGO (Agrandado para mejor visibilidad) ---
   img.logo-header {
-    width: 110px;
+    width: 145px; // Agrandado de 110px a 145px
     height: auto;
     display: block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     transition: transform 0.2s ease;
 
     &:hover {
-      transform: scale(1.02);
+      transform: scale(1.03);
     }
 
     @include variables.responder-a(tablet) {
-      width: 95px;
+      width: 120px;
     }
 
     @include variables.responder-a(celular) {
-      width: 80px;
+      width: 100px;
     }
   }
 
-  // --- NAVEGACIÓN ---
+  // --- NAVEGACIÓN (Tipografía más clara y legible) ---
   nav {
     display: flex;
-    gap: 0.75rem;
+    gap: 1rem;
     align-items: center;
 
     @include variables.responder-a(celular) {
-      gap: 0.25rem;
+      gap: 0.35rem;
     }
 
     // Enlaces de navegación
     a {
       color: #ffffff;
       text-decoration: none;
-      padding: 0.45rem 0.85rem;
+      padding: 0.55rem 1rem;
       font-family: variables.$font-family-base;
-      font-size: 0.95rem;
-      font-weight: 500;
+      font-size: 1.05rem; // Subido de 0.95rem
+      font-weight: 600;
       border-radius: 8px;
       transition: all 0.2s ease;
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(255, 255, 255, 0.18);
         color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
 
       @include variables.responder-a(tablet) {
-        font-size: 0.875rem;
-        padding: 0.4rem 0.65rem;
+        font-size: 0.95rem;
+        padding: 0.45rem 0.75rem;
       }
 
       @include variables.responder-a(celular) {
-        font-size: 0.8rem;
-        padding: 0.3rem 0.45rem;
+        font-size: 0.85rem;
+        padding: 0.35rem 0.5rem;
       }
     }
 
@@ -95,12 +103,13 @@ header {
 
     // --- BANDERAS ---
     .flag-vector {
-      width: 20px;
-      height: 14px;
+      width: 22px;
+      height: 15px;
       object-fit: cover;
       border-radius: 2px;
       display: inline-block;
       vertical-align: middle;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
     // --- SELECTOR DE IDIOMA ---
@@ -111,62 +120,62 @@ header {
       .lang-btn {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        background: rgba(255, 255, 255, 0.12);
+        gap: 0.45rem;
+        background: rgba(255, 255, 255, 0.15);
         color: #ffffff;
         font-family: variables.$font-family-base;
-        font-size: 0.875rem;
-        font-weight: 500;
-        padding: 0.35rem 0.65rem;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 6px;
+        font-size: 0.95rem; // Subido de 0.875rem
+        font-weight: 600;
+        padding: 0.45rem 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s ease;
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.22);
-          border-color: rgba(255, 255, 255, 0.5);
+          background-color: rgba(255, 255, 255, 0.25);
+          border-color: rgba(255, 255, 255, 0.6);
         }
 
         .arrow {
-          font-size: 0.6rem;
-          opacity: 0.8;
+          font-size: 0.65rem;
+          opacity: 0.85;
         }
 
         @include variables.responder-a(celular) {
-          font-size: 0.75rem;
-          padding: 0.25rem 0.45rem;
+          font-size: 0.8rem;
+          padding: 0.3rem 0.5rem;
         }
       }
 
       .lang-menu {
         position: absolute;
-        top: calc(100% + 4px);
+        top: calc(100% + 6px);
         right: 0;
-        background-color: #0c4a6e;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background-color: #0f172a; // Fondo azul noche acorde al nuevo degradado
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 8px;
-        padding: 0.3rem 0;
+        padding: 0.4rem 0;
         list-style: none;
         margin: 0;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
         z-index: 100;
-        min-width: 90px;
+        min-width: 100px;
 
         li {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          padding: 0.4rem 0.75rem;
+          padding: 0.45rem 0.85rem;
           cursor: pointer;
           color: white;
           font-family: variables.$font-family-base;
-          font-size: 0.85rem;
+          font-size: 0.9rem;
           font-weight: 500;
           transition: background 0.2s ease;
 
           &:hover {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(6, 182, 212, 0.25);
           }
         }
       }

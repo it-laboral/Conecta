@@ -52,6 +52,12 @@
           </span>
         </div>
 
+        <!-- ENLACE OLVIDE CONTRASEÑA (Ubicación ideal 1: Justo debajo de la clave) -->
+          <div class="olvide-clave-container">
+            <a routerLink="/solicitar-recupero" class="link-olvide">¿Olvidaste tu contraseña?</a>
+          </div>
+        
+
         <!-- ERROR PASSWORD -->
 
         @if (loginForm.get('password')?.errors?.['pattern']

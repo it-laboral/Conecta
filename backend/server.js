@@ -12,7 +12,7 @@ require('dotenv').config();
  
 const db = require('./db');
 const { verificarToken } = require('./middlewares/auth.middleware');
- 
+const authRoutes = require('./routes/auth.routes');
 const app = express();
 // ====================================================================
 // CONFIGURACIÓN DE CARPETA DE ARCHIVOS (UPLOADS)
@@ -48,6 +48,8 @@ app.get('/test-db', async (req, res) => {
 // ====================================================================
 // 3. AUTENTICACIÓN Y REGISTROS (RUTAS PÚBLICAS - SIN TOKEN)
 // ====================================================================
+app.use('/api/auth', authRoutes);
+
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -235,9 +237,10 @@ const adminRoutes = require('./routes/admin');
 const perfilEmpresaRoutes = require('./routes/perfilEmpresa.routes');
 const perfilPostulanteRoutes = require('./routes/perfilPostulante.routes');
 const ofertasRoutes = require('./routes/ofertas.routes');
-// Importas el router que corregimos recién (suponiendo que está en /routes/postulaciones.js)
 const postulacionesRoutes = require('./routes/postulaciones.routes');
 const contactoRoutes = require('./routes/contacto.routes');
+
+
 app.use('/api/admin', verificarToken, adminRoutes);
  
 // ✅ CAMBIO CLAVE: Se añade el prefijo /api/empresa para coincidir con Angular

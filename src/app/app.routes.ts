@@ -10,7 +10,8 @@ import { Ofertas } from './pagina/ofertas/ofertas';
 import { PostulacionesComponent } from './pagina/postulaciones/postulaciones';
 import { PanelAdmin } from './pagina/panel-admin/panel-admin';
 import { Contacto } from './pagina/contacto/contacto';
- 
+import { Solicitar } from './pagina/recuperar/solicitar/solicitar';
+import { Restablecer } from './pagina/recuperar/restablecer/restablecer';
 // Guards de Seguridad y Roles
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
@@ -29,7 +30,9 @@ export const routes: Routes = [
  
   // Formulario de contacto (público)
   { path: 'contacto', component: Contacto },
- 
+
+ { path: 'solicitar-recupero', component: Solicitar },
+  { path: 'restablecer-password', component: Restablecer },
   // Cartelera pública (lectura para todos)
   { path: 'ofertas', component: Ofertas },
  

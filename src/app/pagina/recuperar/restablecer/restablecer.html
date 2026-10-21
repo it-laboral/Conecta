@@ -1,0 +1,67 @@
+<div class="contenedor-recupero">
+  <div class="tarjeta-recupero">
+    <h2>Restablecer Contraseña</h2>
+    <p class="subtitulo">Ingresá tu nueva clave para actualizar tu cuenta en ITB Conecta.</p>
+
+    @if (mensajeExito) {
+      <div class="alerta exito">
+        {{ mensajeExito }}
+        <p class="redirigiendo">Redirigiendo al inicio de sesión...</p>
+      </div>
+    }
+
+    @if (mensajeError) {
+      <div class="alerta error">
+        {{ mensajeError }}
+      </div>
+    }
+
+    @if (!mensajeExito && token) {
+      <form [formGroup]="formulario" (ngSubmit)="cambiarPassword()">
+        
+        <div class="campo">
+          <label for="nuevaPassword">Nueva Contraseña</label>
+          <input 
+            type="password" 
+            id="nuevaPassword" 
+            formControlName="nuevaPassword"
+            placeholder="••••••••"
+          />
+          
+          <!-- Texto dinámico de requisitos en tiempo real -->
+          @if (f['nuevaPassword'].invalid && (f['nuevaPassword'].dirty || f['nuevaPassword'].touched)) {
+            <p class="texto-requisitos error">
+              Mínimo 8 caracteres, incluir al menos una mayúscula, un número y un carácter especial.
+            </p>
+          } @else {
+            <p class="texto-requisitos ayuda">
+              Mínimo 8 caracteres (Al menos1 mayúscula, 1 número y 1 símbolo).
+            </p>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="confirmarPassword">Confirmar Contraseña</label>
+          <input 
+            type="password" 
+            id="confirmarPassword" 
+            formControlName="confirmarPassword"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <button type="submit" class="btn-principal" [disabled]="cargando || formulario.invalid">
+          @if (cargando) {
+            <span>Actualizando...</span>
+          } @else {
+            <span>Cambiar Contraseña</span>
+          }
+        </button>
+      </form>
+    }
+
+    <div class="acciones">
+      <a routerLink="/sesion" class="link-volver">← Volver a Iniciar Sesión</a>
+    </div>
+  </div>
+</div>

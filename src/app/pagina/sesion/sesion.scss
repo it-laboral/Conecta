@@ -132,6 +132,25 @@ form {
       }
     }
   }
+.olvide-clave-container {
+  display: flex;
+  justify-content: flex-end; // Lo alinea a la derecha justo debajo del input
+  margin-top: 0.4rem;
+  margin-bottom: 0.8rem;
+
+  .link-olvide {
+    color: #2d4c7e;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+      text-decoration: underline;
+      color: #1e3456;
+    }
+  }
+}
 
   /* BOTÓN INICIAR SESIÓN */
   button {

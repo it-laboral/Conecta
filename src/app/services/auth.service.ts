@@ -4,6 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+export interface RespuestaAuth {
+  success: boolean;
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -58,6 +63,20 @@ export class AuthService {
       })
 
     );
+  }
+
+  // ==========================================
+  // RECUPERACIÓN DE CONTRASEÑA
+  // ==========================================
+  solicitarRecupero(email: string): Observable<RespuestaAuth> {
+    return this.http.post<RespuestaAuth>(`${this.API_URL}/auth/solicitar-recupero`, { email });
+  }
+
+  restablecerPassword(token: string, nuevaPassword: string): Observable<RespuestaAuth> {
+    return this.http.post<RespuestaAuth>(`${this.API_URL}/auth/restablecer-password`, {
+      token,
+      nuevaPassword
+    });
   }
 
   // ==========================================
