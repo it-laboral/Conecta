@@ -1,8 +1,10 @@
 <section class="contacto">
+
   <h2>Contactanos</h2>
   <p>Escribinos tu consulta o comentario y te responderemos a la brevedad.</p>
 
   <form #f="ngForm" (ngSubmit)="f.valid && enviar()">
+
     <label>
       Nombre
       <input type="text" name="nombre" [(ngModel)]="nombre" required maxlength="100" />
@@ -28,5 +30,7 @@
     @if (error) {
       <p class="error">{{ error }}</p>
     }
+
   </form>
+
 </section>
