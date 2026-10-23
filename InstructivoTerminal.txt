@@ -16,6 +16,6 @@ dejar la terminal abierta y corriendo.
 3)y el localhost4200 del proyecto en otra terminal
 
 # Revisar en carpeta backend en archivo db.js el puerto y 
-cambiar el que usen si es el 3306 dejarlo si no guardar el que usen. 
+cambiar el que usen si es el 3306 dejarlo si no guardar. 
 Si les da error en la terminal que tienen abierta. corregir linea sugerida en archivo. Cerrar terminal 
 y volver abrir para que se produczcan los cambios volver a revisar en http://localhost:3000/test-db Conexion exitosa

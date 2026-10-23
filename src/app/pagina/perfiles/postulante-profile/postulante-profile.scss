@@ -122,7 +122,7 @@ $gris-borde: #dbe5ec;
 // 1. CARD PRINCIPAL (HEADER PERFIL)
 // =========================================================
 .card-main {
-  grid-column: 1 / -1; // Ocupa todo el ancho superior
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: 2rem;
@@ -511,7 +511,7 @@ $gris-borde: #dbe5ec;
 }
 
 // =========================================================
-// MODALES Y FORMULARIOS
+// MODAL GENERAL DE FORMULARIOS
 // =========================================================
 .modal-overlay {
   position: fixed;
@@ -614,7 +614,6 @@ $gris-borde: #dbe5ec;
         }
       }
 
-      // Estilos para la lista de Skills en el Modal
       .skills-modal-list {
         display: flex;
         flex-direction: column;
@@ -664,35 +663,61 @@ $gris-borde: #dbe5ec;
       background: $blanco;
     }
   }
+} // 👈 ACÁ CIERRA CORRECTAMENTE .modal-overlay
 
-  // =========================================================
-  // 👁️ VISOR DE CV EXPANDIDO (PDF FULL SCREEN)
-  // =========================================================
-  &.cv-preview-overlay {
-    .cv-preview-modal {
-      max-width: 90vw;
-      width: 90vw;
-      height: 88vh;
-      max-height: 88vh;
+// =========================================================
+// 👁️ VISOR DE CV EXPANDIDO (BLOQUE INDEPENDIENTE Y SEGURO)
+// =========================================================
+.modal-overlay.cv-preview-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 
-      @media (max-width: 650px) {
-        max-width: 96vw;
-        width: 96vw;
-        height: 92vh;
-      }
+  .cv-preview-modal {
+    width: 90vw;
+    max-width: 950px;
+    height: 85vh;
+    max-height: 85vh;
+    background: $blanco;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
 
-      .cv-preview-container {
-        flex: 1;
-        width: 100%;
-        height: 100%;
-        min-height: 0;
-        background-color: #525659;
+    @media (max-width: 768px) {
+      width: 95vw;
+      height: 90vh;
+      max-height: 90vh;
+      border-radius: 12px;
+    }
 
-        .cv-preview-frame {
-          width: 100%;
-          height: 100%;
-          border: none;
-        }
+    .modal-header {
+      padding: 0.85rem 1.25rem;
+      background: $blanco;
+      border-bottom: 1px solid $azul-borde;
+    }
+
+    .cv-preview-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      background-color: #525659;
+      overflow: hidden;
+
+      .cv-preview-frame, iframe, object, embed {
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+        display: block;
       }
     }
   }
