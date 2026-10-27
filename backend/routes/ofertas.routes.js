@@ -48,7 +48,7 @@ router.get('/categorias-skills', verificarToken, async (req, res) => {
     }
 });
 
-// =========================================================================
+/// =========================================================================
 // 2. GET: Obtener ofertas vigentes unificadas
 // (Acceso: Público / Autenticado)
 // =========================================================================
@@ -63,6 +63,7 @@ router.get('/vigentes', async (req, res) => {
                 o.experiencia, 
                 o.dias_duracion, 
                 o.fecha_publicacion,
+                o.estado,
                 DATE_ADD(o.fecha_publicacion, INTERVAL o.dias_duracion DAY) AS fecha_vencimiento,
                 o.id_empresa, 
                 e.razonSocial AS razonSocial,
@@ -71,7 +72,8 @@ router.get('/vigentes', async (req, res) => {
             JOIN empresa e ON o.id_empresa = e.id_empresa
             LEFT JOIN oferta_skill os ON o.id_oferta = os.id_oferta
             LEFT JOIN skill s ON os.skill_id = s.skill_id
-            WHERE DATE_ADD(o.fecha_publicacion, INTERVAL o.dias_duracion DAY) >= CURDATE()
+            WHERE o.estado = 'Abierta' 
+              AND DATE_ADD(o.fecha_publicacion, INTERVAL o.dias_duracion DAY) >= CURDATE()
             GROUP BY o.id_oferta
             ORDER BY o.id_oferta DESC
         `);
@@ -207,6 +209,7 @@ router.get('/empresa/:idEmpresa', verificarToken, async (req, res) => {
                 o.experiencia, 
                 o.dias_duracion, 
                 o.fecha_publicacion,
+                o.estado,
                 DATE_ADD(o.fecha_publicacion, INTERVAL o.dias_duracion DAY) AS fecha_vencimiento,
                 (DATE_ADD(o.fecha_publicacion, INTERVAL o.dias_duracion DAY) >= CURDATE()) AS esta_vigente,
                 o.id_empresa, 
@@ -270,9 +273,54 @@ router.patch('/:id/ampliar', verificarToken, async (req, res) => {
         res.status(500).json({ OK: false, error: 'Error al actualizar los días de duración.' });
     }
 });
+// =========================================================================
+// 7. PATCH: Cambiar el estado de una oferta (Abierta / Cerrada) por la empresa
+// =========================================================================
+router.patch('/:id/estado', verificarToken, async (req, res) => {
+    const id_oferta = req.params.id;
+    const { estado } = req.body; // Espera 'Abierta' o 'Cerrada'
+
+    const rolUsuario = (req.usuario?.rol || req.usuario?.tipo || '').toString().toLowerCase();
+    if (rolUsuario !== 'empresa' && rolUsuario !== 'admin') {
+        return res.status(403).json({ OK: false, error: 'Acceso denegado.' });
+    }
+
+    if (!['Abierta', 'Cerrada'].includes(estado)) {
+        return res.status(400).json({ OK: false, error: 'Estado no válido. Debe ser "Abierta" o "Cerrada".' });
+    }
+
+    try {
+        let query = '';
+        let params = [];
+
+        if (estado === 'Cerrada') {
+            // Si se cierra, solo cambiamos el estado
+            query = `UPDATE ofertas SET estado = ? WHERE id_oferta = ?`;
+            params = [estado, id_oferta];
+        } else {
+            // 💡 Si se REABRE, pasamos a 'Abierta' Y actualizamos la fecha al día de hoy para que corran los días de nuevo
+            query = `UPDATE ofertas SET estado = ?, fecha_publicacion = NOW() WHERE id_oferta = ?`;
+            params = [estado, id_oferta];
+        }
+
+        const [resultado] = await db.query(query, params);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ OK: false, error: 'Oferta no encontrada.' });
+        }
+
+        res.json({ 
+            OK: true, 
+            message: `Oferta actualizada a estado: ${estado} exitosamente.` 
+        });
+    } catch (error) {
+        console.error('Error al actualizar estado de la oferta:', error);
+        res.status(500).json({ OK: false, error: 'Error interno al actualizar el estado.' });
+    }
+});
 
 // =========================================================================
-// 7. DELETE: Eliminar una oferta por ID
+// 8. DELETE: Eliminar una oferta por ID
 // (Acceso: Solo rol 'empresa' o 'admin')
 // =========================================================================
 router.delete('/:id', verificarToken, async (req, res) => {

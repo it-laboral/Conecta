@@ -145,7 +145,9 @@
             
             <div class="card-header">
               <h3>{{ oferta.titulo }}</h3>
-              <span class="badge-estado" [class.abierta]="esOfertaAbierta(oferta)">
+              <span class="badge-estado" 
+                    [class.abierta]="esOfertaAbierta(oferta)" 
+                    [class.cerrada]="!esOfertaAbierta(oferta)">
                 {{ esOfertaAbierta(oferta) ? 'Abierta' : 'Cerrada' }}
               </span>
             </div>
@@ -176,7 +178,14 @@
                 <p class="empresa-detalle"><i class="fa-regular fa-building"></i> {{ ofertaSeleccionada.razonSocial || ofertaSeleccionada.nombre_empresa || 'Empresa ITB' }}</p>
               </div>
               
-              <span class="badge-modalidad">{{ ofertaSeleccionada.modalidad }}</span>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <span class="badge-estado" 
+                      [class.abierta]="esOfertaAbierta(ofertaSeleccionada)" 
+                      [class.cerrada]="!esOfertaAbierta(ofertaSeleccionada)">
+                  {{ esOfertaAbierta(ofertaSeleccionada) ? 'Abierta' : 'Cerrada' }}
+                </span>
+                <span class="badge-modalidad">{{ ofertaSeleccionada.modalidad }}</span>
+              </div>
             </div>
 
             <hr />
@@ -187,14 +196,13 @@
               </div>
 
               <div class="meta-item">
-              <strong>Publicado el:</strong> {{ ofertaSeleccionada.fecha_publicacion | date:'dd/MM/yyyy' }}
+                <strong>Publicado el:</strong> {{ ofertaSeleccionada.fecha_publicacion | date:'dd/MM/yyyy' }}
               </div>
 
-              <!-- ⌛ Fecha de Vencimiento calculada -->
               @if (obtenerFechaVencimiento(ofertaSeleccionada)) {
-              <div class="meta-item">
-              <strong>Vence el:</strong> {{ obtenerFechaVencimiento(ofertaSeleccionada) | date:'dd/MM/yyyy' }} ({{ ofertaSeleccionada.dias_duracion }} días)
-              </div>
+                <div class="meta-item">
+                  <strong>Vence el:</strong> {{ obtenerFechaVencimiento(ofertaSeleccionada) | date:'dd/MM/yyyy' }} ({{ ofertaSeleccionada.dias_duracion }} días)
+                </div>
               }
               
               <h4>Descripción del Puesto</h4>
@@ -244,6 +252,12 @@
                   <i class="fa-solid fa-hourglass-half"></i> Ampliar Días
                 </button>
 
+                <button type="button" class="btn-estado" 
+                        [class.btn-cerrar]="esOfertaAbierta(ofertaSeleccionada)" 
+                        [class.btn-abrir]="!esOfertaAbierta(ofertaSeleccionada)"
+                        (click)="cambiarEstadoOferta(ofertaSeleccionada.id_oferta, esOfertaAbierta(ofertaSeleccionada) ? 'Abierta' : 'Cerrada')">
+                  <i class="fa-solid fa-power-off"></i> {{ esOfertaAbierta(ofertaSeleccionada) ? 'Cerrar Oferta' : 'Reabrir Oferta' }}
+                </button>
               }
 
               <!-- Rol ADMIN -->

@@ -414,6 +414,24 @@ export class Ofertas implements OnInit {
     }
   }
 
+  cambiarEstadoOferta(ofertaId: number, estadoActual: string): void {
+    const nuevoEstado = (estadoActual === 'Cerrada') ? 'Abierta' : 'Cerrada';
+    const accionTexto = nuevoEstado === 'Cerrada' ? 'cerrar' : 'reabrir';
+
+    if (confirm(`¿Estás seguro de que querés ${accionTexto} esta oferta laboral?`)) {
+      this.ofertaService.cambiarEstado(ofertaId, nuevoEstado).subscribe({
+        next: () => {
+          alert(`Oferta ${nuevoEstado === 'Cerrada' ? 'cerrada' : 'reabierta'} con éxito.`);
+          this.cargarOfertasDesdeBackend();
+        },
+        error: (err) => {
+          console.error('Error al cambiar el estado de la oferta:', err);
+          alert(err.error?.error || 'No se pudo actualizar el estado de la oferta.');
+        }
+      });
+    }
+  }
+  
   guardarPostulacion(ofertaId: number): void {
     if (!this.idUsuario) {
       alert('Debes iniciar sesión para postularte a una oferta laboral.');
