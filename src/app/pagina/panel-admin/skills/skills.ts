@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { AdminService, CategoriaAdmin, SkillAdmin } from '../../../services/admin';
+import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
   selector: 'app-skills',
@@ -13,6 +14,7 @@ import { AdminService, CategoriaAdmin, SkillAdmin } from '../../../services/admi
 export class Skills implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly adminService = inject(AdminService);
+  private readonly alertaService = inject(AlertaService);
 
   categorias: CategoriaAdmin[] = [];
   skills: SkillAdmin[] = [];
@@ -84,24 +86,31 @@ export class Skills implements OnInit {
     });
   }
 
-  eliminarCategoriaActual(): void {
-    if (this.categoriaSeleccionadaId === 'todas') {
-      alert('Seleccioná una categoría específica para eliminar.');
-      return;
-    }
-
-    if (confirm('¿Estás seguro de eliminar esta categoría? Se desvinculará de sus habilidades.')) {
-      this.adminService.eliminarCategoria(Number(this.categoriaSeleccionadaId)).subscribe({
-        next: () => {
-          this.categoriaSeleccionadaId = 'todas';
-          this.cargarCategorias();
-          this.cargarSkills();
-        },
-        error: (err) => console.error('Error al eliminar categoría:', err)
-      });
-    }
+  async eliminarCategoriaActual(): Promise<void> {
+  if (this.categoriaSeleccionadaId === 'todas') {
+    await this.alertaService.mostrar('Seleccioná una categoría específica para eliminar.');
+    return;
   }
 
+  // 1. Usamos tu servicio de alerta con la cajita turquesa
+  const confirmado = await this.alertaService.confirmar('¿Estás seguro de eliminar esta categoría? Se desvinculará de sus habilidades.');
+  
+  if (!confirmado) return;
+
+  // 2. Si acepta, se ejecuta la petición al servicio
+  this.adminService.eliminarCategoria(Number(this.categoriaSeleccionadaId)).subscribe({
+    next: () => {
+      this.categoriaSeleccionadaId = 'todas';
+      this.cargarCategorias();
+      this.cargarSkills();
+      this.alertaService.mostrar('Categoría eliminada correctamente');
+    },
+    error: (err) => {
+      console.error('Error al eliminar categoría:', err);
+      this.alertaService.mostrar('Ocurrió un error al intentar eliminar la categoría.');
+    }
+  });
+}
   // ==========================================
   // LÓGICA DE SKILLS
   // ==========================================
@@ -199,12 +208,23 @@ export class Skills implements OnInit {
     }
   }
 
-  eliminarSkill(id: number): void {
-    if (confirm('¿Estás seguro de eliminar esta habilidad?')) {
-      this.adminService.eliminarSkill(id).subscribe({
-        next: () => this.cargarSkills(),
-        error: (err) => console.error('Error al eliminar skill:', err)
-      });
+  async eliminarSkill(id: number): Promise<void> {
+  // 1. Reemplazamos el confirm() nativo por la cajita turquesa
+  const confirmado = await this.alertaService.confirmar('¿Estás seguro de eliminar esta habilidad?');
+  
+  if (!confirmado) return;
+
+  // 2. Si el usuario acepta, se ejecuta la petición normal
+  this.adminService.eliminarSkill(id).subscribe({
+    next: () => {
+      this.cargarSkills();
+      // Opcional: si querés mostrar un aviso de éxito después de borrar
+      this.alertaService.mostrar('Habilidad eliminada correctamente');
+    },
+    error: (err) => {
+      console.error('Error al eliminar skill:', err);
+      this.alertaService.mostrar('Ocurrió un error al intentar eliminar la habilidad.');
     }
-  }
+  });
+}
 }

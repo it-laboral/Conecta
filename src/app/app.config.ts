@@ -7,7 +7,7 @@ import localeEs from '@angular/common/locales/es';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor } from './interceptors/auth.interceptor';
-
+import { alertaInterceptor } from './interceptors/alerta.interceptor';
 // Registrar los datos del idioma español
 registerLocaleData(localeEs);
 
@@ -18,7 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, alertaInterceptor])
     ),
     { provide: LOCALE_ID, useValue: 'es' }
   ]

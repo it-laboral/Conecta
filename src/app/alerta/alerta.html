@@ -1,0 +1,32 @@
+@if (alertaService.alerta$ | async; as data) {
+  @if (data.visible) {
+    <div class="alerta-overlay">
+      <div class="alerta-modal">
+        <div class="alerta-icono">
+          @if (data.esConfirmacion) {
+            <i class="fa-solid fa-circle-question"></i>
+          } @else {
+            <i class="fa-solid fa-circle-check"></i>
+          }
+        </div>
+        <h3>{{ data.esConfirmacion ? 'Confirmación' : '¡Aviso!' }}</h3>
+        <p>{{ data.alert }}</p>
+        
+        <div class="alerta-botones">
+          @if (data.esConfirmacion) {
+            <button type="button" class="btn-alerta-cancelar" (click)="alertaService.responder(false)">
+              Cancelar
+            </button>
+            <button type="button" class="btn-alerta-aceptar" (click)="alertaService.responder(true)">
+              Sí, eliminar
+            </button>
+          } @else {
+            <button type="button" class="btn-alerta-aceptar" (click)="alertaService.ocultar()">
+              Aceptar
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+}

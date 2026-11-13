@@ -259,35 +259,38 @@ if (this.chartEstadoEmpresasRef && this.chartEstadoEmpresasRef.nativeElement) {
   }
 
   exportarCSV(): void {
-    let contenido = '';
-    let nombreArchivo = 'reporte.csv';
+  let contenido = '';
+  let nombreArchivo = 'reporte.csv';
 
-    if (this.tipoReporte === 'postulantes') {
-      contenido = 'ID,Nombre,Email,Carrera,Skills,Estado\n';
-      this.resultadosPostulantes.forEach(p => {
-        contenido += `"${p.id_postulante || p.id}","${p.nombres || p.nombre} ${p.apellidos || p.apellido}","${p.email}","${p.carrera || ''}","${p.skills || ''}","${p.estado || 'Activo'}"\n`;
-      });
-      nombreArchivo = 'reporte_postulantes_skills.csv';
-    } else if (this.tipoReporte === 'empresas') {
-      contenido = 'ID,Razón Social,CUIT,Email,Stack Tecnológico,Sector,Estado\n';
-      this.resultadosEmpresas.forEach(e => {
-        contenido += `"${e.id_empresa}","${e.razonSocial}","${e.cuit}","${e.email}","${e.stack_tecnologico || ''}","${e.sector || ''}","${e.estado}"\n`;
-      });
-      nombreArchivo = 'reporte_empresas_stack.csv';
-    } else {
-      contenido = 'ID,Título,Empresa,Modalidad,Fecha Publicación\n';
-      this.resultadosOfertas.forEach(o => {
-        contenido += `"${o.id_oferta}","${o.titulo}","${o.razonSocial || ''}","${o.modalidad}","${o.fecha_publicacion}"\n`;
-      });
-      nombreArchivo = 'reporte_ofertas_laborales.csv';
-    }
-
-    const blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', nombreArchivo);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // 💡 Usamos punto y coma (;) como separador para que Excel en español no amontone las columnas
+  if (this.tipoReporte === 'postulantes') {
+    contenido = 'ID;Nombre;Email;Carrera;Skills;Estado\n';
+    this.resultadosPostulantes.forEach(p => {
+      const nombreCompleto = `${p.nombres || p.nombre || ''} ${p.apellidos || p.apellido || ''}`.trim();
+      contenido += `"${p.id_postulante || p.id || ''}";"${nombreCompleto}";"${p.email || ''}";"${p.carrera || ''}";"${p.skills || ''}";"${p.estado || 'Activo'}"\n`;
+    });
+    nombreArchivo = 'reporte_postulantes_skills.csv';
+  } else if (this.tipoReporte === 'empresas') {
+    contenido = 'ID;Razón Social;CUIT;Email;Stack Tecnológico;Sector;Estado\n';
+    this.resultadosEmpresas.forEach(e => {
+      contenido += `"${e.id_empresa || ''}";"${e.razonSocial || ''}";"${e.cuit || ''}";"${e.email || ''}";"${e.stack_tecnologico || ''}";"${e.sector || ''}";"${e.estado || ''}"\n`;
+    });
+    nombreArchivo = 'reporte_empresas_stack.csv';
+  } else {
+    contenido = 'ID;Título;Empresa;Modalidad;Fecha Publicación\n';
+    this.resultadosOfertas.forEach(o => {
+      contenido += `"${o.id_oferta || ''}";"${o.titulo || ''}";"${o.razonSocial || ''}";"${o.modalidad || ''}";"${o.fecha_publicacion || ''}"\n`;
+    });
+    nombreArchivo = 'reporte_ofertas_laborales.csv';
   }
+
+  // 👈 IMPORTANTE: Añadimos '\uFEFF' (BOM) al principio para que Excel lea bien las tildes y eñes
+  const blob = new Blob(['\uFEFF' + contenido], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', nombreArchivo);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 }

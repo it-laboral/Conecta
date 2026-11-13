@@ -10,7 +10,11 @@ const transporter = process.env.DISABLE_EMAIL === 'true'
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-      }
+      },
+      // 👈 Agregamos únicamente esto para cortar la espera excesiva
+      connectionTimeout: 10000, // 10 segundos
+      greetingTimeout: 10000,   // 10 segundos
+      socketTimeout: 10000      // 10 segundos
     });
 
 router.post('/', async (req, res) => {

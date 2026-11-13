@@ -105,7 +105,7 @@ export class RegistrarPostulante implements OnInit {
 
           console.log('¡Postulante creado con éxito!', res);
 
-          alert('Registro exitoso.');
+          alert('Registro exitoso.Cuenta pendiente Aprobacion. Te avisaremos por email su Aprobacion');
 
           // Resetear el formulario tras enviar
           this.formRegistro.reset();

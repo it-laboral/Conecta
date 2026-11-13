@@ -20,6 +20,15 @@
     }
   </header>
 
+  <!-- 🔍 Buscador Local (Ubicado antes de los estados de carga/vacío para que siempre esté accesible) -->
+  <div class="buscador-container mb-3">
+    <input 
+      type="text" 
+      class="form-control" 
+      placeholder="Buscar por oferta, empresa o postulante..." 
+      [(ngModel)]="searchQuery">
+  </div>
+
   <!-- Estado de Carga -->
   @if (cargando) {
     <div class="state-box loading">
@@ -58,13 +67,14 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of postulaciones; track obtenerId(item)) {
+          <!-- 🔍 Recorremos 'postulacionesFiltradas' en lugar de 'postulaciones' -->
+          @for (item of postulacionesFiltradas; track obtenerId(item)) {
             <tr>
               <!-- Oferta -->
               <td class="col-oferta">
                 <span class="titulo-oferta">{{ item.titulo_oferta }}</span>
               </td>
-
+              
               <!-- Empresa (visible para postulante y admin) -->
               @if (rolUsuario !== 'empresa') {
                 <td class="col-empresa">

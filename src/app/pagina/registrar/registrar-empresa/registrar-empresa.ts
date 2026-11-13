@@ -61,7 +61,7 @@ export class RegistrarEmpresa implements OnInit {
       this.authService.registrarEmpresa(this.formRegistro.value).subscribe({
         next: (res) => {
           console.log('¡Empresa registrada con éxito!', res);
-          alert('¡Empresa registrada con éxito! Ya podés iniciar sesión.');
+          alert('¡Empresa registrada con éxito! Cuenta pendiente Aprobacion. Recibirás una notificación por email una vez sea aprobada.');
           this.formRegistro.reset();
           this.router.navigate(['/sesion']);
         },

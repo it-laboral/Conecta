@@ -1,0 +1,104 @@
+.alerta-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.alerta-modal {
+  background: linear-gradient(135deg, #14e9d7 0%, #b6eee9 100%);
+  color: #ffffff;
+  width: 90%;
+  max-width: 400px;
+  padding: 30px 25px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(13, 148, 136, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  .alerta-icono {
+    font-size: 48px;
+    color: #ccfbf1;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #0e0f68;
+  }
+
+  .alerta-botones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+
+    .btn-alerta-aceptar {
+      background-color: #ffffff;
+      color: #0f766e;
+      border: none;
+      padding: 10px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+
+      &:hover {
+        background-color: #f0fdfa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .btn-alerta-cancelar {
+      background-color: transparent;
+      color: #0e0f68;
+      border: 2px solid #0e0f68;
+      padding: 10px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+
+      &:hover {
+        background-color: rgba(14, 15, 104, 0.08);
+        transform: translateY(-2px);
+      }
+    }
+  } // 👈 Cierra .alerta-botones
+
+} // 👈 Cierra .alerta-modal
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

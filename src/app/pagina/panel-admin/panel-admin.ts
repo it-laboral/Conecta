@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { AlertaService } from '../../services/alerta.service';
 import { Skills } from './skills/skills';
 import { PostulanteProfile } from '../perfiles/postulante-profile/postulante-profile';
 import { EmpresaProfile } from '../perfiles/empresa-profile/empresa-profile';
@@ -29,6 +30,7 @@ export class PanelAdmin implements OnInit {
   private adminService = inject(AdminService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  private alertaService = inject(AlertaService);
   public authService = inject(AuthService);
 
   // Control de Vistas
@@ -194,20 +196,24 @@ export class PanelAdmin implements OnInit {
   }
 
   // Moderación de Ofertas
-  bajaOfertaAdmin(idOferta: number): void {
-    if (confirm(`¿Está seguro de que desea eliminar la oferta #${idOferta} de manera permanente?`)) {
-      this.adminService.eliminarOferta(idOferta).subscribe({
-        next: (res: RespuestaApi) => {
-          if (res.success) {
-            alert(`Oferta #${idOferta} eliminada con éxito.`);
-            this.ofertas = this.ofertas.filter(o => o.id_oferta !== idOferta);
-            this.cdr.detectChanges();
-          }
-        },
-        error: (err) => console.error('Error al eliminar oferta:', err)
-      });
+async bajaOfertaAdmin(idOferta: number): Promise<void> {
+  const confirmado = await this.alertaService.confirmar(`¿Está seguro de que desea eliminar la oferta #${idOferta} de manera permanente?`);
+  if (!confirmado) return;
+
+  this.adminService.eliminarOferta(idOferta).subscribe({
+    next: async (res: RespuestaApi) => {
+      if (res.success) {
+        await this.alertaService.mostrar(`Oferta #${idOferta} eliminada con éxito.`);
+        this.ofertas = this.ofertas.filter(o => o.id_oferta !== idOferta);
+        this.cdr.detectChanges();
+      }
+    },
+    error: async (err) => {
+      console.error('Error al eliminar oferta:', err);
+      await this.alertaService.mostrar('Ocurrió un error al intentar eliminar la oferta.');
     }
-  }
+  });
+}
 
   // Helpers de Fechas
   formatearFecha(fechaRaw: string | Date | null | undefined): string {

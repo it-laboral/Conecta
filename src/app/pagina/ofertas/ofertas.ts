@@ -2,10 +2,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router , ActivatedRoute} from '@angular/router';
-
+import { Inject } from '@angular/core';
 import { OfertaService } from '../../services/oferta_service';
 import { PostulacionesService } from '../../services/postulaciones.service';
 import { AuthService } from '../../services/auth.service';
+import { AlertaService } from '../../services/alerta.service';
 
 export interface Skill {
   skill_id: number;
@@ -56,6 +57,7 @@ export class Ofertas implements OnInit {
     private ofertaService: OfertaService,
     private postulacionesService: PostulacionesService,
     private authService: AuthService,
+    private alertaService: AlertaService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private router: Router
@@ -78,9 +80,10 @@ export class Ofertas implements OnInit {
       this.verMisOfertas = (params['vista'] === 'mis-ofertas');
       this.filtroEstado = this.verMisOfertas ? 'todas' : 'abiertas';
    
-    // 1. Carga inicial (Cartelera General Pública por defecto)
-    this.cargarOfertasDesdeBackend();
-  });
+      // 1. Carga inicial (Cartelera General Pública por defecto)
+      this.cargarOfertasDesdeBackend();
+    });
+    
     // 2. Cargas adicionales si hay sesión activa
     if (usuarioLogueado) {
       this.cargarHabilidadesYCategorias();
@@ -350,10 +353,10 @@ export class Ofertas implements OnInit {
     }
   }
 
-  guardarOferta(): void {
+  async guardarOferta(): Promise<void> {
     if (this.ofertaForm.invalid || this.skillsSeleccionadasIds.length === 0) {
       this.ofertaForm.markAllAsTouched();
-      alert('Por favor completa los campos obligatorios y selecciona al menos una habilidad.');
+      await this.alertaService.mostrar('Por favor completa los campos obligatorios y selecciona al menos una habilidad.');
       return;
     }
 
@@ -377,81 +380,82 @@ export class Ofertas implements OnInit {
       : this.ofertaService.publicarOferta(payload);
 
     peticion$.subscribe({
-      next: () => {
-        alert(this.modoEdicion ? 'Oferta actualizada con éxito.' : 'Oferta publicada con éxito.');
+      next: async () => {
+        await this.alertaService.mostrar(this.modoEdicion ? 'Oferta actualizada con éxito.' : 'Oferta publicada con éxito.');
         this.resetearFormulario();
         this.toggleVista(false);
         this.verMisOfertas = true; // Al guardar pasa al panel privado de la empresa
         this.filtroEstado = 'abiertas';
         this.cargarOfertasDesdeBackend();
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Error al guardar la oferta:', err);
         if (err.status === 403) {
-          alert('Acceso denegado (403): Tu usuario no cuenta con el rol "Empresa" o la sesión expiró.');
+          await this.alertaService.mostrar('Acceso denegado (403): Tu usuario no cuenta con el rol "Empresa" o la sesión expiró.');
         } else {
-          alert(err.error?.error || err.error?.mensaje || 'Error al procesar la solicitud en el servidor.');
+          await this.alertaService.mostrar(err.error?.error || err.error?.mensaje || 'Error al procesar la solicitud en el servidor.');
         }
       }
     });
   }
 
-  ampliarDuracion(ofertaId: number): void {
+  async ampliarDuracion(ofertaId: number): Promise<void> {
     const diasStr = prompt('¿Cuántos días desea agregar al plazo de vigencia?', '10');
     const dias = Number(diasStr);
 
     if (dias && dias > 0) {
       this.ofertaService.ampliarPlazo(ofertaId, dias).subscribe({
-        next: () => {
+        next: async () => {
           this.cargarOfertasDesdeBackend();
-          alert(`Plazo ampliado exitosamente en ${dias} días.`);
+          await this.alertaService.mostrar(`Plazo ampliado exitosamente en ${dias} días.`);
         },
-        error: (err) => {
+        error: async (err) => {
           console.error('Error al ampliar plazo:', err);
-          alert(err.error?.error || 'No se pudo ampliar el plazo de la oferta.');
+          await this.alertaService.mostrar(err.error?.error || 'No se pudo ampliar el plazo de la oferta.');
         }
       });
     }
   }
 
-  cambiarEstadoOferta(ofertaId: number, estadoActual: string): void {
+  async cambiarEstadoOferta(ofertaId: number, estadoActual: string): Promise<void> {
     const nuevoEstado = (estadoActual === 'Cerrada') ? 'Abierta' : 'Cerrada';
     const accionTexto = nuevoEstado === 'Cerrada' ? 'cerrar' : 'reabrir';
 
-    if (confirm(`¿Estás seguro de que querés ${accionTexto} esta oferta laboral?`)) {
-      this.ofertaService.cambiarEstado(ofertaId, nuevoEstado).subscribe({
-        next: () => {
-          alert(`Oferta ${nuevoEstado === 'Cerrada' ? 'cerrada' : 'reabierta'} con éxito.`);
-          this.cargarOfertasDesdeBackend();
-        },
-        error: (err) => {
-          console.error('Error al cambiar el estado de la oferta:', err);
-          alert(err.error?.error || 'No se pudo actualizar el estado de la oferta.');
-        }
-      });
-    }
+    const confirmado = await this.alertaService.confirmar(`¿Estás seguro de que querés ${accionTexto} esta oferta laboral?`);
+    if (!confirmado) return;
+
+    this.ofertaService.cambiarEstado(ofertaId, nuevoEstado).subscribe({
+      next: async () => {
+        await this.alertaService.mostrar(`Oferta ${nuevoEstado === 'Cerrada' ? 'cerrada' : 'reabierta'} con éxito.`);
+        this.cargarOfertasDesdeBackend();
+      },
+      error: async (err) => {
+        console.error('Error al cambiar el estado de la oferta:', err);
+        await this.alertaService.mostrar(err.error?.error || 'No se pudo actualizar el estado de la oferta.');
+      }
+    });
   }
   
-  guardarPostulacion(ofertaId: number): void {
+  async guardarPostulacion(ofertaId: number): Promise<void> {
     if (!this.idUsuario) {
-      alert('Debes iniciar sesión para postularte a una oferta laboral.');
+      await this.alertaService.mostrar('Debes iniciar sesión para postularte a una oferta laboral.');
       this.router.navigate(['/sesion']);
       return;
     }
 
     if (this.postulacionesRealizadas.has(ofertaId)) {
-      alert('Ya te has postulado a esta oferta laboral.');
+      await this.alertaService.mostrar('Ya te has postulado a esta oferta laboral.');
       return;
     }
 
     this.postulacionesService.crearPostulacion(ofertaId).subscribe({
-      next: () => {
-        alert('¡Postulación enviada con éxito!');
+      next: async () => {
+        await this.alertaService.mostrar('¡Postulación enviada con éxito!');
         this.postulacionesRealizadas.add(ofertaId);
         this.postulacionesRealizadas = new Set(this.postulacionesRealizadas);
         this.cdr.detectChanges();
       },
-      error: (err) => alert(err.error?.mensaje || 'Error al procesar la postulación.')
+      error: async (err) => await this.alertaService.mostrar(err.error?.mensaje || 'Error al procesar la postulación.')
     });
   }
 
@@ -459,16 +463,17 @@ export class Ofertas implements OnInit {
     return this.postulacionesRealizadas.has(ofertaId);
   }
 
-  bajaOfertaAdmin(ofertaId: number): void {
-    if (confirm('¿Está seguro de que desea eliminar esta oferta de manera permanente?')) {
-      this.ofertaService.eliminarOferta(ofertaId).subscribe({
-        next: () => {
-          this.ofertasDeBaseDeDatos = this.ofertasDeBaseDeDatos.filter(o => o.id_oferta !== ofertaId);
-          this.filtrarOfertasLocal();
-          alert(`Oferta N° ${ofertaId} eliminada.`);
-        },
-        error: (err) => console.error('Error al eliminar oferta:', err)
-      });
-    }
+  async bajaOfertaAdmin(ofertaId: number): Promise<void> {
+    const confirmado = await this.alertaService.confirmar('¿Está seguro de que desea eliminar esta oferta de manera permanente?');
+    if (!confirmado) return;
+
+    this.ofertaService.eliminarOferta(ofertaId).subscribe({
+      next: async () => {
+        this.ofertasDeBaseDeDatos = this.ofertasDeBaseDeDatos.filter(o => o.id_oferta !== ofertaId);
+        this.filtrarOfertasLocal();
+        await this.alertaService.mostrar(`Oferta N° ${ofertaId} eliminada.`);
+      },
+      error: (err) => console.error('Error al eliminar oferta:', err)
+    });
   }
 }
